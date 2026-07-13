@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "159426937103",
+    "project_id": "niniapp-c401b",
+    "storage_bucket": "niniapp-c401b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159426937103:android:2bcf06f518fb0f270a3e7a",
+        "android_client_info": {
+          "package_name": "com.anty48.niniapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "159426937103-as92gf9k86lnc8d8qaiv4vbtjk3jfoqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsmKVeq-NTwKZ-Ele1ITmpMbmgmsc9Yac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "159426937103-as92gf9k86lnc8d8qaiv4vbtjk3jfoqu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
