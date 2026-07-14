@@ -74,6 +74,18 @@ export default function ProfileScreen() {
         variant="outline"
         onPress={() => router.push('/groups')}
       />
+      {me?.isDriver && (
+        <Button
+          title={`🚗 ${t('drivers.title')}`}
+          variant="outline"
+          onPress={() => router.push('/drivers-zone')}
+        />
+      )}
+      <Button
+        title={t('extras.title')}
+        variant="outline"
+        onPress={() => router.push('/extras')}
+      />
 
       {/* Función "Tocar": activada por defecto, desactivable */}
       <View style={styles.switchRow}>

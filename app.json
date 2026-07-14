@@ -4,7 +4,7 @@
     "slug": "mi-red-social",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo_app.png",
     "scheme": "miredsocial",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -20,7 +20,7 @@
       "package": "com.anty48.niniapp",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/logo_app.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -29,12 +29,18 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/logo_app.png"
     },
     "plugins": [
       "expo-router",
       "expo-localization",
-      "react-native-nitro-google-signin"
+      "react-native-nitro-google-signin",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "NiniApp usa tu ubicación solo para calcular en tu dispositivo la distancia al IFAE; nunca se envía a ningún servidor."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -33,6 +33,7 @@ export default function GroupSettingsScreen() {
     isAdmin,
     updateGroupSettings,
     setMemberRole,
+    setDriver,
     leaveGroup,
   } = useGroupData();
 
@@ -196,6 +197,7 @@ export default function GroupSettingsScreen() {
               <Avatar uri={member.photoUrl} name={member.nickname ?? member.name} size={36} />
               <ThemedText style={styles.flex} numberOfLines={1}>
                 {member.nickname ?? member.name}
+                {member.isDriver ? ' 🚗' : ''}
                 {member.userId === user?.id ? ` (${t('common.you')})` : ''}
               </ThemedText>
               <ThemedText
@@ -203,6 +205,13 @@ export default function GroupSettingsScreen() {
                 style={member.role === 'admin' ? { color: theme.primary, fontWeight: '600' } : undefined}>
                 {member.role === 'admin' ? t('group.roleAdmin') : t('group.roleMember')}
               </ThemedText>
+              {isAdmin && (
+                <Pill
+                  label={t('group.driver')}
+                  selected={!!member.isDriver}
+                  onPress={() => setDriver(member.userId, !member.isDriver)}
+                />
+              )}
               {isAdmin && member.role !== 'admin' && member.userId !== user?.id && (
                 <Pill
                   label={t('group.makeAdmin')}

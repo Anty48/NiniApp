@@ -43,6 +43,15 @@ export interface Group {
   createdAt: string;
 }
 
+/** Datos del coche propio de un conductor (los edita él mismo). */
+export interface CarDetails {
+  model?: string;
+  color?: string;
+  /** Matrícula/placas. */
+  plate?: string;
+  seats?: number;
+}
+
 /** Miembro del grupo con su perfil visible y sus estadísticas. */
 export interface GroupMember {
   userId: UserId;
@@ -63,6 +72,12 @@ export interface GroupMember {
   personalStreakDays: number;
   /** Último día (YYYY-MM-DD) en que contribuyó al contador. */
   lastContributionDate?: string;
+  /** "Copipuntos": saldo del copiloto, lo administran los conductores. */
+  copipoints: number;
+  /** Conductor: lo asigna el admin; desbloquea la Zona de Conductores. */
+  isDriver?: boolean;
+  /** Coche del conductor, editable por él en la Zona de Conductores. */
+  carDetails?: CarDetails;
 }
 
 /** "Toque" entre miembros (estilo poke). Máx. uno cada 24 h por destinatario. */

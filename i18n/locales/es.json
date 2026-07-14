@@ -100,6 +100,7 @@
     "carSeats": "Plazas",
     "addCar": "Añadir coche",
     "leave": "Salir del grupo",
+    "driver": "Conductor",
     "leaveTitle": "¿Salir del grupo?",
     "leaveMessage": "Se borrarán todos tus datos de este grupo (votos, aportes y plazas). Esta acción no se puede deshacer.",
     "chooseSuccessor": "Eres el administrador. Elige quién heredará el rol:",
@@ -170,7 +171,39 @@
   },
   "leaderboard": {
     "byCommitment": "Compromiso",
-    "byContributions": "Contribuciones"
+    "byContributions": "Contribuciones",
+    "byCopipoints": "Copipuntos"
+  },
+  "drivers": {
+    "title": "Zona de Conductores",
+    "subtitle": "Panel exclusivo para conductores: administra los copipuntos del grupo y tu coche.",
+    "notDriver": "Solo los conductores designados por el admin pueden entrar aquí.",
+    "myCar": "Mi coche",
+    "carModel": "Modelo",
+    "carColor": "Color",
+    "carPlate": "Matrícula",
+    "carSaved": "¡Guardado!",
+    "points": "Copipuntos",
+    "pointsHint": "Suma o resta copipuntos a cualquier miembro; se guarda al instante."
+  },
+  "extras": {
+    "title": "Funciones extra",
+    "subtitle": "Tres utilidades sin ninguna utilidad. De nada.",
+    "ifaeTitle": "Distancia al IFAE",
+    "ifaeDesc": "Calcula la distancia en línea recta desde donde estás hasta el Institut de Física d'Altes Energies.",
+    "ifaeButton": "¿A cuánto estoy?",
+    "ifaeResultHint": "en línea recta hasta el IFAE",
+    "ifaePrivacy": "Tu ubicación se usa solo en este dispositivo; no se guarda ni se envía a ningún servidor.",
+    "ifaeDenied": "Permiso de ubicación denegado. Actívalo en los ajustes del sistema si quieres saberlo.",
+    "ifaeError": "No se pudo obtener tu ubicación. Inténtalo de nuevo.",
+    "ifaeUnavailable": "Esta versión de la app aún no incluye el módulo de ubicación; reinstala el development build.",
+    "diceTitle": "Dado virtual",
+    "diceButton": "Tirar el dado",
+    "diceRolling": "Girando...",
+    "pantoKicker": "Facto ferroviario",
+    "pantoTitle": "El Pantógrafo",
+    "pantoDesc": "El pantógrafo es el mecanismo articulado instalado en el techo de los trenes eléctricos que capta la corriente de la catenaria. Mantiene una presión de contacto constante contra el hilo de contacto, adaptándose a las variaciones de altura a cualquier velocidad.",
+    "pantoButton": "¡Descubre el pantógrafo!"
   },
   "groups": {
     "title": "Mis grupos",

@@ -13,6 +13,7 @@ import { i18n } from '@/i18n';
 import * as gd from '@/services/groupData';
 import { notifyLocal } from '@/services/notifications';
 import {
+  CarDetails,
   EventVoteValue,
   Group,
   GroupCounter,
@@ -52,6 +53,12 @@ interface GroupDataContextValue {
   }) => Promise<void>;
   /** "Tocar" a otro miembro (una vez cada 24 h por persona). */
   pokeMember: (toUserId: UserId) => Promise<'ok' | 'cooldown' | 'disabled'>;
+  /** Suma/resta copipuntos a un miembro (solo conductores, edición directa). */
+  adjustCopipoints: (userId: UserId, delta: number) => Promise<void>;
+  /** Asigna o retira el rol de conductor (solo admin). */
+  setDriver: (userId: UserId, isDriver: boolean) => Promise<void>;
+  /** El conductor edita los datos de su propio coche. */
+  updateMyCar: (carDetails: CarDetails) => Promise<void>;
 }
 
 const GroupDataContext = createContext<GroupDataContextValue | null>(null);
@@ -296,6 +303,41 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
     [user, data, me],
   );
 
+  const adjustCopipoints = useCallback(
+    async (userId: UserId, delta: number) => {
+      await mutate((d) => ({
+        ...d,
+        members: d.members.map((m) =>
+          m.userId === userId
+            ? { ...m, copipoints: (m.copipoints ?? gd.COPIPOINTS_START) + delta }
+            : m,
+        ),
+      }));
+    },
+    [mutate],
+  );
+
+  const setDriver = useCallback(
+    async (userId: UserId, isDriver: boolean) => {
+      await mutate((d) => ({
+        ...d,
+        members: d.members.map((m) => (m.userId === userId ? { ...m, isDriver } : m)),
+      }));
+    },
+    [mutate],
+  );
+
+  const updateMyCar = useCallback(
+    async (carDetails: CarDetails) => {
+      if (!user) return;
+      await mutate((d) => ({
+        ...d,
+        members: d.members.map((m) => (m.userId === user.id ? { ...m, carDetails } : m)),
+      }));
+    },
+    [mutate, user],
+  );
+
   const value = useMemo(
     () => ({
       data,
@@ -315,6 +357,9 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       leaveGroup,
       updateMyProfile,
       pokeMember,
+      adjustCopipoints,
+      setDriver,
+      updateMyCar,
     }),
     [
       data,
@@ -334,6 +379,9 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       leaveGroup,
       updateMyProfile,
       pokeMember,
+      adjustCopipoints,
+      setDriver,
+      updateMyCar,
     ],
   );
 

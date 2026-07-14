@@ -42,6 +42,8 @@ export const PERSONAL_MILESTONES = [5, 10];
 export const CLICKS_BEFORE_PROOF_REQUIRED = 3;
 /** "Tocar": una vez cada 24 h por destinatario. */
 export const POKE_COOLDOWN_MS = 24 * 3600 * 1000;
+/** Copipuntos con los que arranca todo miembro al crear/unirse a un grupo. */
+export const COPIPOINTS_START = 100;
 
 export function makeMember(user: User, role: GroupRole): GroupMember {
   return {
@@ -56,6 +58,7 @@ export function makeMember(user: User, role: GroupRole): GroupMember {
     lastRecoveryAt: new Date().toISOString(),
     counterContributions: 0,
     personalStreakDays: 0,
+    copipoints: COPIPOINTS_START,
   };
 }
 
@@ -167,6 +170,9 @@ export function runMaintenance(data: GroupData, now: Date = new Date()): GroupDa
   // 4) Rachas personales y recuperación pasiva del compromiso.
   const members = data.members.map((m) => {
     const member = { ...m };
+    // Backfill: los miembros anteriores al sistema de copipuntos arrancan
+    // con el saldo inicial.
+    if (typeof member.copipoints !== 'number') member.copipoints = COPIPOINTS_START;
     if (
       member.personalStreakDays > 0 &&
       member.lastContributionDate &&
@@ -414,6 +420,12 @@ export function sortByCommitment(members: GroupMember[]): GroupMember[] {
 
 export function sortByContributions(members: GroupMember[]): GroupMember[] {
   return [...members].sort((a, b) => b.counterContributions - a.counterContributions);
+}
+
+export function sortByCopipoints(members: GroupMember[]): GroupMember[] {
+  return [...members].sort(
+    (a, b) => (b.copipoints ?? COPIPOINTS_START) - (a.copipoints ?? COPIPOINTS_START),
+  );
 }
 
 // ---------- Salida del grupo ----------

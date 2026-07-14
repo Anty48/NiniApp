@@ -30,6 +30,14 @@ Gotchas de conducción (react-native-web):
   ("Node is either not clickable") por elementos invisibles. Filtrar por
   `getClientRects().length > 0`, sacar el centro del `getBoundingClientRect()`
   y usar `page.mouse.click(x, y)`.
+- **Escenas de pestañas inactivas siguen en el DOM** con rects válidos (te
+  hacen clicar texto oculto: p. ej. el título "Perfil" de una escena tapada).
+  Validar cada candidato con `document.elementFromPoint(centro)` (debe caer
+  dentro del elemento) y hacer `scrollIntoView` + reintento si ninguno es
+  visible. Las pantallas apiladas (drivers-zone, group-settings...) tapan la
+  barra de pestañas: `page.goBack()` antes de cambiar de pestaña.
+- **Triple-click no siempre selecciona todo** en inputs RNW con valor previo
+  (acabó "44" al escribir "4" sobre un "4"): mejor Ctrl+A antes de escribir.
 - **Botones/textos**: buscar `div,span,button,a` con `textContent.trim() === t`,
   ordenar por menos descendientes y clicar el centro del primero.
 - **Inputs**: sin placeholder ni testID; van por orden visual de la pantalla.

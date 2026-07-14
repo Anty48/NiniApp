@@ -100,6 +100,7 @@
     "carSeats": "Seats",
     "addCar": "Add car",
     "leave": "Leave group",
+    "driver": "Driver",
     "leaveTitle": "Leave the group?",
     "leaveMessage": "All your data in this group (votes, contributions and seats) will be deleted. This cannot be undone.",
     "chooseSuccessor": "You are the admin. Choose who inherits the role:",
@@ -170,7 +171,39 @@
   },
   "leaderboard": {
     "byCommitment": "Commitment",
-    "byContributions": "Contributions"
+    "byContributions": "Contributions",
+    "byCopipoints": "Copipoints"
+  },
+  "drivers": {
+    "title": "Drivers' Zone",
+    "subtitle": "Drivers-only panel: manage the group's copipoints and your car.",
+    "notDriver": "Only drivers appointed by the admin can enter here.",
+    "myCar": "My car",
+    "carModel": "Model",
+    "carColor": "Color",
+    "carPlate": "License plate",
+    "carSaved": "Saved!",
+    "points": "Copipoints",
+    "pointsHint": "Add or subtract copipoints for any member; saved instantly."
+  },
+  "extras": {
+    "title": "Extra features",
+    "subtitle": "Three utilities with no utility whatsoever. You're welcome.",
+    "ifaeTitle": "Distance to IFAE",
+    "ifaeDesc": "Calculates the straight-line distance from where you are to the Institute for High Energy Physics.",
+    "ifaeButton": "How far am I?",
+    "ifaeResultHint": "as the crow flies to IFAE",
+    "ifaePrivacy": "Your location is used on this device only; it is never stored or sent to any server.",
+    "ifaeDenied": "Location permission denied. Enable it in system settings if you really want to know.",
+    "ifaeError": "Could not get your location. Try again.",
+    "ifaeUnavailable": "This build of the app does not include the location module yet; reinstall the development build.",
+    "diceTitle": "Virtual die",
+    "diceButton": "Roll the die",
+    "diceRolling": "Rolling...",
+    "pantoKicker": "Railway fact",
+    "pantoTitle": "The Pantograph",
+    "pantoDesc": "The pantograph is the articulated mechanism mounted on the roof of electric trains that collects current from the catenary. It keeps a constant contact pressure against the contact wire, adapting to height variations at any speed.",
+    "pantoButton": "Discover the pantograph!"
   },
   "groups": {
     "title": "My groups",

@@ -100,6 +100,7 @@
     "carSeats": "Places",
     "addCar": "Afegir cotxe",
     "leave": "Sortir del grup",
+    "driver": "Conductor",
     "leaveTitle": "Sortir del grup?",
     "leaveMessage": "S'esborraran totes les teves dades d'aquest grup (vots, aportacions i places). Aquesta acció no es pot desfer.",
     "chooseSuccessor": "Ets l'administrador. Tria qui heretarà el rol:",
@@ -170,7 +171,39 @@
   },
   "leaderboard": {
     "byCommitment": "Compromís",
-    "byContributions": "Contribucions"
+    "byContributions": "Contribucions",
+    "byCopipoints": "Copipunts"
+  },
+  "drivers": {
+    "title": "Zona de Conductors",
+    "subtitle": "Panell exclusiu per a conductors: administra els copipunts del grup i el teu cotxe.",
+    "notDriver": "Només els conductors designats per l'admin poden entrar aquí.",
+    "myCar": "El meu cotxe",
+    "carModel": "Model",
+    "carColor": "Color",
+    "carPlate": "Matrícula",
+    "carSaved": "Desat!",
+    "points": "Copipunts",
+    "pointsHint": "Suma o resta copipunts a qualsevol membre; es desa a l'instant."
+  },
+  "extras": {
+    "title": "Funcions extra",
+    "subtitle": "Tres utilitats sense cap utilitat. De res.",
+    "ifaeTitle": "Distància a l'IFAE",
+    "ifaeDesc": "Calcula la distància en línia recta des d'on ets fins a l'Institut de Física d'Altes Energies.",
+    "ifaeButton": "A quant sóc?",
+    "ifaeResultHint": "en línia recta fins a l'IFAE",
+    "ifaePrivacy": "La teva ubicació només s'usa en aquest dispositiu; no es desa ni s'envia a cap servidor.",
+    "ifaeDenied": "Permís d'ubicació denegat. Activa'l als ajustos del sistema si ho vols saber.",
+    "ifaeError": "No s'ha pogut obtenir la teva ubicació. Torna-ho a provar.",
+    "ifaeUnavailable": "Aquesta versió de l'app encara no inclou el mòdul d'ubicació; reinstal·la el development build.",
+    "diceTitle": "Dau virtual",
+    "diceButton": "Tirar el dau",
+    "diceRolling": "Girant...",
+    "pantoKicker": "Facto ferroviari",
+    "pantoTitle": "El Pantògraf",
+    "pantoDesc": "El pantògraf és el mecanisme articulat instal·lat al sostre dels trens elèctrics que capta el corrent de la catenària. Manté una pressió de contacte constant contra el fil de contacte, adaptant-se a les variacions d'alçada a qualsevol velocitat.",
+    "pantoButton": "Descobreix el pantògraf!"
   },
   "groups": {
     "title": "Els meus grups",

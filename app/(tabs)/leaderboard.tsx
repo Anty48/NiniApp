@@ -9,7 +9,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { sortByCommitment, sortByContributions } from '@/services/groupData';
+import {
+  COPIPOINTS_START,
+  sortByCommitment,
+  sortByContributions,
+  sortByCopipoints,
+} from '@/services/groupData';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -19,7 +24,7 @@ export default function LeaderboardScreen() {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { data, isLoading } = useGroupData();
-  const [mode, setMode] = useState<'commitment' | 'contributions'>('commitment');
+  const [mode, setMode] = useState<'commitment' | 'contributions' | 'copipoints'>('commitment');
 
   if (isLoading || !data) {
     return (
@@ -30,7 +35,11 @@ export default function LeaderboardScreen() {
   }
 
   const sorted =
-    mode === 'commitment' ? sortByCommitment(data.members) : sortByContributions(data.members);
+    mode === 'commitment'
+      ? sortByCommitment(data.members)
+      : mode === 'contributions'
+        ? sortByContributions(data.members)
+        : sortByCopipoints(data.members);
 
   return (
     <Screen style={styles.container}>
@@ -46,6 +55,11 @@ export default function LeaderboardScreen() {
           label={t('leaderboard.byContributions')}
           selected={mode === 'contributions'}
           onPress={() => setMode('contributions')}
+        />
+        <Pill
+          label={t('leaderboard.byCopipoints')}
+          selected={mode === 'copipoints'}
+          onPress={() => setMode('copipoints')}
         />
       </View>
 
@@ -67,7 +81,9 @@ export default function LeaderboardScreen() {
             <ThemedText variant="subtitle">
               {mode === 'commitment'
                 ? `${Math.round(member.commitmentScore)}%`
-                : member.counterContributions}
+                : mode === 'contributions'
+                  ? member.counterContributions
+                  : (member.copipoints ?? COPIPOINTS_START)}
             </ThemedText>
           </View>
         ))}
