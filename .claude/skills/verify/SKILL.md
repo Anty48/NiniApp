@@ -14,6 +14,10 @@ Receta que funcionó (jul 2026). La app es 100 % online contra Firebase
 npx expo start --web --port 8081   # en background; ~15 s hasta bundle listo
 ```
 
+Al terminar, matar el proceso `node` que escucha en 8081 (parar la shell de
+fondo NO mata a Metro): `Get-NetTCPConnection -LocalPort 8081 -State Listen`
+→ `Stop-Process -Id <pid>`.
+
 ## Handle: puppeteer-core + Edge del sistema
 
 No hay Playwright. `npm i puppeteer-core` en un dir temporal y lanzar con

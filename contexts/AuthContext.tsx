@@ -69,6 +69,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // autenticar y las reglas las rechazarían ("insufficient permissions").
   useEffect(() => {
     let cancelled = false;
+
+    // Relee el perfil y los grupos desde Firestore y actualiza la sesión.
+    // La copia local puede estar desactualizada si el usuario editó su perfil
+    // (foto, apodo...) o los grupos desde OTRO dispositivo.
+    const refreshFromFirestore = async (
+      fbUser: NonNullable<Awaited<ReturnType<typeof authService.restoreFirebaseUser>>>,
+      preferredActiveId: string | null,
+    ) => {
+      const nextUser = await authService.loadUserDoc(fbUser);
+      const userGroups = await groupsService.fetchGroupsFor(nextUser);
+      if (cancelled) return;
+      const nextActiveId = userGroups.some((g) => g.id === preferredActiveId)
+        ? preferredActiveId
+        : (userGroups[0]?.id ?? null);
+      setUser(nextUser);
+      setGroups(userGroups);
+      setActiveGroupId(nextActiveId);
+      await setItem(StorageKeys.session, {
+        user: nextUser,
+        groups: userGroups,
+        activeGroupId: nextActiveId,
+      });
+    };
+
     (async () => {
       try {
         const session = await getItem<PersistedSession>(StorageKeys.session);
@@ -81,31 +105,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         if (session && session.user.id === fbUser.uid) {
+          // Arranque instantáneo con la copia local...
           setUser(session.user);
-          if (session.groups) {
-            setGroups(session.groups);
-            setActiveGroupId(session.activeGroupId ?? session.groups[0]?.id ?? null);
-          } else if (session.group) {
-            // Formato antiguo (un solo grupo); se migra al vuelo.
-            setGroups([session.group]);
-            setActiveGroupId(session.group.id);
-          }
+          const sessionGroups = session.groups ?? (session.group ? [session.group] : []);
+          const sessionActiveId =
+            session.activeGroupId ?? sessionGroups[0]?.id ?? null;
+          setGroups(sessionGroups);
+          setActiveGroupId(sessionActiveId);
+          // ...y refresco en segundo plano (no bloquea isLoading).
+          refreshFromFirestore(fbUser, sessionActiveId).catch((e) =>
+            console.warn('No se pudo refrescar el perfil desde Firestore', e),
+          );
           return;
         }
 
         // Hay usuario de Firebase pero la sesión guardada falta o es de otra
         // identidad: se reconstruye desde Firestore.
-        const nextUser = await authService.loadUserDoc(fbUser);
-        const userGroups = await groupsService.fetchGroupsFor(nextUser);
-        if (cancelled) return;
-        setUser(nextUser);
-        setGroups(userGroups);
-        setActiveGroupId(userGroups[0]?.id ?? null);
-        await setItem(StorageKeys.session, {
-          user: nextUser,
-          groups: userGroups,
-          activeGroupId: userGroups[0]?.id ?? null,
-        });
+        await refreshFromFirestore(fbUser, session?.activeGroupId ?? null);
       } catch (e) {
         console.warn('No se pudo restaurar la sesión', e);
       } finally {
