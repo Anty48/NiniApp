@@ -7,6 +7,7 @@
     "loading": "Carregant...",
     "logout": "Tancar sessió",
     "error": "S'ha produït un error. Torna-ho a provar.",
+    "photoUploadError": "No s'ha pogut pujar la foto. Comprova la connexió i torna-ho a provar.",
     "requiredFields": "Omple tots els camps obligatoris",
     "yes": "Sí",
     "no": "No",

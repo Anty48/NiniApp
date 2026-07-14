@@ -1,5 +1,5 @@
 import { getFirebase } from '@/services/firebase';
-import { makeMember } from '@/services/groupData';
+import { makeMember, mutateGroupData } from '@/services/groupData';
 import { Group, GroupData, User } from '@/types/models';
 
 /** Un usuario puede pertenecer como máximo a 3 grupos. */
@@ -76,17 +76,19 @@ export async function joinGroup(
 ): Promise<Group> {
   const id = groupId.trim().toUpperCase();
 
-  const { db } = getFirebase();
-  const { doc, getDoc, setDoc } = require('@firebase/firestore');
-  const ref = doc(db, 'groups', id);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) throw new Error('join-invalid');
-  const data = snap.data() as GroupData;
+  // Transacción: la validación y el alta se hacen sobre el documento fresco,
+  // sin pisar cambios concurrentes de otros miembros.
   // TODO(backend): validar en una Cloud Function para no exponer la
   // contraseña en el documento a clientes no miembros (reglas + hash).
-  if (data.group.accessPassword !== accessPassword) throw new Error('join-invalid');
-
-  if (!data.members.some((m) => m.userId === user.id)) {
+  let group: Group | null = null;
+  await mutateGroupData(id, (data) => {
+    if (!data || data.group.accessPassword !== accessPassword) {
+      throw new Error('join-invalid'); // aborta la transacción
+    }
+    if (data.members.some((m) => m.userId === user.id)) {
+      group = data.group;
+      return null; // ya era miembro: no hay nada que escribir
+    }
     const next: GroupData = {
       ...data,
       group: {
@@ -95,10 +97,11 @@ export async function joinGroup(
       },
       members: [...data.members, makeMember(user, 'member')],
     };
-    await setDoc(ref, next);
-  }
+    group = next.group;
+    return next;
+  });
   await addGroupToUserDoc(user.id, id);
-  return data.group;
+  return group!;
 }
 
 /** Recupera los objetos Group de los grupos del usuario (para el login). */

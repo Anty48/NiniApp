@@ -21,17 +21,16 @@ demo se eliminó. Estos pasos quedan como referencia de cómo se configuró.
 2. Pestaña *Sign-in method*:
    - Activa **Correo electrónico/contraseña**.
    - Activa **Google** (elige un correo de soporte). Esto hace funcionar el
-     botón "Continuar con Google" en la web/PWA. Para el login con Google
-     nativo en Android hará falta además crear el OAuth client de Android en
-     Google Cloud y usar `expo-auth-session` (pendiente, marcado con TODO en
-     `services/auth.ts`).
+     botón "Continuar con Google" en la web/PWA. El login con Google nativo
+     en Android ya funciona (`react-native-nitro-google-signin` + development
+     build de EAS; requiere `google-services.json` y el SHA-1 del keystore de
+     EAS dado de alta en Firebase).
 
 ## 3. Activar Cloud Firestore
 
 1. Menú lateral → **Firestore Database** → **Crear base de datos**.
 2. Ubicación: `eur3 (europe-west)` va bien.
-3. Empieza en **modo de prueba** para probar ya mismo, y luego pega estas
-   reglas mínimas (pestaña *Reglas*):
+3. Pega estas reglas **v2** en la pestaña *Reglas* y pulsa **Publicar**:
 
 ```
 rules_version = '2';
@@ -41,20 +40,74 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     match /groups/{groupId} {
-      // v1: cualquier usuario autenticado puede leer (necesario para unirse
-      // con ID+contraseña) y los miembros pueden escribir.
+      // Leer: cualquier autenticado (necesario para unirse con ID+contraseña).
       allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      // Crear: solo si el creador queda registrado como admin del grupo.
+      allow create: if request.auth != null
+        && request.resource.data.group.memberRoles[request.auth.uid] == 'admin';
+      // Actualizar: miembros actuales del grupo, o alguien que se está
+      // añadiendo a sí mismo como 'member' (flujo de unirse). Salir del grupo
+      // también entra por la primera rama (el que sale aún es miembro).
+      allow update: if request.auth != null && (
+        request.auth.uid in resource.data.group.memberRoles
+        || request.resource.data.group.memberRoles[request.auth.uid] == 'member'
+      );
+      // El cliente nunca borra documentos de grupo.
+      allow delete: if false;
     }
   }
 }
 ```
 
-> ⚠️ v1 pragmática: la contraseña del grupo viaja dentro del documento del
-> grupo. Para el lanzamiento real, mover la validación de unirse a una Cloud
-> Function y guardar la contraseña hasheada (TODO en `services/groups.ts`).
+> ⚠️ Límite conocido de la v2: la contraseña del grupo viaja dentro del
+> documento (legible por cualquier autenticado) y las reglas no pueden
+> comprobarla, así que un usuario malicioso podría unirse sin contraseña
+> escribiéndose como 'member'. Para el lanzamiento real, mover la validación
+> de unirse a una Cloud Function y guardar la contraseña hasheada (TODO en
+> `services/groups.ts`).
 
-## 4. Probar
+## 4. Activar Cloud Storage (fotos)
+
+Las fotos (perfil, grupo y pruebas del contador) se suben a Firebase Storage
+(`services/photos.ts`) y en Firestore solo se guarda la URL.
+
+1. Menú lateral → **Storage** → **Comenzar**. Desde finales de 2024 los
+   proyectos nuevos necesitan el plan **Blaze** (pago por uso, requiere
+   tarjeta) para crear el bucket; la cuota gratuita mensual (5 GB, 1 GB/día de
+   descarga) sobra de largo para un grupo de amigos, coste ≈ 0 €.
+2. Ubicación: la misma región que Firestore.
+3. Pega estas reglas en la pestaña *Reglas* de Storage y pulsa **Publicar**
+   (usan `firestore.get` para comprobar la membresía del grupo):
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Foto de perfil: cada usuario escribe solo en su carpeta.
+    match /users/{userId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+    // Foto del grupo y pruebas del contador: solo miembros del grupo.
+    match /groups/{groupId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*')
+        && request.auth.uid in firestore.get(
+             /databases/(default)/documents/groups/$(groupId)
+           ).data.group.memberRoles;
+    }
+  }
+}
+```
+
+Si Storage no está activado, la app sigue funcionando: al fallar la subida se
+muestra un aviso y no se guarda la foto.
+
+## 5. Probar
 
 ```bash
 npm run web      # o npm run android
@@ -69,15 +122,22 @@ en tiempo real (Firestore `onSnapshot`).
 - `users/{uid}` → perfil del usuario (`types/models.ts` → `User`).
 - `groups/{groupId}` → **todo el estado del grupo** en un documento
   (`GroupData`: miembros, eventos, votos, contador, aportes, toques).
-  - Simple y en tiempo real; límite de 1 MB por documento. Las fotos van en
-    base64 comprimido — para muchos usuarios/fotos, migrar a Firebase Storage
-    (TODO en `utils/pickImage.ts`).
+  - Simple y en tiempo real; límite de 1 MB por documento (las fotos ya NO
+    van dentro: se suben a Storage y solo se guarda la URL).
+  - Todas las escrituras del cliente pasan por `runTransaction`
+    (`mutateGroupData` en `services/groupData.ts`): se relee el documento
+    fresco y se le aplica la mutación, así dos miembros simultáneos no se
+    pisan.
+- Storage: `users/{uid}/profile-*.jpg`, `groups/{gid}/photo-*.jpg` y
+  `groups/{gid}/proofs/{uid}-*.jpg`.
 
 ## Pendiente para después (marcado con TODO en el código)
 
 - **Push reales**: FCM (Android) + Web Push con VAPID (PWA iOS) enviados desde
   Cloud Functions al crear eventos, hitos de racha y toques. Ahora mismo las
   notificaciones son locales al dispositivo.
-- **Google nativo Android** con `expo-auth-session`.
-- **Borrado programado** de fotos de prueba a las 24 h con Cloud Scheduler
-  (ahora se hace al abrir la app).
+- **Unirse vía Cloud Function** con contraseña hasheada (ver aviso en las
+  reglas de Firestore).
+- **Borrado programado** de fotos de prueba a las 24 h con Cloud Scheduler:
+  la referencia se quita del documento al abrir la app, pero el archivo
+  sigue en Storage hasta que exista esa limpieza.

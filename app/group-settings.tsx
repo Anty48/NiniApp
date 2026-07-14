@@ -14,7 +14,8 @@ import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { sortByCommitment } from '@/services/groupData';
-import { confirmAsync } from '@/utils/confirm';
+import { uploadPhoto } from '@/services/photos';
+import { alertMessage, confirmAsync } from '@/utils/confirm';
 import { pickImage } from '@/utils/pickImage';
 
 /**
@@ -72,7 +73,13 @@ export default function GroupSettingsScreen() {
 
   const changePhoto = async () => {
     const photo = await pickImage(true);
-    if (photo) await updateGroupSettings({ photoUrl: photo });
+    if (!photo) return;
+    try {
+      const url = await uploadPhoto(photo, `groups/${data.group.id}/photo-${Date.now()}.jpg`);
+      await updateGroupSettings({ photoUrl: url });
+    } catch {
+      alertMessage(t('common.error'), t('common.photoUploadError'));
+    }
   };
 
   const addPresetCar = async () => {

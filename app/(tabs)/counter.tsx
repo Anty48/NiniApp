@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Alert, Image, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
@@ -13,6 +13,8 @@ import {
   contributionsToday,
   sortByContributions,
 } from '@/services/groupData';
+import { uploadPhoto } from '@/services/photos';
+import { alertMessage } from '@/utils/confirm';
 import { formatDateTime } from '@/utils/date';
 import { pickImage } from '@/utils/pickImage';
 
@@ -60,17 +62,24 @@ export default function CounterScreen() {
   };
 
   const add = async (withPhoto: boolean) => {
-    if (!canIncrement || dailyLimitReached) return;
+    if (!user || !canIncrement || dailyLimitReached) return;
     let photo: string | undefined;
     if (withPhoto || photoRequired) {
       if (photoRequired && !withPhoto) {
         // Anti-trampas: al 4º clic del día la foto es obligatoria.
-        if (Platform.OS === 'web') window.alert(t('counter.photoRequiredMessage'));
-        else Alert.alert(t('counter.photoRequiredTitle'), t('counter.photoRequiredMessage'));
+        alertMessage(t('counter.photoRequiredTitle'), t('counter.photoRequiredMessage'));
       }
       const picked = await pickImage();
       if (!picked) return; // sin foto no se valida el clic obligatorio
-      photo = picked;
+      try {
+        photo = await uploadPhoto(
+          picked,
+          `groups/${data.group.id}/proofs/${user.id}-${Date.now()}.jpg`,
+        );
+      } catch {
+        alertMessage(t('common.error'), t('common.photoUploadError'));
+        return;
+      }
     }
     await contribute(photo);
   };

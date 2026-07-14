@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { ensurePhotoUploaded } from '@/services/photos';
 import { pickImage } from '@/utils/pickImage';
 
 /** Edición del perfil propio: foto, nombre de usuario, apodo y descripción. */
@@ -34,19 +35,31 @@ export default function EditProfileScreen() {
   };
 
   const save = async () => {
+    if (!user) return;
     if (!username.trim()) {
       setError(t('common.requiredFields'));
       return;
     }
     setError(null);
     setSaving(true);
-    await updateMyProfile({
-      username: username.trim(),
-      nickname: nickname.trim() || undefined,
-      description: description.trim() || undefined,
-      photoUrl,
-    });
-    router.back();
+    try {
+      // La foto elegida se previsualiza con su URI local y solo se sube a
+      // Storage al guardar; en el perfil se persiste la URL remota.
+      const remotePhotoUrl = await ensurePhotoUploaded(
+        photoUrl,
+        `users/${user.id}/profile-${Date.now()}.jpg`,
+      );
+      await updateMyProfile({
+        username: username.trim(),
+        nickname: nickname.trim() || undefined,
+        description: description.trim() || undefined,
+        photoUrl: remotePhotoUrl,
+      });
+      router.back();
+    } catch {
+      setError(t('common.photoUploadError'));
+      setSaving(false);
+    }
   };
 
   return (

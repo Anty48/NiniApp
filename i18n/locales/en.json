@@ -7,6 +7,7 @@
     "loading": "Loading...",
     "logout": "Log out",
     "error": "Something went wrong. Please try again.",
+    "photoUploadError": "The photo could not be uploaded. Check your connection and try again.",
     "requiredFields": "Please fill in all required fields",
     "yes": "Yes",
     "no": "No",

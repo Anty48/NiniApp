@@ -61,40 +61,51 @@ export function makeMember(user: User, role: GroupRole): GroupMember {
 
 // ---------- Carga / guardado ----------
 
-export async function loadGroupData(group: Group, me: User): Promise<GroupData> {
+/**
+ * Mutación atómica del grupo: `runTransaction` relee el documento fresco,
+ * le aplica la función pura y escribe el resultado. Así dos miembros que
+ * actúan a la vez no se pisan (antes cada cliente hacía `setDoc` del estado
+ * local entero = last-writer-wins).
+ *
+ * `fn` recibe el estado fresco (o null si el doc no existe) y puede
+ * ejecutarse varias veces si la transacción reintenta: debe ser pura.
+ * Si devuelve null no se escribe nada (p. ej. cooldown de un toque).
+ * Devuelve el estado confirmado en el servidor, o null si no se escribió.
+ */
+export async function mutateGroupData(
+  groupId: string,
+  fn: (current: GroupData | null) => GroupData | null,
+): Promise<GroupData | null> {
   const { db } = getFirebase();
-  const { doc, getDoc } = require('@firebase/firestore');
-  const snap = await getDoc(doc(db, 'groups', group.id));
-  let data: GroupData | null = snap.exists() ? (snap.data() as GroupData) : null;
+  const { doc, runTransaction } = require('@firebase/firestore');
+  const ref = doc(db, 'groups', groupId);
+  return runTransaction(db, async (tx: any) => {
+    const snap = await tx.get(ref);
+    const next = fn(snap.exists() ? (snap.data() as GroupData) : null);
+    if (next) tx.set(ref, next);
+    return next;
+  });
+}
 
-  if (data) {
-    // Si el usuario acaba de unirse y aún no figura como miembro, se añade.
-    if (!data.members.some((m) => m.userId === me.id)) {
-      data = {
-        ...data,
-        members: [...data.members, makeMember(me, group.memberRoles[me.id] ?? 'member')],
-      };
-    }
-  } else {
-    data = {
+export async function loadGroupData(group: Group, me: User): Promise<GroupData> {
+  const data = await mutateGroupData(group.id, (current) => {
+    let d: GroupData = current ?? {
       group,
-      members: [makeMember(me, group.memberRoles[me.id] ?? 'admin')],
+      members: [],
       events: [],
       votes: [],
       counter: null,
       contributions: [],
       pokes: [],
     };
-  }
-  data = runMaintenance(data);
-  await saveGroupData(data);
-  return data;
-}
-
-export async function saveGroupData(data: GroupData): Promise<void> {
-  const { db } = getFirebase();
-  const { doc, setDoc } = require('@firebase/firestore');
-  await setDoc(doc(db, 'groups', data.group.id), data);
+    // Si el usuario acaba de unirse y aún no figura como miembro, se añade.
+    if (!d.members.some((m) => m.userId === me.id)) {
+      const role = d.group.memberRoles[me.id] ?? (current ? 'member' : 'admin');
+      d = { ...d, members: [...d.members, makeMember(me, role)] };
+    }
+    return runMaintenance(d);
+  });
+  return data!;
 }
 
 /**

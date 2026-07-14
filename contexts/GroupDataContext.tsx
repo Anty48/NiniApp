@@ -91,11 +91,17 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   }, [user?.id, group?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const mutate = useCallback(
-    async (fn: (d: GroupData) => GroupData) => {
-      if (!data) return;
-      const next = fn(data);
-      setData(next);
-      await gd.saveGroupData(next);
+    async (fn: (d: GroupData) => GroupData): Promise<GroupData | null> => {
+      if (!data) return null;
+      // Optimista: pinta ya el resultado local. La transacción relee el doc
+      // fresco del servidor y le aplica la misma función, así dos miembros
+      // actuando a la vez no se pisan; onSnapshot reconcilia después.
+      setData(fn(data));
+      const committed = await gd.mutateGroupData(data.group.id, (fresh) =>
+        fresh ? fn(fresh) : null,
+      );
+      if (committed) setData(committed);
+      return committed;
     },
     [data],
   );
@@ -169,9 +175,17 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   const contribute = useCallback(
     async (proofPhotoUrl?: string) => {
       if (!user || !data) return;
-      const result = gd.contribute(data, user.id, proofPhotoUrl);
-      setData(result.data);
-      await gd.saveGroupData(result.data);
+      // Los hitos se calculan sobre el estado fresco leído en la transacción.
+      let lastRun: ReturnType<typeof gd.contribute> | null = null;
+      const committed = await gd.mutateGroupData(data.group.id, (fresh) => {
+        if (!fresh) return null;
+        lastRun = gd.contribute(fresh, user.id, proofPhotoUrl);
+        return lastRun.data;
+      });
+      // TS no ve las asignaciones hechas dentro del closure de la transacción.
+      const result = lastRun as ReturnType<typeof gd.contribute> | null;
+      if (!committed || !result) return;
+      setData(committed);
       if (result.groupMilestone) {
         notifyLocal(
           i18n.t('notifications.groupMilestoneTitle'),
@@ -190,12 +204,10 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
 
   const updateGroupSettings = useCallback(
     async (fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl' | 'presetCars'>>) => {
-      if (!data) return;
-      const nextGroup = { ...data.group, ...fields };
-      await mutate((d) => ({ ...d, group: nextGroup }));
-      await updateGroup(nextGroup);
+      const committed = await mutate((d) => ({ ...d, group: { ...d.group, ...fields } }));
+      if (committed) await updateGroup(committed.group);
     },
-    [data, mutate, updateGroup],
+    [mutate, updateGroup],
   );
 
   const setMemberRole = useCallback(
@@ -212,8 +224,9 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   const leaveGroup = useCallback(
     async (successorId?: UserId) => {
       if (!user || !data) return;
-      const next = gd.removeMember(data, user.id, successorId);
-      await gd.saveGroupData(next);
+      await gd.mutateGroupData(data.group.id, (fresh) =>
+        fresh ? gd.removeMember(fresh, user.id, successorId) : null,
+      );
       setData(null);
       await clearGroup(); // el guard redirige al onboarding de grupo
     },
@@ -253,14 +266,27 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   const pokeMember = useCallback(
     async (toUserId: UserId): Promise<'ok' | 'cooldown' | 'disabled'> => {
       if (!user || !data) return 'disabled';
-      const target = data.members.find((m) => m.userId === toUserId);
-      if (!target || target.allowPokes === false) return 'disabled';
-      const last = gd.lastPokeAt(data, user.id, toUserId);
-      if (last && Date.now() - last < gd.POKE_COOLDOWN_MS) return 'cooldown';
-
-      const next = gd.addPoke(data, user.id, toUserId);
-      setData(next);
-      await gd.saveGroupData(next);
+      // El cooldown y el permiso se comprueban sobre el estado fresco dentro
+      // de la transacción: dos toques simultáneos no lo saltan.
+      let status: 'ok' | 'cooldown' | 'disabled' = 'disabled';
+      const committed = await gd.mutateGroupData(data.group.id, (fresh) => {
+        if (!fresh) return null;
+        const target = fresh.members.find((m) => m.userId === toUserId);
+        if (!target || target.allowPokes === false) {
+          status = 'disabled';
+          return null;
+        }
+        const last = gd.lastPokeAt(fresh, user.id, toUserId);
+        if (last && Date.now() - last < gd.POKE_COOLDOWN_MS) {
+          status = 'cooldown';
+          return null;
+        }
+        status = 'ok';
+        return gd.addPoke(fresh, user.id, toUserId);
+      });
+      if (committed) setData(committed);
+      // (cast: TS no ve las asignaciones hechas dentro del closure)
+      if ((status as string) !== 'ok') return status;
       // TODO(backend): push real al destinatario vía FCM/Web Push. En local se
       // muestra la notificación en este dispositivo como demostración.
       const myName = me?.nickname ?? me?.name ?? '';

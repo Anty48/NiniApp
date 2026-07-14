@@ -4,6 +4,12 @@ import { Alert, Platform } from 'react-native';
  * Diálogo de confirmación multiplataforma: Alert nativo en Android/iOS y
  * window.confirm en web (react-native-web no implementa Alert.alert).
  */
+/** Aviso simple multiplataforma (Alert nativo / window.alert en web). */
+export function alertMessage(title: string, message: string): void {
+  if (Platform.OS === 'web') window.alert(`${title}\n\n${message}`);
+  else Alert.alert(title, message);
+}
+
 export function confirmAsync(options: {
   title: string;
   message: string;
