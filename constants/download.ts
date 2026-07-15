@@ -3,16 +3,19 @@ import { Platform } from 'react-native';
 /**
  * URL de descarga del APK de Android de NiniApp.
  *
- * 👉 CAMBIA SOLO ESTA LÍNEA cuando subas una nueva versión del APK: pega aquí
- * el enlace de descarga directa de tu Google Drive / Dropbox / etc. Tanto la
+ * 👉 CAMBIA SOLO EL FILE_ID cuando subas una nueva versión del APK a Google
+ * Drive (la parte entre /d/ y /view del enlace de compartir). Tanto la
  * pantalla de bienvenida web (`app/gateway.tsx`) como el botón del Perfil
  * (`app/(tabs)/profile.tsx`) usan esta misma constante.
  *
- * Consejo: usa un enlace de descarga DIRECTA (no la vista previa del archivo).
- * - Google Drive: https://drive.google.com/uc?export=download&id=FILE_ID
- * - Dropbox: cambia el `?dl=0` final del enlace por `?dl=1`.
+ * OJO: el formato clásico `drive.google.com/uc?export=download&id=...` NO
+ * sirve para este APK: pesa más de 100 MB y Drive devuelve una página HTML
+ * de aviso ("no se puede analizar en busca de virus") en lugar del archivo.
+ * El formato `drive.usercontent.google.com/download` con `confirm=t` salta
+ * ese aviso y descarga directamente (verificado: HTTP 200 + attachment).
  */
-export const APK_DOWNLOAD_URL = 'https://TODO-pega-aqui-el-enlace-de-descarga-del-apk';
+export const APK_DOWNLOAD_URL =
+  'https://drive.usercontent.google.com/download?id=1sU-ZmUU9pYY1UoDFxqM38Menc7viYnUr&export=download&confirm=t';
 
 /**
  * Inicia la descarga del APK. Solo tiene efecto en la web; en nativo no hace
