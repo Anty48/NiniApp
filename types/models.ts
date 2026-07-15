@@ -38,17 +38,17 @@ export interface Group {
   accessPassword: string;
   /** El creador es admin; puede asignar más admins. */
   memberRoles: Record<UserId, GroupRole>;
-  /** Coches predefinidos activables en bloque al crear un evento. */
-  presetCars: CarPreset[];
   createdAt: string;
 }
 
-/** Datos del coche propio de un conductor (los edita él mismo). */
+/**
+ * Datos del coche de un conductor. Solo existe un coche por conductor,
+ * atado a su persona: lo asigna el admin al darle el rol y lo puede editar
+ * después tanto el admin como el propio conductor.
+ */
 export interface CarDetails {
   model?: string;
   color?: string;
-  /** Matrícula/placas. */
-  plate?: string;
   seats?: number;
 }
 
@@ -115,6 +115,10 @@ export interface GroupEvent {
   startsAt: string;
   /** Puede ser otro día: los eventos pueden durar más de un día. */
   endsAt: string;
+  /** Si es true, startsAt/endsAt son las 00:00 y 23:59 de sus días (sin hora concreta). */
+  allDay?: boolean;
+  /** Color del evento en el calendario: aleatorio y transparente por defecto. */
+  color?: string;
   /** Horas antes del inicio en que se cierra la votación (por defecto 12). */
   voteLockHoursBefore: number;
   cars?: EventCar[];
@@ -135,15 +139,12 @@ export interface EventVote {
 
 // ---------- Coches (logística de eventos) ----------
 
-export interface CarPreset {
-  id: string;
-  name: string;
-  seats: number; // por defecto 4
-}
-
 export interface EventCar {
   id: string;
-  name: string;
+  /** Conductor dueño del coche, si es un coche del grupo (queda atado a él). */
+  driverId?: UserId;
+  /** Solo para coches temporales (creados solo para este evento, sin dueño). */
+  name?: string;
   seats: number;
   /** Usuarios (con voto SÍ) asignados a plaza, en orden. */
   occupants: UserId[];

@@ -412,6 +412,13 @@ export function contribute(
   };
 }
 
+// ---------- Coches de conductores ----------
+
+/** Miembros conductores que ya tienen un coche configurado, activables en eventos. */
+export function driversWithCar(data: GroupData): GroupMember[] {
+  return data.members.filter((m) => m.isDriver && m.carDetails);
+}
+
 // ---------- Ranking ----------
 
 export function sortByCommitment(members: GroupMember[]): GroupMember[] {

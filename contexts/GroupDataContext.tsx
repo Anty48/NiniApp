@@ -39,7 +39,7 @@ interface GroupDataContextValue {
   saveCounter: (counter: GroupCounter) => Promise<void>;
   contribute: (proofPhotoUrl?: string) => Promise<void>;
   updateGroupSettings: (
-    fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl' | 'presetCars'>>,
+    fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl'>>,
   ) => Promise<void>;
   setMemberRole: (userId: UserId, role: GroupRole) => Promise<void>;
   /** Sale del grupo borrando los datos propios; si era admin, traspasa el rol. */
@@ -57,8 +57,10 @@ interface GroupDataContextValue {
   adjustCopipoints: (userId: UserId, delta: number) => Promise<void>;
   /** Asigna o retira el rol de conductor (solo admin). */
   setDriver: (userId: UserId, isDriver: boolean) => Promise<void>;
-  /** El conductor edita los datos de su propio coche. */
-  updateMyCar: (carDetails: CarDetails) => Promise<void>;
+  /** El conductor edita o quita los datos de su propio coche. */
+  updateMyCar: (carDetails: CarDetails | undefined) => Promise<void>;
+  /** El admin asigna, edita o quita el coche de cualquier conductor. */
+  setMemberCar: (userId: UserId, carDetails: CarDetails | undefined) => Promise<void>;
 }
 
 const GroupDataContext = createContext<GroupDataContextValue | null>(null);
@@ -210,7 +212,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   );
 
   const updateGroupSettings = useCallback(
-    async (fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl' | 'presetCars'>>) => {
+    async (fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl'>>) => {
       const committed = await mutate((d) => ({ ...d, group: { ...d.group, ...fields } }));
       if (committed) await updateGroup(committed.group);
     },
@@ -328,7 +330,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   );
 
   const updateMyCar = useCallback(
-    async (carDetails: CarDetails) => {
+    async (carDetails: CarDetails | undefined) => {
       if (!user) return;
       await mutate((d) => ({
         ...d,
@@ -336,6 +338,16 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       }));
     },
     [mutate, user],
+  );
+
+  const setMemberCar = useCallback(
+    async (userId: UserId, carDetails: CarDetails | undefined) => {
+      await mutate((d) => ({
+        ...d,
+        members: d.members.map((m) => (m.userId === userId ? { ...m, carDetails } : m)),
+      }));
+    },
+    [mutate],
   );
 
   const value = useMemo(
@@ -360,6 +372,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       adjustCopipoints,
       setDriver,
       updateMyCar,
+      setMemberCar,
     }),
     [
       data,
@@ -382,6 +395,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       adjustCopipoints,
       setDriver,
       updateMyCar,
+      setMemberCar,
     ],
   );
 

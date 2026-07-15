@@ -12,7 +12,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { hasEnded, hasStarted, isVoteLocked, voteLockTime } from '@/services/groupData';
 import { EventVoteValue } from '@/types/models';
 import { confirmAsync } from '@/utils/confirm';
-import { formatDateTime } from '@/utils/date';
+import { formatDateTime, formatEventRange } from '@/utils/date';
 
 /** Detalle de evento: información, votación, coches y validación de asistencia. */
 export default function EventDetailScreen() {
@@ -92,6 +92,7 @@ export default function EventDetailScreen() {
       <Stack.Screen options={{ headerShown: true, title: event.title }} />
       <Screen scroll style={styles.container}>
         <View style={styles.titleRow}>
+          {event.color && <View style={[styles.colorDot, { backgroundColor: event.color }]} />}
           <ThemedText variant="title" style={styles.flex}>
             {event.title}
           </ThemedText>
@@ -100,9 +101,7 @@ export default function EventDetailScreen() {
           )}
         </View>
 
-        <ThemedText variant="muted">
-          {formatDateTime(event.startsAt, language)} → {formatDateTime(event.endsAt, language)}
-        </ThemedText>
+        <ThemedText variant="muted">{formatEventRange(event, language)}</ThemedText>
 
         {event.description && <ThemedText>{event.description}</ThemedText>}
 
@@ -174,11 +173,21 @@ export default function EventDetailScreen() {
             {myVote?.value !== 'yes' && (
               <ThemedText variant="muted">{t('events.seatHint')}</ThemedText>
             )}
-            {event.cars.map((car) => (
+            {event.cars.map((car) => {
+              const owner = car.driverId ? data.members.find((m) => m.userId === car.driverId) : null;
+              const title = owner ? (owner.nickname ?? owner.name) : (car.name ?? t('events.carsSection'));
+              const subtitle = owner?.carDetails
+                ? [owner.carDetails.model, owner.carDetails.color].filter(Boolean).join(' · ')
+                : null;
+              return (
               <View
                 key={car.id}
                 style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <ThemedText variant="subtitle">{car.name}</ThemedText>
+                <ThemedText variant="subtitle">
+                  {title}
+                  {owner ? ' 🚗' : ''}
+                </ThemedText>
+                {subtitle && <ThemedText variant="muted">{subtitle}</ThemedText>}
                 {Array.from({ length: car.seats }).map((_, seatIndex) => {
                   const occupant = car.occupants[seatIndex];
                   const isMe = occupant === user?.id;
@@ -202,7 +211,8 @@ export default function EventDetailScreen() {
                   );
                 })}
               </View>
-            ))}
+              );
+            })}
           </>
         )}
 
@@ -251,6 +261,7 @@ const styles = StyleSheet.create({
   container: { paddingBottom: 40 },
   center: { alignItems: 'center', justifyContent: 'center' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  colorDot: { width: 14, height: 14, borderRadius: 7 },
   flex: { flex: 1 },
   row: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   card: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 8 },

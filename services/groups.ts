@@ -51,7 +51,6 @@ export async function createGroup(
     name,
     accessPassword,
     memberRoles: { [creator.id]: 'admin' },
-    presetCars: [],
     createdAt: new Date().toISOString(),
   };
   const data: GroupData = {

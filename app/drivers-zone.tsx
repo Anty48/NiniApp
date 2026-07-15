@@ -12,6 +12,7 @@ import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { COPIPOINTS_START } from '@/services/groupData';
+import { confirmAsync } from '@/utils/confirm';
 
 /** Botones rápidos de ajuste de copipuntos. */
 const QUICK_DELTAS = [-5, -1, +1, +5];
@@ -29,10 +30,10 @@ export default function DriversZoneScreen() {
 
   const [model, setModel] = useState(me?.carDetails?.model ?? '');
   const [color, setColor] = useState(me?.carDetails?.color ?? '');
-  const [plate, setPlate] = useState(me?.carDetails?.plate ?? '');
   const [seats, setSeats] = useState(String(me?.carDetails?.seats ?? 4));
   const [savingCar, setSavingCar] = useState(false);
   const [carSaved, setCarSaved] = useState(false);
+  const [removingCar, setRemovingCar] = useState(false);
   /** Ajustes en vuelo, para deshabilitar los botones de esa fila. */
   const [busyMember, setBusyMember] = useState<string | null>(null);
 
@@ -53,12 +54,28 @@ export default function DriversZoneScreen() {
     await updateMyCar({
       model: model.trim() || undefined,
       color: color.trim() || undefined,
-      plate: plate.trim() || undefined,
       seats: Math.max(1, parseInt(seats, 10) || 4),
     });
     setSavingCar(false);
     setCarSaved(true);
     setTimeout(() => setCarSaved(false), 2000);
+  };
+
+  const removeCar = async () => {
+    const ok = await confirmAsync({
+      title: t('drivers.removeCarConfirmTitle'),
+      message: t('drivers.removeCarConfirmMessage'),
+      confirmLabel: t('common.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+    });
+    if (!ok) return;
+    setRemovingCar(true);
+    await updateMyCar(undefined);
+    setModel('');
+    setColor('');
+    setSeats('4');
+    setRemovingCar(false);
   };
 
   const adjust = async (userId: string, delta: number) => {
@@ -79,18 +96,12 @@ export default function DriversZoneScreen() {
         {/* Mi coche */}
         <ThemedText variant="label">{t('drivers.myCar')}</ThemedText>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <TextField label={t('drivers.carModel')} value={model} onChangeText={setModel} />
           <View style={styles.inlineRow}>
             <View style={styles.flex}>
-              <TextField label={t('drivers.carColor')} value={color} onChangeText={setColor} />
+              <TextField label={t('drivers.carModel')} value={model} onChangeText={setModel} />
             </View>
             <View style={styles.flex}>
-              <TextField
-                label={t('drivers.carPlate')}
-                value={plate}
-                onChangeText={setPlate}
-                autoCapitalize="characters"
-              />
+              <TextField label={t('drivers.carColor')} value={color} onChangeText={setColor} />
             </View>
             <View style={styles.seatsField}>
               <TextField
@@ -105,6 +116,13 @@ export default function DriversZoneScreen() {
             title={carSaved ? t('drivers.carSaved') : t('common.save')}
             onPress={saveCar}
             loading={savingCar}
+          />
+          <Button
+            title={t('drivers.removeCar')}
+            onPress={removeCar}
+            loading={removingCar}
+            variant="outline"
+            style={{ borderColor: theme.danger }}
           />
         </View>
 

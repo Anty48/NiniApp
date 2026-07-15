@@ -1,7 +1,10 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { MonthCalendar } from '@/components/MonthCalendar';
 import { Button } from '@/components/ui/Button';
+import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,7 +12,9 @@ import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { GroupEvent } from '@/types/models';
-import { formatDateTime } from '@/utils/date';
+import { dayKey, eventsOnDay, formatEventRange } from '@/utils/date';
+
+type ViewMode = 'list' | 'month';
 
 /** Núcleo A: calendario de eventos del grupo. */
 export default function CalendarScreen() {
@@ -18,6 +23,10 @@ export default function CalendarScreen() {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { data, isLoading } = useGroupData();
+
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [month, setMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+  const [selectedDay, setSelectedDay] = useState(() => dayKey());
 
   if (isLoading || !data) {
     return (
@@ -34,6 +43,7 @@ export default function CalendarScreen() {
   const past = data.events
     .filter((e) => new Date(e.endsAt).getTime() < now)
     .sort((a, b) => b.startsAt.localeCompare(a.startsAt));
+  const dayEvents = eventsOnDay(data.events, selectedDay);
 
   const renderEvent = (event: GroupEvent) => {
     const myVote = data.votes.find((v) => v.eventId === event.id && v.userId === user?.id);
@@ -51,7 +61,7 @@ export default function CalendarScreen() {
         onPress={() => router.push({ pathname: '/event/[id]', params: { id: event.id } })}
         style={({ pressed }) => [
           styles.card,
-          { backgroundColor: theme.surface, borderColor: theme.border },
+          { backgroundColor: event.color ?? theme.surface, borderColor: theme.border },
           pressed && { opacity: 0.7 },
         ]}>
         <View style={styles.cardHeader}>
@@ -62,9 +72,7 @@ export default function CalendarScreen() {
             <ThemedText style={{ color: theme.primary }}>{t('events.specialBadge')}</ThemedText>
           )}
         </View>
-        <ThemedText variant="muted">
-          {formatDateTime(event.startsAt, language)} → {formatDateTime(event.endsAt, language)}
-        </ThemedText>
+        <ThemedText variant="muted">{formatEventRange(event, language)}</ThemedText>
         <View style={styles.cardFooter}>
           <ThemedText variant="muted">{t('events.yesCount', { count: yesCount })}</ThemedText>
           {myVote && (
@@ -88,27 +96,53 @@ export default function CalendarScreen() {
         <Button title={t('events.create')} onPress={() => router.push('/event/new')} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
-        {upcoming.length === 0 && past.length === 0 && (
-          <ThemedText variant="muted">{t('events.none')}</ThemedText>
-        )}
+      <View style={styles.viewToggle}>
+        <Pill label={t('events.viewList')} selected={viewMode === 'list'} onPress={() => setViewMode('list')} />
+        <Pill label={t('events.viewMonth')} selected={viewMode === 'month'} onPress={() => setViewMode('month')} />
+      </View>
 
-        {upcoming.length > 0 && (
-          <>
-            <ThemedText variant="label">{t('events.upcoming')}</ThemedText>
-            {upcoming.map(renderEvent)}
-          </>
-        )}
+      {viewMode === 'list' ? (
+        <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+          {upcoming.length === 0 && past.length === 0 && (
+            <ThemedText variant="muted">{t('events.none')}</ThemedText>
+          )}
 
-        {past.length > 0 && (
-          <>
-            <ThemedText variant="label" style={styles.pastHeader}>
-              {t('events.past')}
-            </ThemedText>
-            {past.map(renderEvent)}
-          </>
-        )}
-      </ScrollView>
+          {upcoming.length > 0 && (
+            <>
+              <ThemedText variant="label">{t('events.upcoming')}</ThemedText>
+              {upcoming.map(renderEvent)}
+            </>
+          )}
+
+          {past.length > 0 && (
+            <>
+              <ThemedText variant="label" style={styles.pastHeader}>
+                {t('events.past')}
+              </ThemedText>
+              {past.map(renderEvent)}
+            </>
+          )}
+        </ScrollView>
+      ) : (
+        <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
+          <MonthCalendar
+            month={month}
+            onChangeMonth={setMonth}
+            selectedDay={selectedDay}
+            onSelectDay={setSelectedDay}
+            events={data.events}
+            language={language}
+          />
+          <ThemedText variant="label" style={styles.pastHeader}>
+            {selectedDay}
+          </ThemedText>
+          {dayEvents.length === 0 ? (
+            <ThemedText variant="muted">{t('events.agendaEmpty')}</ThemedText>
+          ) : (
+            dayEvents.map(renderEvent)
+          )}
+        </ScrollView>
+      )}
     </Screen>
   );
 }
@@ -117,6 +151,7 @@ const styles = StyleSheet.create({
   container: { gap: 12 },
   center: { alignItems: 'center', justifyContent: 'center' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  viewToggle: { flexDirection: 'row', gap: 8 },
   list: { gap: 10, paddingBottom: 24 },
   card: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 4 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
