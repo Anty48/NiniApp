@@ -17,6 +17,7 @@ const SECTIONS = [
   'poke',
   'groups',
   'suggestions',
+  'ios',
 ] as const;
 
 /**

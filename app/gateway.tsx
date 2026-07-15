@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
@@ -19,13 +20,15 @@ export default function GatewayScreen() {
   const { t } = useLanguage();
   const { theme } = useTheme();
 
+  const [showIosHelp, setShowIosHelp] = useState(false);
+
   const enterWeb = () => {
     markEnteredWeb();
     router.replace('/(auth)/login');
   };
 
   return (
-    <Screen style={styles.container}>
+    <Screen scroll style={styles.container}>
       <ThemedText variant="title" style={styles.centered}>
         {t('gateway.title')}
       </ThemedText>
@@ -36,7 +39,21 @@ export default function GatewayScreen() {
       <View style={styles.actions}>
         <Button title={t('gateway.enterWeb')} onPress={enterWeb} />
         <Button title={t('gateway.download')} variant="outline" onPress={openApkDownload} />
+        <Button
+          title={t('gateway.iosButton')}
+          variant="ghost"
+          onPress={() => setShowIosHelp((v) => !v)}
+        />
       </View>
+
+      {showIosHelp && (
+        <View style={[styles.iosCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <ThemedText variant="subtitle">{t('gateway.iosTitle')}</ThemedText>
+          <ThemedText variant="muted" style={styles.iosSteps}>
+            {t('gateway.iosSteps')}
+          </ThemedText>
+        </View>
+      )}
 
       <ThemedText variant="muted" style={[styles.note, { color: theme.textMuted }]}>
         {t('gateway.iosNote')}
@@ -46,8 +63,10 @@ export default function GatewayScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { justifyContent: 'center', gap: 16 },
+  container: { justifyContent: 'center', flexGrow: 1, gap: 16 },
   centered: { textAlign: 'center' },
   actions: { gap: 12, marginTop: 8 },
+  iosCard: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 8 },
+  iosSteps: { lineHeight: 21 },
   note: { textAlign: 'center', fontSize: 13, marginTop: 4 },
 });

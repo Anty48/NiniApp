@@ -86,6 +86,9 @@
     "subtitle": "Com vols fer servir NiniApp?",
     "enterWeb": "Entrar a la Web",
     "download": "Descarregar App",
+    "iosButton": "Què faig si tinc un iPhone o iPad?",
+    "iosTitle": "Ús en dispositius Apple",
+    "iosSteps": "Als dispositius Apple no és possible instal·lar el fitxer APK. En el seu lloc, la versió web es pot ancorar a la pantalla d'inici i es comporta com una aplicació més:\n\n1. Obre aquesta pàgina a Safari.\n2. Prem el botó Compartir: el quadrat amb una fletxa cap amunt situat a la barra del navegador.\n3. Selecciona l'opció \"Afegir a pantalla d'inici\" i confirma.\n\nA partir d'aquest moment, NiniApp apareixerà amb la seva icona a la pantalla d'inici.",
     "iosNote": "La descàrrega directa només és compatible amb dispositius Android. Els usuaris d'iOS han d'utilitzar la versió web."
   },
   "group": {
@@ -276,7 +279,9 @@
     "groupsTitle": "Grups",
     "groupsBody": "Cada usuari pot pertànyer a un màxim de tres grups i canviar el grup actiu des del Perfil. Per unir-se a un grup calen la seva ID i la seva contrasenya, disponibles als ajustos del grup. Si l'administrador abandona el grup, el rol passa al membre que ell designi.",
     "suggestionsTitle": "Bústia de suggeriments",
-    "suggestionsBody": "La bústia de suggeriments permet enviar propostes de millora directament al desenvolupador de l'aplicació des del Perfil. Els suggeriments es poden enviar de forma anònima si es desitja."
+    "suggestionsBody": "La bústia de suggeriments permet enviar propostes de millora directament al desenvolupador de l'aplicació des del Perfil. Els suggeriments es poden enviar de forma anònima si es desitja.",
+    "iosTitle": "Ús en iPhone i iPad (iOS)",
+    "iosBody": "Als dispositius Apple no és possible instal·lar l'aplicació d'Android (APK); cal utilitzar la versió web. Per tenir-la com una aplicació més, obre niniapp.org a Safari, prem el botó Compartir (el quadrat amb una fletxa cap amunt situat a la barra del navegador) i selecciona l'opció \"Afegir a pantalla d'inici\". L'aplicació quedarà ancorada amb la seva icona a la pantalla d'inici."
   },
   "member": {
     "personalStreak": "Ratxa"

@@ -86,6 +86,9 @@
     "subtitle": "¿Cómo quieres usar NiniApp?",
     "enterWeb": "Entrar a la Web",
     "download": "Descargar App",
+    "iosButton": "¿Qué hago si tengo un iPhone o iPad?",
+    "iosTitle": "Uso en dispositivos Apple",
+    "iosSteps": "En los dispositivos Apple no es posible instalar el archivo APK. En su lugar, la versión web puede anclarse a la pantalla de inicio y se comporta como una aplicación más:\n\n1. Abre esta página en Safari.\n2. Pulsa el botón Compartir: el cuadrado con una flecha hacia arriba situado en la barra del navegador.\n3. Selecciona la opción \"Añadir a pantalla de inicio\" y confirma.\n\nA partir de ese momento, NiniApp aparecerá con su icono en la pantalla de inicio.",
     "iosNote": "La descarga directa solo es compatible con dispositivos Android. Los usuarios de iOS deben utilizar la versión web."
   },
   "group": {
@@ -276,7 +279,9 @@
     "groupsTitle": "Grupos",
     "groupsBody": "Cada usuario puede pertenecer a un máximo de tres grupos y cambiar el grupo activo desde el Perfil. Para unirse a un grupo se necesitan su ID y su contraseña, disponibles en los ajustes del grupo. Si el administrador abandona el grupo, el rol pasa al miembro que él designe.",
     "suggestionsTitle": "Buzón de sugerencias",
-    "suggestionsBody": "El buzón de sugerencias permite enviar propuestas de mejora directamente al desarrollador de la aplicación desde el Perfil. Las sugerencias pueden enviarse de forma anónima si así se desea."
+    "suggestionsBody": "El buzón de sugerencias permite enviar propuestas de mejora directamente al desarrollador de la aplicación desde el Perfil. Las sugerencias pueden enviarse de forma anónima si así se desea.",
+    "iosTitle": "Uso en iPhone y iPad (iOS)",
+    "iosBody": "En los dispositivos Apple no es posible instalar la aplicación de Android (APK); debe utilizarse la versión web. Para tenerla como una aplicación más, abre niniapp.org en Safari, pulsa el botón Compartir (el cuadrado con una flecha hacia arriba situado en la barra del navegador) y selecciona la opción \"Añadir a pantalla de inicio\". La aplicación quedará anclada con su icono en la pantalla de inicio."
   },
   "member": {
     "personalStreak": "Racha"

@@ -86,6 +86,9 @@
     "subtitle": "How do you want to use NiniApp?",
     "enterWeb": "Enter the Web",
     "download": "Download App",
+    "iosButton": "What if I have an iPhone or iPad?",
+    "iosTitle": "Use on Apple devices",
+    "iosSteps": "APK files cannot be installed on Apple devices. Instead, the web version can be pinned to the home screen and behaves like a regular application:\n\n1. Open this page in Safari.\n2. Tap the Share button: the square with an upward arrow in the browser bar.\n3. Select the \"Add to Home Screen\" option and confirm.\n\nFrom that moment on, NiniApp will appear with its icon on your home screen.",
     "iosNote": "Direct download is only compatible with Android devices. iOS users must use the web version."
   },
   "group": {
@@ -276,7 +279,9 @@
     "groupsTitle": "Groups",
     "groupsBody": "Each user can belong to a maximum of three groups and switch the active group from the Profile. Joining a group requires its ID and password, available in the group settings. If the administrator leaves the group, the role passes to the member they designate.",
     "suggestionsTitle": "Suggestion box",
-    "suggestionsBody": "The suggestion box allows you to send improvement proposals directly to the application's developer from the Profile. Suggestions can be sent anonymously if desired."
+    "suggestionsBody": "The suggestion box allows you to send improvement proposals directly to the application's developer from the Profile. Suggestions can be sent anonymously if desired.",
+    "iosTitle": "Use on iPhone and iPad (iOS)",
+    "iosBody": "The Android application (APK) cannot be installed on Apple devices; the web version must be used instead. To have it as a regular application, open niniapp.org in Safari, tap the Share button (the square with an upward arrow in the browser bar) and select the \"Add to Home Screen\" option. The application will be pinned with its icon on the home screen."
   },
   "member": {
     "personalStreak": "Streak"
