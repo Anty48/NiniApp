@@ -30,6 +30,10 @@ export default function Root({ children }: { children: React.ReactNode }) {
 
         {/* Evita parpadeos de fondo al cargar en modo oscuro. */}
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
+        {/* El CSS de arriba sigue al tema del SISTEMA; este script lo corrige
+            con la preferencia guardada en la app (localStorage) antes de que
+            cargue el bundle, para que el fondo no cambie al refrescar. */}
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
       <body>{children}</body>
     </html>
@@ -45,3 +49,18 @@ body {
     background-color: #000;
   }
 }`;
+
+// AsyncStorage en web guarda bajo la misma clave en localStorage, con el
+// valor serializado en JSON ('"dark"'); ver services/storage.ts.
+const themeBootstrap = `
+(function () {
+  try {
+    var mode = JSON.parse(localStorage.getItem('niniapp.themeMode') || 'null');
+    var dark =
+      mode === 'dark' ||
+      (mode !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var style = document.createElement('style');
+    style.textContent = 'body { background-color: ' + (dark ? '#000' : '#fff') + ' !important; }';
+    document.head.appendChild(style);
+  } catch (e) {}
+})();`;

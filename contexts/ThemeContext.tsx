@@ -19,6 +19,9 @@ interface ThemeContextValue {
   /** Esquema efectivo una vez resuelto "system". */
   scheme: 'light' | 'dark';
   theme: Theme;
+  /** true cuando ya se ha leído la preferencia guardada (evita pintar con
+   * el tema equivocado y que "cambie" al refrescar en web). */
+  isReady: boolean;
   setMode: (mode: ThemeMode) => void;
 }
 
@@ -27,10 +30,12 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const systemScheme = useColorScheme();
   const [mode, setModeState] = useState<ThemeMode>('system');
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     getItem<ThemeMode>(StorageKeys.themeMode).then((saved) => {
       if (saved) setModeState(saved);
+      setIsReady(true);
     });
   }, []);
 
@@ -42,8 +47,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const scheme = mode === 'system' ? (systemScheme ?? 'light') : mode;
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ mode, scheme, theme: Colors[scheme], setMode }),
-    [mode, scheme],
+    () => ({ mode, scheme, theme: Colors[scheme], isReady, setMode }),
+    [mode, scheme, isReady],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

@@ -108,18 +108,23 @@ function useAuthGate(booted: boolean) {
 }
 
 function RootNavigator() {
-  const { scheme, theme } = useTheme();
+  const { scheme, theme, isReady: themeReady } = useTheme();
   const { isReady: languageReady } = useLanguage();
   const { isLoading: authLoading } = useAuth();
 
   // Preferencias e intento de restaurar sesión leídos: la app puede decidir ruta.
-  const booted = languageReady && !authLoading;
+  const booted = languageReady && themeReady && !authLoading;
 
   useAuthGate(booted);
 
   useEffect(() => {
     if (booted) SplashScreen.hideAsync();
   }, [booted]);
+
+  // No pintar la app hasta conocer el tema guardado: si no, en web el primer
+  // frame sale con el tema del sistema y "cambia" al llegar la preferencia
+  // (en nativo este hueco lo tapa el splash).
+  if (!themeReady) return null;
 
   const baseNavTheme = scheme === 'dark' ? DarkTheme : DefaultTheme;
   const navTheme = {
