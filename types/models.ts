@@ -176,3 +176,24 @@ export interface CounterContribution {
   /** Foto de prueba: opcional en los 3 primeros clics del día, obligatoria en el 4º. Se borra a las 24h. */
   proofPhotoUrl?: string;
 }
+
+// ---------- Buzón de sugerencias (para el desarrollador) ----------
+
+/**
+ * Sugerencia sobre la app que un usuario envía al desarrollador. Se guarda en
+ * la colección `suggestions` de Firestore; solo el desarrollador la lee desde
+ * la consola de Firebase. `expireAt` es un Timestamp de Firestore = creación
+ * + 5 días: con la política TTL activada sobre ese campo, Firebase borra la
+ * sugerencia sola y gratis pasado ese plazo.
+ */
+export interface Suggestion {
+  text: string;
+  userId: UserId;
+  userName: string;
+  userEmail: string;
+  platform: string;
+  /** serverTimestamp() de Firestore. */
+  createdAt: unknown;
+  /** Timestamp de Firestore usado por la política TTL para autoborrado. */
+  expireAt: unknown;
+}

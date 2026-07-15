@@ -24,7 +24,7 @@ export default function CalendarScreen() {
   const { user } = useAuth();
   const { data, isLoading } = useGroupData();
 
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [month, setMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [selectedDay, setSelectedDay] = useState(() => dayKey());
 
@@ -141,6 +141,13 @@ export default function CalendarScreen() {
           ) : (
             dayEvents.map(renderEvent)
           )}
+          <Button
+            title={t('events.createOnDay')}
+            variant="outline"
+            onPress={() =>
+              router.push({ pathname: '/event/new', params: { date: selectedDay } })
+            }
+          />
         </ScrollView>
       )}
     </Screen>

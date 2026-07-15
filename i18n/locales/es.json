@@ -135,6 +135,7 @@
     "viewList": "Lista",
     "viewMonth": "Mes",
     "agendaEmpty": "Sin eventos este día",
+    "createOnDay": "Crear evento este día",
     "attendance": "Asistencia",
     "voteYes": "SÍ",
     "voteNo": "NO",
@@ -231,6 +232,15 @@
     "cooldown": "Podrás volver a tocarle en %{hours} h",
     "notifTitle": "👉 ¡Toque!",
     "notifBody": "%{name} te ha tocado"
+  },
+  "suggestions": {
+    "title": "Buzón de sugerencias",
+    "subtitle": "¿Alguna idea o mejora para la app? Escríbela y llegará directa al desarrollador.",
+    "label": "Tu sugerencia",
+    "placeholder": "Escribe aquí tu sugerencia sobre la app...",
+    "ttlHint": "Se borrará automáticamente a los 5 días de enviarla.",
+    "send": "Enviar sugerencia",
+    "sent": "¡Enviada! ¡Gracias!"
   },
   "member": {
     "personalStreak": "Racha"

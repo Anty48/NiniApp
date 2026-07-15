@@ -135,6 +135,7 @@
     "viewList": "Llista",
     "viewMonth": "Mes",
     "agendaEmpty": "Sense esdeveniments aquest dia",
+    "createOnDay": "Crear esdeveniment aquest dia",
     "attendance": "Assistència",
     "voteYes": "SÍ",
     "voteNo": "NO",
@@ -231,6 +232,15 @@
     "cooldown": "Podràs tornar a tocar-lo d'aquí a %{hours} h",
     "notifTitle": "👉 Toc!",
     "notifBody": "%{name} t'ha tocat"
+  },
+  "suggestions": {
+    "title": "Bústia de suggeriments",
+    "subtitle": "Alguna idea o millora per a l'app? Escriu-la i arribarà directament al desenvolupador.",
+    "label": "El teu suggeriment",
+    "placeholder": "Escriu aquí el teu suggeriment sobre l'app...",
+    "ttlHint": "S'esborrarà automàticament al cap de 5 dies d'enviar-lo.",
+    "send": "Enviar suggeriment",
+    "sent": "Enviat! Gràcies!"
   },
   "member": {
     "personalStreak": "Ratxa"

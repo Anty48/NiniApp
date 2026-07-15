@@ -55,9 +55,33 @@ service cloud.firestore {
       // El cliente nunca borra documentos de grupo.
       allow delete: if false;
     }
+    match /suggestions/{suggestionId} {
+      // Buzón de sugerencias para el desarrollador: cualquier usuario
+      // autenticado puede CREAR una sugerencia, pero nadie puede leerlas,
+      // editarlas ni borrarlas desde la app. El desarrollador las lee desde
+      // la consola de Firebase (que salta las reglas). El borrado a los
+      // 5 días lo hace la política TTL de Firestore sobre `expireAt`.
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
   }
 }
 ```
+
+### Activar el autoborrado (TTL) de las sugerencias
+
+Para que las sugerencias se borren solas 5 días después de crearse (gratis,
+sin Cloud Functions):
+
+1. Consola de Firebase → **Firestore Database** → pestaña **TTL** (o *Time to
+   live*).
+2. **Crear política** → **Colección**: `suggestions` → **Campo de tiempo de
+   vida**: `expireAt` → **Crear**.
+
+Firestore borrará cada documento automáticamente a partir de la fecha guardada
+en `expireAt` (creación + 5 días; el borrado real ocurre dentro de las 24-72 h
+siguientes a esa fecha, comportamiento normal del TTL). El campo `expireAt` ya
+lo escribe la app en cada envío (`services/suggestions.ts`).
 
 > ⚠️ Límite conocido de la v2: la contraseña del grupo viaja dentro del
 > documento (legible por cualquier autenticado) y las reglas no pueden
@@ -128,6 +152,10 @@ en tiempo real (Firestore `onSnapshot`).
     (`mutateGroupData` en `services/groupData.ts`): se relee el documento
     fresco y se le aplica la mutación, así dos miembros simultáneos no se
     pisan.
+- `suggestions/{id}` → sugerencias sobre la app para el desarrollador
+  (`types/models.ts` → `Suggestion`). Solo se crean desde el cliente; se leen
+  desde la consola de Firebase y se autoborran a los 5 días con la política
+  TTL sobre `expireAt`.
 - Storage: `users/{uid}/profile-*.jpg`, `groups/{gid}/photo-*.jpg` y
   `groups/{gid}/proofs/{uid}-*.jpg`.
 

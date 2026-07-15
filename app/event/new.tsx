@@ -28,7 +28,9 @@ interface TempCarDraft {
  */
 export default function EventFormScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  // `date` (YYYY-MM-DD) llega cuando se crea desde un día pulsado en el
+  // calendario: preselecciona ese día como inicio y fin del nuevo evento.
+  const { id, date } = useLocalSearchParams<{ id?: string; date?: string }>();
   const { t } = useLanguage();
   const { theme } = useTheme();
   const { user } = useAuth();
@@ -42,10 +44,10 @@ export default function EventFormScreen() {
   const [address, setAddress] = useState(editing?.mapsAddress ?? '');
   const [allDay, setAllDay] = useState(editing ? (editing.allDay ?? false) : true);
   const [startDate, setStartDate] = useState(
-    editing ? toDateInput(editing.startsAt) : dayKey(),
+    editing ? toDateInput(editing.startsAt) : (date ?? dayKey()),
   );
   const [startTime, setStartTime] = useState(editing ? toTimeInput(editing.startsAt) : '18:00');
-  const [endDate, setEndDate] = useState(editing ? toDateInput(editing.endsAt) : dayKey());
+  const [endDate, setEndDate] = useState(editing ? toDateInput(editing.endsAt) : (date ?? dayKey()));
   const [endTime, setEndTime] = useState(editing ? toTimeInput(editing.endsAt) : '21:00');
   const [lockHours, setLockHours] = useState(String(editing?.voteLockHoursBefore ?? 12));
   const [isSpecial, setIsSpecial] = useState(editing?.isSpecial ?? false);

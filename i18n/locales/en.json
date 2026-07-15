@@ -135,6 +135,7 @@
     "viewList": "List",
     "viewMonth": "Month",
     "agendaEmpty": "No events this day",
+    "createOnDay": "Create event on this day",
     "attendance": "Attendance",
     "voteYes": "YES",
     "voteNo": "NO",
@@ -231,6 +232,15 @@
     "cooldown": "You can poke them again in %{hours}h",
     "notifTitle": "👉 Poke!",
     "notifBody": "%{name} poked you"
+  },
+  "suggestions": {
+    "title": "Suggestion box",
+    "subtitle": "Any idea or improvement for the app? Write it down and it goes straight to the developer.",
+    "label": "Your suggestion",
+    "placeholder": "Write your suggestion about the app here...",
+    "ttlHint": "It will be deleted automatically 5 days after you send it.",
+    "send": "Send suggestion",
+    "sent": "Sent! Thank you!"
   },
   "member": {
     "personalStreak": "Streak"

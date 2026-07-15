@@ -86,6 +86,11 @@ export default function ProfileScreen() {
         variant="outline"
         onPress={() => router.push('/extras')}
       />
+      <Button
+        title={t('suggestions.title')}
+        variant="outline"
+        onPress={() => router.push('/suggestions')}
+      />
 
       {/* Función "Tocar": activada por defecto, desactivable */}
       <View style={styles.switchRow}>
