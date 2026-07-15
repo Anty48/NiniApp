@@ -78,7 +78,15 @@
     "changePhoto": "Canviar foto",
     "groupSettings": "Ajustos del grup",
     "myCommitment": "Compromís",
-    "myContributions": "Aportacions"
+    "myContributions": "Aportacions",
+    "downloadApp": "Descarregar App (Android)"
+  },
+  "gateway": {
+    "title": "Benvingut a NiniApp",
+    "subtitle": "Com vols fer servir NiniApp?",
+    "enterWeb": "Entrar a la Web",
+    "download": "Descarregar App",
+    "iosNote": "La descàrrega directa només és compatible amb dispositius Android. Els usuaris d'iOS han d'utilitzar la versió web."
   },
   "group": {
     "settings": "Ajustos del grup",

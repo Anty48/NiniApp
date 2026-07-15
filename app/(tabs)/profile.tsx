@@ -1,11 +1,12 @@
 import { useRouter } from 'expo-router';
-import { StyleSheet, Switch, View } from 'react-native';
+import { Platform, StyleSheet, Switch, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
+import { openApkDownload } from '@/constants/download';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -91,6 +92,14 @@ export default function ProfileScreen() {
         variant="outline"
         onPress={() => router.push('/suggestions')}
       />
+      {/* Descargar el APK de Android: solo tiene sentido desde la web. */}
+      {Platform.OS === 'web' && (
+        <Button
+          title={t('profile.downloadApp')}
+          variant="outline"
+          onPress={openApkDownload}
+        />
+      )}
 
       {/* Función "Tocar": activada por defecto, desactivable */}
       <View style={styles.switchRow}>

@@ -9,12 +9,14 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import 'react-native-reanimated';
 
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { GroupDataProvider } from '@/contexts/GroupDataContext';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
+import { hasEnteredWeb } from '@/utils/webGateway';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -47,10 +49,12 @@ export default function RootLayout() {
 
 /**
  * Guard central de navegación. Orden de prioridad:
- *   1. Sin idioma elegido  -> /language (primer arranque)
- *   2. Sin sesión          -> /(auth)/login
- *   3. Sin grupo           -> /(onboarding)  (la app no tiene sentido sin grupo)
- *   4. Todo listo          -> /(tabs)
+ *   1. Sin idioma elegido       -> /language (primer arranque)
+ *   2. Web sin sesión y sin      -> /gateway  (puerta de entrada solo web:
+ *      cruzar la puerta todavía              entrar a la web o descargar APK)
+ *   3. Sin sesión               -> /(auth)/login
+ *   4. Sin grupo                -> /(onboarding)  (la app no tiene sentido sin grupo)
+ *   5. Todo listo               -> /(tabs)
  */
 function useAuthGate(booted: boolean) {
   const segments = useSegments();
@@ -66,6 +70,13 @@ function useAuthGate(booted: boolean) {
       if (section !== 'language') router.replace('/language');
       return;
     }
+    // Solo web: antes de dejar entrar al login se muestra la puerta de entrada
+    // (entrar a la web o descargar el APK), hasta que el usuario la cruce. En
+    // nativo nunca aparece.
+    if (Platform.OS === 'web' && !user && !hasEnteredWeb()) {
+      if (section !== 'gateway') router.replace('/gateway');
+      return;
+    }
     if (!user) {
       if (section !== '(auth)') router.replace('/(auth)/login');
       return;
@@ -77,7 +88,7 @@ function useAuthGate(booted: boolean) {
     // Con todo en orden, solo se expulsa al usuario de las secciones de
     // "entrada"; el resto de rutas son libres — incluido (onboarding), que
     // también sirve para crear/unirse a un 2º o 3º grupo desde el menú.
-    const entrySections = [undefined, 'index', 'language', '(auth)'];
+    const entrySections = [undefined, 'index', 'language', 'gateway', '(auth)'];
     if (entrySections.includes(section)) router.replace('/(tabs)/calendar');
   }, [booted, language, user, group, segments, router]);
 }
@@ -114,6 +125,7 @@ function RootNavigator() {
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
+        <Stack.Screen name="gateway" />
         <Stack.Screen name="language" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(onboarding)" />

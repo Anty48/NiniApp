@@ -78,7 +78,15 @@
     "changePhoto": "Change photo",
     "groupSettings": "Group settings",
     "myCommitment": "Commitment",
-    "myContributions": "Contributions"
+    "myContributions": "Contributions",
+    "downloadApp": "Download App (Android)"
+  },
+  "gateway": {
+    "title": "Welcome to NiniApp",
+    "subtitle": "How do you want to use NiniApp?",
+    "enterWeb": "Enter the Web",
+    "download": "Download App",
+    "iosNote": "Direct download is only compatible with Android devices. iOS users must use the web version."
   },
   "group": {
     "settings": "Group settings",
