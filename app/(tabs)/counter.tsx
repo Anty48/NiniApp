@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Image, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
@@ -14,9 +14,9 @@ import {
   sortByContributions,
 } from '@/services/groupData';
 import { uploadPhoto } from '@/services/photos';
-import { alertMessage } from '@/utils/confirm';
+import { alertMessage, chooseAsync } from '@/utils/confirm';
 import { formatDateTime } from '@/utils/date';
-import { pickImage } from '@/utils/pickImage';
+import { pickImage, takePhoto } from '@/utils/pickImage';
 
 /** Núcleo B: contador de rachas grupales estilo Duolingo. */
 export default function CounterScreen() {
@@ -61,6 +61,28 @@ export default function CounterScreen() {
     return m ? (m.nickname ?? m.name) : '—';
   };
 
+  /**
+   * Foto de prueba: en nativo se elige entre cámara y galería; en web va
+   * directo al file input (que en móvil ya ofrece la cámara del sistema).
+   */
+  const pickProofPhoto = async (): Promise<string | null> => {
+    if (Platform.OS === 'web') return pickImage();
+    const source = await chooseAsync({
+      title: t('counter.photoSourceTitle'),
+      message: t('counter.photoSourceMessage'),
+      optionA: { label: t('counter.photoCamera'), value: 'camera' as const },
+      optionB: { label: t('counter.photoGallery'), value: 'gallery' as const },
+      cancelLabel: t('common.cancel'),
+    });
+    if (!source) return null;
+    if (source === 'camera') {
+      const shot = await takePhoto();
+      if (shot.denied) alertMessage(t('common.error'), t('counter.cameraDenied'));
+      return shot.uri;
+    }
+    return pickImage();
+  };
+
   const add = async (withPhoto: boolean) => {
     if (!user || !canIncrement || dailyLimitReached) return;
     let photo: string | undefined;
@@ -69,7 +91,7 @@ export default function CounterScreen() {
         // Anti-trampas: al 4º clic del día la foto es obligatoria.
         alertMessage(t('counter.photoRequiredTitle'), t('counter.photoRequiredMessage'));
       }
-      const picked = await pickImage();
+      const picked = await pickProofPhoto();
       if (!picked) return; // sin foto no se valida el clic obligatorio
       try {
         photo = await uploadPhoto(

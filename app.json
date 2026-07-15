@@ -31,6 +31,14 @@
       "expo-localization",
       "react-native-nitro-google-signin",
       [
+        "expo-image-picker",
+        {
+          "cameraPermission": "NiniApp usa la cámara solo para tomar fotos de prueba del contador; nunca se usa sin que tú lo pidas.",
+          "photosPermission": "NiniApp accede a tus fotos solo para elegir imágenes de perfil, de grupo o de prueba del contador.",
+          "microphonePermission": false
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/logo_app.png",

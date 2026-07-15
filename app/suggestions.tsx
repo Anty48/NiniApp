@@ -1,6 +1,6 @@
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
@@ -24,6 +24,7 @@ export default function SuggestionsScreen() {
   const { user } = useAuth();
 
   const [text, setText] = useState('');
+  const [anonymous, setAnonymous] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +34,7 @@ export default function SuggestionsScreen() {
     setSending(true);
     setError(null);
     try {
-      await sendSuggestion(user, text);
+      await sendSuggestion(user, text, anonymous);
       setSent(true);
       setText('');
       // Breve confirmación visible antes de volver atrás.
@@ -63,9 +64,15 @@ export default function SuggestionsScreen() {
             multiline
             style={styles.textArea}
           />
-          <ThemedText variant="muted" style={styles.small}>
-            🕔 {t('suggestions.ttlHint')}
-          </ThemedText>
+          <View style={styles.switchRow}>
+            <View style={styles.flex}>
+              <ThemedText>{t('suggestions.anonymous')}</ThemedText>
+              <ThemedText variant="muted" style={styles.small}>
+                {t('suggestions.anonymousHint')}
+              </ThemedText>
+            </View>
+            <Switch value={anonymous} onValueChange={setAnonymous} />
+          </View>
           {error && <ThemedText style={{ color: theme.danger }}>{error}</ThemedText>}
           <Button
             title={sent ? t('suggestions.sent') : t('suggestions.send')}
@@ -84,4 +91,6 @@ const styles = StyleSheet.create({
   card: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 12 },
   textArea: { height: 140, paddingTop: 12, textAlignVertical: 'top' },
   small: { fontSize: 12 },
+  switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  flex: { flex: 1 },
 });

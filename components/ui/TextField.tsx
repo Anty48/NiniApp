@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
+import { FONT_FAMILY } from '@/constants/typography';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface TextFieldProps extends TextInputProps {
@@ -31,12 +32,13 @@ export function TextField({ label, ...inputProps }: TextFieldProps) {
 
 const styles = StyleSheet.create({
   container: { gap: 6 },
-  label: { fontSize: 14, fontWeight: '600' },
+  label: { fontSize: 14, fontWeight: '600', fontFamily: FONT_FAMILY },
   input: {
     height: 52,
     borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 16,
     fontSize: 16,
+    fontFamily: FONT_FAMILY,
   },
 });

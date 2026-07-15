@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { Platform } from 'react-native';
 import 'react-native-reanimated';
 
+import { FONT_FAMILY } from '@/constants/typography';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { GroupDataProvider } from '@/contexts/GroupDataContext';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
@@ -123,7 +124,11 @@ function RootNavigator() {
   return (
     <NavigationThemeProvider value={navTheme}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          headerTitleStyle: { fontFamily: FONT_FAMILY },
+        }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="gateway" />
         <Stack.Screen name="language" />

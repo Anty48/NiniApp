@@ -188,9 +188,11 @@ export interface CounterContribution {
  */
 export interface Suggestion {
   text: string;
-  userId: UserId;
-  userName: string;
-  userEmail: string;
+  /** true = sin datos del remitente (tampoco los ve el desarrollador). */
+  anonymous: boolean;
+  userId?: UserId;
+  userName?: string;
+  userEmail?: string;
   platform: string;
   /** serverTimestamp() de Firestore. */
   createdAt: unknown;

@@ -92,6 +92,11 @@ export default function ProfileScreen() {
         variant="outline"
         onPress={() => router.push('/suggestions')}
       />
+      <Button
+        title={t('help.title')}
+        variant="outline"
+        onPress={() => router.push('/help')}
+      />
       {/* Descargar el APK de Android: solo tiene sentido desde la web. */}
       {Platform.OS === 'web' && (
         <Button
