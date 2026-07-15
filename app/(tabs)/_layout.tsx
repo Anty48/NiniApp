@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 
-import { FONT_FAMILY } from '@/constants/typography';
+import { FONT_REGULAR } from '@/constants/typography';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -26,7 +26,7 @@ export default function TabsLayout() {
           backgroundColor: theme.background,
           borderTopColor: theme.border,
         },
-        tabBarLabelStyle: { fontFamily: FONT_FAMILY },
+        tabBarLabelStyle: { fontFamily: FONT_REGULAR },
       }}>
       <Tabs.Screen
         name="calendar"

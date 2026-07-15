@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Switch, TextInput, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
-import { FONT_FAMILY } from '@/constants/typography';
+import { FONT_REGULAR } from '@/constants/typography';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -133,7 +133,7 @@ export default function EventFormScreen() {
     backgroundColor: theme.surface,
     borderColor: theme.border,
     color: theme.text,
-    fontFamily: FONT_FAMILY,
+    fontFamily: FONT_REGULAR,
   };
 
   return (

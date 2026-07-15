@@ -6,7 +6,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { FONT_FAMILY } from '@/constants/typography';
+import { FONT_BOLD } from '@/constants/typography';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface ButtonProps {
@@ -67,5 +67,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   dimmed: { opacity: 0.6 },
-  text: { fontSize: 16, fontWeight: '600', fontFamily: FONT_FAMILY },
+  text: { fontSize: 16, fontFamily: FONT_BOLD },
 });

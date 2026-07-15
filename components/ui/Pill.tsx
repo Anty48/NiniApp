@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { FONT_FAMILY } from '@/constants/typography';
+import { FONT_BOLD } from '@/constants/typography';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface PillProps {
@@ -42,5 +42,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  text: { fontSize: 14, fontWeight: '600', fontFamily: FONT_FAMILY },
+  text: { fontSize: 14, fontFamily: FONT_BOLD },
 });

@@ -1,3 +1,4 @@
+import { Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {
   DarkTheme,
@@ -9,10 +10,10 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 import 'react-native-reanimated';
 
-import { FONT_FAMILY } from '@/constants/typography';
+import { FONT_BOLD } from '@/constants/typography';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { GroupDataProvider } from '@/contexts/GroupDataContext';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
@@ -25,6 +26,10 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
+    // Tipografía de toda la app: Lora (serif de Google Fonts), empaquetada
+    // en el binario/bundle para que se renderice idéntica en Android y web.
+    'Lora-Regular': Lora_400Regular,
+    'Lora-Bold': Lora_700Bold,
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
@@ -33,7 +38,15 @@ export default function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  if (!loaded) return null;
+  // En nativo el splash sigue tapando la app mientras cargan las fuentes;
+  // este indicador se ve solo en web (evita el flash de texto sin fuente).
+  if (!loaded) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <LanguageProvider>
@@ -127,7 +140,7 @@ function RootNavigator() {
       <Stack
         screenOptions={{
           headerShown: false,
-          headerTitleStyle: { fontFamily: FONT_FAMILY },
+          headerTitleStyle: { fontFamily: FONT_BOLD },
         }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="gateway" />
