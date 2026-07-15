@@ -86,6 +86,7 @@
     "subtitle": "How do you want to use NiniApp?",
     "enterWeb": "Enter the Web",
     "download": "Download App",
+    "androidWarning": "When installing the APK file, Android will show a security warning because the application is not published on Google Play. This is normal: tap \"More details\" and then \"Install anyway\". If you prefer to check it first (being cautious with downloads is always advisable), you can scan the APK with any virus detector and verify that it is completely safe.",
     "iosButton": "What if I have an iPhone or iPad?",
     "iosTitle": "Use on Apple devices",
     "iosSteps": "APK files cannot be installed on Apple devices. Instead, the web version can be pinned to the home screen and behaves like a regular application:\n\n1. Open this page in Safari.\n2. Tap the Share button: the square with an upward arrow in the browser bar.\n3. Select the \"Add to Home Screen\" option and confirm.\n\nFrom that moment on, NiniApp will appear with its icon on your home screen.",

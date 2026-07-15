@@ -99,11 +99,16 @@ export default function ProfileScreen() {
       />
       {/* Descargar el APK de Android: solo tiene sentido desde la web. */}
       {Platform.OS === 'web' && (
-        <Button
-          title={t('profile.downloadApp')}
-          variant="outline"
-          onPress={openApkDownload}
-        />
+        <>
+          <Button
+            title={t('profile.downloadApp')}
+            variant="outline"
+            onPress={openApkDownload}
+          />
+          <ThemedText variant="muted" style={styles.downloadWarning}>
+            {t('gateway.androidWarning')}
+          </ThemedText>
+        </>
       )}
 
       {/* Función "Tocar": activada por defecto, desactivable */}
@@ -154,6 +159,7 @@ const styles = StyleSheet.create({
   statsRow: { flexDirection: 'row', gap: 24 },
   stat: { alignItems: 'center' },
   row: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  downloadWarning: { fontSize: 13, lineHeight: 19 },
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',

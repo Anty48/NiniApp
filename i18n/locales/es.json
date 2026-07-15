@@ -86,6 +86,7 @@
     "subtitle": "¿Cómo quieres usar NiniApp?",
     "enterWeb": "Entrar a la Web",
     "download": "Descargar App",
+    "androidWarning": "Al instalar el archivo APK, Android mostrará una alerta de seguridad porque la aplicación no está publicada en Google Play. Es normal: pulsa \"Más detalles\" y después \"Instalar de todas formas\". Si prefieres comprobarlo antes (desconfiar de lo que se descarga siempre es recomendable), puedes analizar el APK con cualquier detector de virus y verificar que es completamente seguro.",
     "iosButton": "¿Qué hago si tengo un iPhone o iPad?",
     "iosTitle": "Uso en dispositivos Apple",
     "iosSteps": "En los dispositivos Apple no es posible instalar el archivo APK. En su lugar, la versión web puede anclarse a la pantalla de inicio y se comporta como una aplicación más:\n\n1. Abre esta página en Safari.\n2. Pulsa el botón Compartir: el cuadrado con una flecha hacia arriba situado en la barra del navegador.\n3. Selecciona la opción \"Añadir a pantalla de inicio\" y confirma.\n\nA partir de ese momento, NiniApp aparecerá con su icono en la pantalla de inicio.",

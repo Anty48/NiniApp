@@ -39,6 +39,9 @@ export default function GatewayScreen() {
       <View style={styles.actions}>
         <Button title={t('gateway.enterWeb')} onPress={enterWeb} />
         <Button title={t('gateway.download')} variant="outline" onPress={openApkDownload} />
+        <ThemedText variant="muted" style={styles.warning}>
+          {t('gateway.androidWarning')}
+        </ThemedText>
         <Button
           title={t('gateway.iosButton')}
           variant="ghost"
@@ -66,6 +69,7 @@ const styles = StyleSheet.create({
   container: { justifyContent: 'center', flexGrow: 1, gap: 16 },
   centered: { textAlign: 'center' },
   actions: { gap: 12, marginTop: 8 },
+  warning: { fontSize: 13, lineHeight: 19 },
   iosCard: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 8 },
   iosSteps: { lineHeight: 21 },
   note: { textAlign: 'center', fontSize: 13, marginTop: 4 },

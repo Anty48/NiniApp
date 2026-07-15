@@ -86,6 +86,7 @@
     "subtitle": "Com vols fer servir NiniApp?",
     "enterWeb": "Entrar a la Web",
     "download": "Descarregar App",
+    "androidWarning": "En instal·lar el fitxer APK, Android mostrarà una alerta de seguretat perquè l'aplicació no està publicada a Google Play. És normal: prem \"Més detalls\" i després \"Instal·lar igualment\". Si prefereixes comprovar-ho abans (desconfiar del que es descarrega sempre és recomanable), pots analitzar l'APK amb qualsevol detector de virus i verificar que és completament segur.",
     "iosButton": "Què faig si tinc un iPhone o iPad?",
     "iosTitle": "Ús en dispositius Apple",
     "iosSteps": "Als dispositius Apple no és possible instal·lar el fitxer APK. En el seu lloc, la versió web es pot ancorar a la pantalla d'inici i es comporta com una aplicació més:\n\n1. Obre aquesta pàgina a Safari.\n2. Prem el botó Compartir: el quadrat amb una fletxa cap amunt situat a la barra del navegador.\n3. Selecciona l'opció \"Afegir a pantalla d'inici\" i confirma.\n\nA partir d'aquest moment, NiniApp apareixerà amb la seva icona a la pantalla d'inici.",
