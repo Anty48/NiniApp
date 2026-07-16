@@ -25,10 +25,10 @@ const MAX_TEXT = 300;
 let ready = false;
 function init() {
   if (ready) return;
+  // Nota: no comprobar admin.apps (el empaquetado de Vercel lo deja
+  // undefined); el flag `ready` ya garantiza una sola inicialización.
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  if (!admin.apps.length) {
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-  }
+  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
   webpush.setVapidDetails(
     process.env.VAPID_SUBJECT || 'mailto:psardapalla48@gmail.com',
     process.env.VAPID_PUBLIC_KEY,
