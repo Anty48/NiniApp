@@ -1,25 +1,39 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, StyleSheet, Switch, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
+import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { openApkDownload } from '@/constants/download';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ThemeMode, useTheme } from '@/contexts/ThemeContext';
+import { normalizeHexColor, ThemeMode, useTheme } from '@/contexts/ThemeContext';
 import { LANGUAGE_LABELS, SUPPORTED_LANGUAGES } from '@/i18n';
 import { enablePush, getPushStatus, PushStatus } from '@/services/push';
+
+/** Lila de serie + paleta de acentos elegibles desde el Perfil. */
+const DEFAULT_ACCENT = '#6C5CE7';
+const ACCENT_PRESETS = [
+  DEFAULT_ACCENT,
+  '#2F80ED',
+  '#00A8A8',
+  '#2E9E5B',
+  '#F5C518',
+  '#F2994A',
+  '#E0533D',
+  '#E84393',
+];
 
 /** Perfil propio, estadísticas en el grupo y ajustes de la app. */
 export default function ProfileScreen() {
   const router = useRouter();
   const { t, language, setLanguage } = useLanguage();
-  const { theme, mode, setMode } = useTheme();
+  const { theme, mode, setMode, accent, setAccent } = useTheme();
   const { user, group, signOut } = useAuth();
   const { me, updateMyProfile } = useGroupData();
 
@@ -37,6 +51,16 @@ export default function ProfileScreen() {
       setEnablingPush(false);
     }
   }, []);
+
+  // Color de acento: borrador del campo hexadecimal libre.
+  const [hexDraft, setHexDraft] = useState('');
+  const currentAccent = accent ?? DEFAULT_ACCENT;
+  const applyHex = () => {
+    const normalized = normalizeHexColor(hexDraft);
+    if (!normalized) return;
+    setAccent(normalized === DEFAULT_ACCENT ? null : normalized);
+    setHexDraft('');
+  };
 
   const themeModes: { value: ThemeMode; label: string }[] = [
     { value: 'light', label: t('settings.light') },
@@ -169,6 +193,45 @@ export default function ProfileScreen() {
         ))}
       </View>
 
+      {/* Color de acento: paleta + cualquier hexadecimal */}
+      <ThemedText variant="label">{t('settings.accentColor')}</ThemedText>
+      <ThemedText variant="muted">{t('settings.accentHint')}</ThemedText>
+      <View style={styles.row}>
+        {ACCENT_PRESETS.map((color) => (
+          <Pressable
+            key={color}
+            onPress={() => setAccent(color === DEFAULT_ACCENT ? null : color)}
+            style={[
+              styles.swatch,
+              { backgroundColor: color, borderColor: theme.border },
+              currentAccent.toUpperCase() === color.toUpperCase() && [
+                styles.swatchSelected,
+                { borderColor: theme.text },
+              ],
+            ]}
+          />
+        ))}
+      </View>
+      <View style={styles.hexRow}>
+        <View style={styles.flex}>
+          <TextField
+            label={t('settings.accentCustom')}
+            value={hexDraft}
+            onChangeText={setHexDraft}
+            placeholder="#1A9E75"
+            autoCapitalize="characters"
+            autoCorrect={false}
+            onSubmitEditing={applyHex}
+          />
+        </View>
+        <Button
+          title={t('settings.accentApply')}
+          variant="outline"
+          onPress={applyHex}
+          disabled={!normalizeHexColor(hexDraft)}
+        />
+      </View>
+
       <ThemedText variant="label">{t('settings.language')}</ThemedText>
       <View style={styles.row}>
         {SUPPORTED_LANGUAGES.map((lang) => (
@@ -193,6 +256,9 @@ const styles = StyleSheet.create({
   statsRow: { flexDirection: 'row', gap: 24 },
   stat: { alignItems: 'center' },
   row: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  swatch: { width: 36, height: 36, borderRadius: 18, borderWidth: 1 },
+  swatchSelected: { borderWidth: 3 },
+  hexRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-end' },
   downloadWarning: { fontSize: 13, lineHeight: 19 },
   switchRow: {
     flexDirection: 'row',

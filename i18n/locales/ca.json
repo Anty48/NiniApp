@@ -69,7 +69,11 @@
     "light": "Clar",
     "dark": "Fosc",
     "system": "Sistema",
-    "language": "Idioma"
+    "language": "Idioma",
+    "accentColor": "Color de l'app",
+    "accentHint": "Tria un color de la paleta o escriu qualsevol codi hexadecimal.",
+    "accentCustom": "Color personalitzat",
+    "accentApply": "Aplicar"
   },
   "profile": {
     "editProfile": "Editar perfil",

@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const StorageKeys = {
   language: 'niniapp.language',
   themeMode: 'niniapp.themeMode',
+  accentColor: 'niniapp.accentColor',
   session: 'niniapp.session',
 } as const;
 

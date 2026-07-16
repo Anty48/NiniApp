@@ -1,8 +1,10 @@
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet } from 'react-native';
 
+import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
+import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -14,6 +16,7 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const { signOut } = useAuth();
 
   const options = [
     {
@@ -46,6 +49,10 @@ export default function OnboardingScreen() {
           <ThemedText variant="muted">{option.hint}</ThemedText>
         </Pressable>
       ))}
+
+      {/* Salida de emergencia: p. ej. si se entró con la cuenta equivocada.
+          El guard de _layout redirige solo al login al quedar sin sesión. */}
+      <Button title={t('common.logout')} variant="ghost" onPress={signOut} />
     </Screen>
   );
 }

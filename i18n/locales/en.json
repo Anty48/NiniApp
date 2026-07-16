@@ -69,7 +69,11 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System",
-    "language": "Language"
+    "language": "Language",
+    "accentColor": "App color",
+    "accentHint": "Pick a color from the palette or type any hex code.",
+    "accentCustom": "Custom color",
+    "accentApply": "Apply"
   },
   "profile": {
     "editProfile": "Edit profile",
