@@ -110,7 +110,7 @@ function useAuthGate(booted: boolean) {
 
 function RootNavigator() {
   const { scheme, theme, isReady: themeReady } = useTheme();
-  const { isReady: languageReady } = useLanguage();
+  const { isReady: languageReady, language } = useLanguage();
   const { isLoading: authLoading, user } = useAuth();
 
   // Preferencias e intento de restaurar sesión leídos: la app puede decidir ruta.
@@ -123,6 +123,15 @@ function RootNavigator() {
   useEffect(() => {
     if (user) refreshPushIfEnabled();
   }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sincroniza el idioma al doc del usuario: el servidor lo usa para enviar
+  // los recordatorios de votación en el idioma de cada destinatario.
+  useEffect(() => {
+    if (!user || !language || user.language === language) return;
+    const { getFirebase } = require('@/services/firebase');
+    const { doc, updateDoc } = require('@firebase/firestore');
+    updateDoc(doc(getFirebase().db, 'users', user.id), { language }).catch(() => {});
+  }, [user?.id, user?.language, language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (booted) SplashScreen.hideAsync();

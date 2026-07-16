@@ -21,6 +21,12 @@ export interface User {
   photoUrl?: string;
   /** Función "Tocar": si acepta recibir toques. Activada por defecto. */
   allowPokes?: boolean;
+  /**
+   * Idioma de la interfaz ('es' | 'en' | 'ca'). Se sincroniza al abrir la app
+   * para que el servidor (api/vote-reminders.js) notifique en el idioma del
+   * destinatario.
+   */
+  language?: string;
   /** IDs de los grupos a los que pertenece (máximo 3). */
   groupIds: GroupId[];
   createdAt: string; // ISO 8601
@@ -124,6 +130,8 @@ export interface GroupEvent {
   cars?: EventCar[];
   /** Los eventos pasados se guardan 1 mes en histórico antes de borrarse. */
   archivedAt?: string;
+  /** Marca del recordatorio "queda <1 h de votación" (lo escribe api/vote-reminders.js). */
+  voteReminderSentAt?: string;
 }
 
 export interface EventVote {
