@@ -28,15 +28,20 @@ const webpush = require('web-push');
 const MAX_TARGETS = 50;
 const MAX_TEXT = 300;
 
+/** Sanea una env var: fuera BOM (se cuela al pegar valores en Windows) y espacios. */
+function env(name) {
+  return (process.env[name] || '').replace(new RegExp('^\\uFEFF'), '').trim();
+}
+
 let ready = false;
 function init() {
   if (ready) return;
-  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  const serviceAccount = JSON.parse(env('FIREBASE_SERVICE_ACCOUNT'));
   initializeApp({ credential: cert(serviceAccount) });
   webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || 'mailto:psardapalla48@gmail.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY,
+    env('VAPID_SUBJECT') || 'mailto:psardapalla48@gmail.com',
+    env('VAPID_PUBLIC_KEY'),
+    env('VAPID_PRIVATE_KEY'),
   );
   ready = true;
 }
