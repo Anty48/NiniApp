@@ -42,3 +42,6 @@ yarn-error.*
 
 .vercel
 .env*
+
+# clave de cuenta de servicio de Firebase (secreto: vive en Vercel, jamás en git)
+*firebase-adminsdk*.json

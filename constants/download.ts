@@ -15,7 +15,7 @@ import { Platform } from 'react-native';
  * ese aviso y descarga directamente (verificado: HTTP 200 + attachment).
  */
 export const APK_DOWNLOAD_URL =
-  'https://drive.usercontent.google.com/download?id=1sU-ZmUU9pYY1UoDFxqM38Menc7viYnUr&export=download&confirm=t';
+  'https://drive.usercontent.google.com/download?id=1IuXdbP0uMghcsyGO4-MZj85zop_ezWbv&export=download&confirm=t';
 
 /**
  * Inicia la descarga del APK. Solo tiene efecto en la web; en nativo no hace
