@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
+import { Loading } from '@/components/ui/Loading';
 import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -35,7 +36,7 @@ export default function LeaderboardScreen() {
   if (isLoading || !data) {
     return (
       <Screen style={styles.center}>
-        <ActivityIndicator color={theme.primary} />
+        <Loading />
       </Screen>
     );
   }

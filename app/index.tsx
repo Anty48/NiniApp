@@ -1,5 +1,6 @@
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { Loading } from '@/components/ui/Loading';
 import { useTheme } from '@/contexts/ThemeContext';
 
 /**
@@ -10,7 +11,7 @@ export default function Index() {
   const { theme } = useTheme();
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <ActivityIndicator color={theme.primary} />
+      <Loading />
     </View>
   );
 }

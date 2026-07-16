@@ -10,8 +10,10 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { ActivityIndicator, Platform, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import 'react-native-reanimated';
+
+import { Loading } from '@/components/ui/Loading';
 
 import { FONT_BOLD } from '@/constants/typography';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
@@ -44,7 +46,7 @@ export default function RootLayout() {
   if (!loaded) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator />
+        <Loading />
       </View>
     );
   }

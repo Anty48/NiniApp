@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-  ActivityIndicator,
   Image,
   Modal,
   Platform,
@@ -12,6 +11,7 @@ import {
 } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { Loading } from '@/components/ui/Loading';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
@@ -41,7 +41,7 @@ export default function CounterScreen() {
   if (isLoading || !data) {
     return (
       <Screen style={styles.center}>
-        <ActivityIndicator color={theme.primary} />
+        <Loading />
       </Screen>
     );
   }
