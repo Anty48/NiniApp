@@ -1,0 +1,26 @@
+# Cron de recordatorios de votación: cada 15 min llama a /api/vote-reminders,
+# que avisa a quienes no han votado cuando queda <1 h para el cierre.
+# (El plan Hobby de Vercel solo permite crons diarios; GitHub Actions hace de
+# reloj. OJO: GitHub desactiva los crons si el repo pasa ~60 días sin commits.)
+name: Recordatorios de votacion
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al endpoint de recordatorios
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "Secreto CRON_SECRET sin configurar en el repo: no se hace nada."
+            exit 0
+          fi
+          curl -fsS -X POST \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            https://www.niniapp.org/api/vote-reminders
