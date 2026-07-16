@@ -29,7 +29,7 @@
     "expo-updates": "~29.0.19",
     "expo-web-browser": "~15.0.11",
     "firebase": "^12.16.0",
-    "firebase-admin": "^14.1.0",
+    "firebase-admin": "^12.7.0",
     "i18n-js": "^4.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
