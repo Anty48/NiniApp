@@ -16,7 +16,13 @@
  *   VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY / VAPID_SUBJECT
  */
 
-const admin = require('firebase-admin');
+// API modular de firebase-admin (subpaths CJS con exports con nombre): el
+// namespace clásico `require('firebase-admin')` llega roto tras el bundler
+// de Vercel (admin.apps/admin.credential undefined).
+const { initializeApp, cert } = require('firebase-admin/app');
+const { getAuth } = require('firebase-admin/auth');
+const { getFirestore } = require('firebase-admin/firestore');
+const { getMessaging } = require('firebase-admin/messaging');
 const webpush = require('web-push');
 
 const MAX_TARGETS = 50;
@@ -25,10 +31,8 @@ const MAX_TEXT = 300;
 let ready = false;
 function init() {
   if (ready) return;
-  // Nota: no comprobar admin.apps (el empaquetado de Vercel lo deja
-  // undefined); el flag `ready` ya garantiza una sola inicialización.
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+  initializeApp({ credential: cert(serviceAccount) });
   webpush.setVapidDetails(
     process.env.VAPID_SUBJECT || 'mailto:psardapalla48@gmail.com',
     process.env.VAPID_PUBLIC_KEY,
@@ -51,7 +55,7 @@ module.exports = async (req, res) => {
   init();
 
   const idToken = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
-  const sender = await admin.auth().verifyIdToken(idToken).catch(() => null);
+  const sender = await getAuth().verifyIdToken(idToken).catch(() => null);
   if (!sender) return res.status(401).json({ error: 'unauthorized' });
 
   const { groupId, toUserIds, title, body, url } = req.body || {};
@@ -67,7 +71,7 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'bad-request' });
   }
 
-  const db = admin.firestore();
+  const db = getFirestore();
 
   // El remitente y todos los destinatarios deben ser miembros del grupo.
   const groupSnap = await db.doc(`groups/${groupId}`).get();
@@ -98,7 +102,7 @@ module.exports = async (req, res) => {
                 TTL: 24 * 3600,
               });
             } else if (device.kind === 'fcm' && device.token) {
-              await admin.messaging().send({
+              await getMessaging().send({
                 token: device.token,
                 notification: { title: payload.title, body: payload.body },
                 data: { url: payload.url },
