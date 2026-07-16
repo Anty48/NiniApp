@@ -159,11 +159,29 @@ en tiempo real (Firestore `onSnapshot`).
 - Storage: `users/{uid}/profile-*.jpg`, `groups/{gid}/photo-*.jpg` y
   `groups/{gid}/proofs/{uid}-*.jpg`.
 
+## Push reales (toques, eventos nuevos, hitos de racha)
+
+Implementados sin Cloud Functions (no requiere plan Blaze para funciones):
+
+- **Registro** (`services/push.ts`): cada dispositivo se registra con el botón
+  "Activar notificaciones" del Perfil y se guarda en `users/{uid}.pushDevices`.
+  - Web y PWA (incluida iOS 16.4+ instalada en pantalla de inicio): Web Push
+    estándar con VAPID + service worker `public/push-sw.js`.
+  - Android nativo (APK): token de dispositivo FCM vía `expo-notifications`
+    (el APK ya se compila con `google-services.json`).
+- **Envío** (`api/push.js`): función serverless en Vercel (se despliega sola
+  con la web). Verifica el ID token de Firebase del remitente, comprueba la
+  membresía del grupo y entrega vía `web-push` o FCM (`firebase-admin`).
+- **Variables de entorno en Vercel** (proyecto `nini-app`):
+  - `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` — ya configuradas
+    (la clave pública también está en `services/push.ts`; es pública por diseño).
+  - `FIREBASE_SERVICE_ACCOUNT` — JSON de la cuenta de servicio: consola de
+    Firebase → ⚙️ Configuración del proyecto → Cuentas de servicio → *Generar
+    nueva clave privada*, y pegar el JSON entero como valor de la variable.
+    **Sin esta variable `/api/push` responde 500 y no llega ningún push.**
+
 ## Pendiente para después (marcado con TODO en el código)
 
-- **Push reales**: FCM (Android) + Web Push con VAPID (PWA iOS) enviados desde
-  Cloud Functions al crear eventos, hitos de racha y toques. Ahora mismo las
-  notificaciones son locales al dispositivo.
 - **Unirse vía Cloud Function** con contraseña hasheada (ver aviso en las
   reglas de Firestore).
 - **Borrado programado** de fotos de prueba a las 24 h con Cloud Scheduler:

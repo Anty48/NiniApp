@@ -166,5 +166,7 @@ export function authErrorMessage(e: unknown, t: (key: string) => string): string
 export async function saveUserDoc(user: User): Promise<void> {
   const { db } = getFirebase();
   const { doc, setDoc } = require('@firebase/firestore');
-  await setDoc(doc(db, 'users', user.id), user);
+  // merge: el doc guarda campos que el objeto User de la sesión no conoce
+  // (pushDevices, escrito por services/push.ts); sin merge se perderían.
+  await setDoc(doc(db, 'users', user.id), user, { merge: true });
 }

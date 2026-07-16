@@ -250,6 +250,15 @@
     "notifTitle": "👉 Toc!",
     "notifBody": "%{name} t'ha tocat"
   },
+  "push": {
+    "section": "Notificacions",
+    "hint": "Activa les notificacions per assabentar-te de tocs, esdeveniments nous i fites de ratxa en aquest dispositiu.",
+    "enableButton": "Activar notificacions",
+    "enabled": "Notificacions activades en aquest dispositiu",
+    "denied": "El permís de notificacions està denegat. Activa'l als ajustos del sistema o del navegador i torna-ho a provar.",
+    "needInstall": "A l'iPhone i l'iPad les notificacions només funcionen amb l'app ancorada a la pantalla d'inici (iOS 16.4 o superior). Ancora-la des de Safari (Compartir → \"Afegir a pantalla d'inici\"), obre-la des de la seva icona i activa-les aquí.",
+    "unsupported": "Aquest navegador o dispositiu no admet notificacions push."
+  },
   "suggestions": {
     "title": "Bústia de suggeriments",
     "subtitle": "Alguna idea o millora per a l'app? Escriu-la i arribarà directament al desenvolupador.",

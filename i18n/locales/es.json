@@ -250,6 +250,15 @@
     "notifTitle": "👉 ¡Toque!",
     "notifBody": "%{name} te ha tocado"
   },
+  "push": {
+    "section": "Notificaciones",
+    "hint": "Activa las notificaciones para enterarte de toques, eventos nuevos e hitos de racha en este dispositivo.",
+    "enableButton": "Activar notificaciones",
+    "enabled": "Notificaciones activadas en este dispositivo",
+    "denied": "El permiso de notificaciones está denegado. Actívalo en los ajustes del sistema o del navegador y vuelve a intentarlo.",
+    "needInstall": "En iPhone y iPad las notificaciones solo funcionan con la app anclada a la pantalla de inicio (iOS 16.4 o superior). Ánclala desde Safari (Compartir → \"Añadir a pantalla de inicio\"), ábrela desde su icono y actívalas aquí.",
+    "unsupported": "Este navegador o dispositivo no admite notificaciones push."
+  },
   "suggestions": {
     "title": "Buzón de sugerencias",
     "subtitle": "¿Alguna idea o mejora para la app? Escríbela y llegará directa al desarrollador.",

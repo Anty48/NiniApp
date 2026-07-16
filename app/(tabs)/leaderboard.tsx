@@ -1,5 +1,6 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Pill } from '@/components/ui/Pill';
@@ -18,8 +19,13 @@ import {
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
-/** Clasificación del grupo: por % de compromiso o por contribuciones. */
+/**
+ * Clasificación del grupo: por % de compromiso, contribuciones o copipuntos.
+ * Hace también de lista de miembros: cada fila abre el perfil del miembro,
+ * desde donde se le puede tocar (sin pasar por los ajustes del grupo).
+ */
 export default function LeaderboardScreen() {
+  const router = useRouter();
   const { t } = useLanguage();
   const { theme } = useTheme();
   const { user } = useAuth();
@@ -65,12 +71,16 @@ export default function LeaderboardScreen() {
 
       <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
         {sorted.map((member, index) => (
-          <View
+          <Pressable
             key={member.userId}
-            style={[
+            onPress={() =>
+              router.push({ pathname: '/member/[id]', params: { id: member.userId } })
+            }
+            style={({ pressed }) => [
               styles.itemRow,
               { backgroundColor: theme.surface, borderColor: theme.border },
               member.userId === user?.id && { borderColor: theme.primary },
+              pressed && styles.pressed,
             ]}>
             <ThemedText style={styles.rank}>{MEDALS[index] ?? `${index + 1}.`}</ThemedText>
             <Avatar uri={member.photoUrl} name={member.nickname ?? member.name} size={36} />
@@ -85,7 +95,8 @@ export default function LeaderboardScreen() {
                   ? member.counterContributions
                   : (member.copipoints ?? COPIPOINTS_START)}
             </ThemedText>
-          </View>
+            <ThemedText variant="muted">›</ThemedText>
+          </Pressable>
         ))}
       </ScrollView>
     </Screen>
@@ -107,4 +118,5 @@ const styles = StyleSheet.create({
   },
   rank: { width: 34, fontSize: 16 },
   name: { flex: 1 },
+  pressed: { opacity: 0.7 },
 });

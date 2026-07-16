@@ -8,6 +8,12 @@
     "scheme": "miredsocial",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "updates": {
+      "url": "https://u.expo.dev/d85cbc5a-c975-4e6a-a2ff-1b1e12f958e6"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "ios": {
       "supportsTablet": true
     },

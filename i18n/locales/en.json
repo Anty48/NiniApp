@@ -250,6 +250,15 @@
     "notifTitle": "👉 Poke!",
     "notifBody": "%{name} poked you"
   },
+  "push": {
+    "section": "Notifications",
+    "hint": "Enable notifications on this device to hear about pokes, new events and streak milestones.",
+    "enableButton": "Enable notifications",
+    "enabled": "Notifications enabled on this device",
+    "denied": "Notification permission is denied. Enable it in your system or browser settings and try again.",
+    "needInstall": "On iPhone and iPad, notifications only work when the app is pinned to the Home Screen (iOS 16.4 or later). Pin it from Safari (Share → \"Add to Home Screen\"), open it from its icon and enable them here.",
+    "unsupported": "This browser or device does not support push notifications."
+  },
   "suggestions": {
     "title": "Suggestion box",
     "subtitle": "Any idea or improvement for the app? Write it down and it goes straight to the developer.",

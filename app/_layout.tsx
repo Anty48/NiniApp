@@ -18,6 +18,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { GroupDataProvider } from '@/contexts/GroupDataContext';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
+import { refreshPushIfEnabled } from '@/services/push';
 import { hasEnteredWeb } from '@/utils/webGateway';
 
 export { ErrorBoundary } from 'expo-router';
@@ -110,12 +111,18 @@ function useAuthGate(booted: boolean) {
 function RootNavigator() {
   const { scheme, theme, isReady: themeReady } = useTheme();
   const { isReady: languageReady } = useLanguage();
-  const { isLoading: authLoading } = useAuth();
+  const { isLoading: authLoading, user } = useAuth();
 
   // Preferencias e intento de restaurar sesión leídos: la app puede decidir ruta.
   const booted = languageReady && themeReady && !authLoading;
 
   useAuthGate(booted);
+
+  // Con sesión iniciada y permiso ya concedido, refresca el token/suscripción
+  // de push de este dispositivo (rotan con el tiempo). No pide permisos.
+  useEffect(() => {
+    if (user) refreshPushIfEnabled();
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (booted) SplashScreen.hideAsync();

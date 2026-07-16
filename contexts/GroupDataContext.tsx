@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { i18n } from '@/i18n';
 import * as gd from '@/services/groupData';
 import { notifyLocal } from '@/services/notifications';
+import { sendPushToUsers } from '@/services/push';
 import {
   CarDetails,
   EventVoteValue,
@@ -123,11 +124,22 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
 
   const createEvent = useCallback(
     async (event: GroupEvent) => {
-      await mutate((d) => ({ ...d, events: [...d.events, event] }));
-      // TODO(backend): push real (FCM / Web Push) a todos los miembros.
-      notifyLocal(i18n.t('notifications.newEventTitle'), i18n.t('notifications.newEventBody', { title: event.title }));
+      const committed = await mutate((d) => ({ ...d, events: [...d.events, event] }));
+      // Push real al resto de miembros (el creador no se notifica a sí mismo).
+      const members = (committed ?? data)?.members ?? [];
+      if (data) {
+        sendPushToUsers(
+          data.group.id,
+          members.filter((m) => m.userId !== user?.id).map((m) => m.userId),
+          {
+            title: i18n.t('notifications.newEventTitle'),
+            body: i18n.t('notifications.newEventBody', { title: event.title }),
+            url: `/event/${event.id}`,
+          },
+        );
+      }
     },
-    [mutate],
+    [mutate, data, user],
   );
 
   const updateEvent = useCallback(
@@ -196,9 +208,19 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       if (!committed || !result) return;
       setData(committed);
       if (result.groupMilestone) {
+        // El hito es del grupo entero: local para quien pulsa, push al resto.
         notifyLocal(
           i18n.t('notifications.groupMilestoneTitle'),
           i18n.t('notifications.groupMilestoneBody', { count: result.groupMilestone }),
+        );
+        sendPushToUsers(
+          committed.group.id,
+          committed.members.filter((m) => m.userId !== user.id).map((m) => m.userId),
+          {
+            title: i18n.t('notifications.groupMilestoneTitle'),
+            body: i18n.t('notifications.groupMilestoneBody', { count: result.groupMilestone }),
+            url: '/counter',
+          },
         );
       }
       if (result.personalMilestone) {
@@ -296,10 +318,15 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       if (committed) setData(committed);
       // (cast: TS no ve las asignaciones hechas dentro del closure)
       if ((status as string) !== 'ok') return status;
-      // TODO(backend): push real al destinatario vía FCM/Web Push. En local se
-      // muestra la notificación en este dispositivo como demostración.
+      // Push real AL DESTINATARIO en todos sus dispositivos. (Antes aquí se
+      // mostraba una notificación local, que le llegaba al que tocaba en vez
+      // de al tocado.)
       const myName = me?.nickname ?? me?.name ?? '';
-      notifyLocal(i18n.t('poke.notifTitle'), i18n.t('poke.notifBody', { name: myName }));
+      sendPushToUsers(data.group.id, [toUserId], {
+        title: i18n.t('poke.notifTitle'),
+        body: i18n.t('poke.notifBody', { name: myName }),
+        url: user ? `/member/${user.id}` : '/',
+      });
       return 'ok';
     },
     [user, data, me],

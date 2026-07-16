@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { Platform, StyleSheet, Switch, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
@@ -12,6 +13,7 @@ import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ThemeMode, useTheme } from '@/contexts/ThemeContext';
 import { LANGUAGE_LABELS, SUPPORTED_LANGUAGES } from '@/i18n';
+import { enablePush, getPushStatus, PushStatus } from '@/services/push';
 
 /** Perfil propio, estadísticas en el grupo y ajustes de la app. */
 export default function ProfileScreen() {
@@ -20,6 +22,21 @@ export default function ProfileScreen() {
   const { theme, mode, setMode } = useTheme();
   const { user, group, signOut } = useAuth();
   const { me, updateMyProfile } = useGroupData();
+
+  // Notificaciones push: estado del permiso en ESTE dispositivo.
+  const [pushStatus, setPushStatus] = useState<PushStatus | null>(null);
+  const [enablingPush, setEnablingPush] = useState(false);
+  useEffect(() => {
+    getPushStatus().then(setPushStatus);
+  }, []);
+  const onEnablePush = useCallback(async () => {
+    setEnablingPush(true);
+    try {
+      setPushStatus(await enablePush());
+    } finally {
+      setEnablingPush(false);
+    }
+  }, []);
 
   const themeModes: { value: ThemeMode; label: string }[] = [
     { value: 'light', label: t('settings.light') },
@@ -108,6 +125,23 @@ export default function ProfileScreen() {
           <ThemedText variant="muted" style={styles.downloadWarning}>
             {t('gateway.androidWarning')}
           </ThemedText>
+        </>
+      )}
+
+      {/* Notificaciones push: activación explícita por dispositivo */}
+      <ThemedText variant="label">{t('push.section')}</ThemedText>
+      {pushStatus === 'enabled' ? (
+        <ThemedText variant="muted">✓ {t('push.enabled')}</ThemedText>
+      ) : pushStatus === 'need-install' ? (
+        <ThemedText variant="muted">{t('push.needInstall')}</ThemedText>
+      ) : pushStatus === 'denied' ? (
+        <ThemedText variant="muted">{t('push.denied')}</ThemedText>
+      ) : pushStatus === 'unsupported' ? (
+        <ThemedText variant="muted">{t('push.unsupported')}</ThemedText>
+      ) : (
+        <>
+          <ThemedText variant="muted">{t('push.hint')}</ThemedText>
+          <Button title={t('push.enableButton')} onPress={onEnablePush} loading={enablingPush} />
         </>
       )}
 

@@ -1,5 +1,15 @@
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Image, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
@@ -25,6 +35,8 @@ export default function CounterScreen() {
   const { theme } = useTheme();
   const { user } = useAuth();
   const { data, isLoading, isAdmin, contribute } = useGroupData();
+  // Foto de prueba abierta a pantalla completa (null = visor cerrado).
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
 
   if (isLoading || !data) {
     return (
@@ -189,7 +201,9 @@ export default function CounterScreen() {
               <View style={styles.proofRow}>
                 {proofs.map((c) => (
                   <View key={c.id} style={styles.proofItem}>
-                    <Image source={{ uri: c.proofPhotoUrl }} style={styles.proofImage} />
+                    <Pressable onPress={() => setViewerUrl(c.proofPhotoUrl!)}>
+                      <Image source={{ uri: c.proofPhotoUrl }} style={styles.proofImage} />
+                    </Pressable>
                     <ThemedText variant="muted" numberOfLines={1}>
                       {memberName(c.userId)}
                     </ThemedText>
@@ -200,6 +214,19 @@ export default function CounterScreen() {
           </>
         )}
       </ScrollView>
+
+      {/* Visor a pantalla completa: se cierra tocando en cualquier parte. */}
+      <Modal
+        visible={viewerUrl !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setViewerUrl(null)}>
+        <Pressable style={styles.viewerBackdrop} onPress={() => setViewerUrl(null)}>
+          {viewerUrl && (
+            <Image source={{ uri: viewerUrl }} style={styles.viewerImage} resizeMode="contain" />
+          )}
+        </Pressable>
+      </Modal>
     </Screen>
   );
 }
@@ -219,4 +246,12 @@ const styles = StyleSheet.create({
   proofRow: { flexDirection: 'row', gap: 10 },
   proofItem: { width: 110, gap: 4 },
   proofImage: { width: 110, height: 110, borderRadius: 12 },
+  viewerBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  viewerImage: { width: '100%', height: '100%' },
 });
