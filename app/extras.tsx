@@ -149,15 +149,11 @@ export default function ExtrasScreen() {
           />
         </View>
 
-        {/* C. YouTube...??? (vídeo misterioso, sin explicaciones) */}
-        <View style={card}>
-          <ThemedText variant="subtitle">🎬 {t('extras.youtubeTitle')}</ThemedText>
-          <ThemedText variant="muted">{t('extras.youtubeDesc')}</ThemedText>
-          <Button
-            title={t('extras.youtubeButton')}
-            onPress={() => WebBrowser.openBrowserAsync(MYSTERY_YOUTUBE_URL)}
-          />
-        </View>
+        {/* C. YouTube...??? (solo el botón, sin explicaciones) */}
+        <Button
+          title={t('extras.youtubeButton')}
+          onPress={() => WebBrowser.openBrowserAsync(MYSTERY_YOUTUBE_URL)}
+        />
 
         {/* D. El pantógrafo (featured card) */}
         <View style={styles.pantoCard}>
