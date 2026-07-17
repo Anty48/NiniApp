@@ -83,7 +83,11 @@
     "groupSettings": "Group settings",
     "myCommitment": "Commitment",
     "myContributions": "Contributions",
-    "downloadApp": "Download App (Android)"
+    "downloadApp": "Download App (Android)",
+    "devContent": "More content from this developer",
+    "devRodalies": "Minecraft mod: Rodalies Decorations",
+    "devCreate": "Create schematics",
+    "devBuildpaste": "BuildPaste builds"
   },
   "gateway": {
     "title": "Welcome to NiniApp",
@@ -120,7 +124,10 @@
     "leaveTitle": "Leave the group?",
     "leaveMessage": "All your data in this group (votes, contributions and seats) will be deleted. This cannot be undone.",
     "chooseSuccessor": "You are the admin. Choose who inherits the role:",
-    "confirmLeave": "Leave for good"
+    "confirmLeave": "Leave for good",
+    "phrasebook": "Phrasary",
+    "phrasebookHint": "Link to a Google Docs with the members' memorable quotes. Once set, everyone in the group gets a \"📖 Phrasary\" button on their Profile. Save it empty to remove it.",
+    "phrasebookUrl": "Google Docs link"
   },
   "events": {
     "upcoming": "Upcoming",
@@ -179,6 +186,8 @@
     "configure": "Configure",
     "name": "Counter name",
     "initialValue": "Initial value",
+    "currentValue": "Current value",
+    "currentValueHint": "Change it only to correct the accumulated total; the streak is untouched.",
     "anyoneCan": "Everyone can add",
     "multiplePerDay": "Can be added multiple times a day",
     "totalLabel": "Total",
@@ -220,7 +229,7 @@
   },
   "extras": {
     "title": "Extra features",
-    "subtitle": "Three utilities with no utility whatsoever. You're welcome.",
+    "subtitle": "Four utilities with no utility whatsoever. You're welcome.",
     "ifaeTitle": "Distance to IFAE",
     "ifaeDesc": "Calculates the straight-line distance from where you are to the Institute for High Energy Physics.",
     "ifaeButton": "How far am I?",
@@ -232,6 +241,9 @@
     "diceTitle": "Virtual die",
     "diceButton": "Roll the die",
     "diceRolling": "Rolling...",
+    "youtubeTitle": "A mystery video",
+    "youtubeDesc": "One button, one video, zero explanations.",
+    "youtubeButton": "YouTube...???",
     "pantoKicker": "Railway fact",
     "pantoTitle": "The Pantograph",
     "pantoDesc": "The pantograph is the articulated mechanism mounted on the roof of electric trains that collects current from the catenary. It keeps a constant contact pressure against the contact wire, adapting to height variations at any speed.",

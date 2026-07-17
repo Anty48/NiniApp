@@ -12,9 +12,10 @@ import { haversineKm, IFAE_COORDS } from '@/utils/geo';
 
 const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 const PANTOGRAPH_WIKI_URL = 'https://es.wikipedia.org/wiki/Pant%C3%B3grafo_(ferrocarril)';
+const MYSTERY_YOUTUBE_URL = 'https://www.youtube.com/watch?v=lzmWzXLPa6I';
 
 /**
- * "Funciones extra inútiles": tres utilidades locales sin ninguna utilidad
+ * "Funciones extra inútiles": cuatro utilidades locales sin ninguna utilidad
  * práctica y por eso imprescindibles. Nada de esta pantalla toca Firebase.
  */
 export default function ExtrasScreen() {
@@ -148,7 +149,17 @@ export default function ExtrasScreen() {
           />
         </View>
 
-        {/* C. El pantógrafo (featured card) */}
+        {/* C. YouTube...??? (vídeo misterioso, sin explicaciones) */}
+        <View style={card}>
+          <ThemedText variant="subtitle">🎬 {t('extras.youtubeTitle')}</ThemedText>
+          <ThemedText variant="muted">{t('extras.youtubeDesc')}</ThemedText>
+          <Button
+            title={t('extras.youtubeButton')}
+            onPress={() => WebBrowser.openBrowserAsync(MYSTERY_YOUTUBE_URL)}
+          />
+        </View>
+
+        {/* D. El pantógrafo (featured card) */}
         <View style={styles.pantoCard}>
           {/* Ilustración: catenaria + brazo articulado dibujados con Views */}
           <View style={styles.pantoScene}>

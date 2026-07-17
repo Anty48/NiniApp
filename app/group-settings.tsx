@@ -41,6 +41,8 @@ export default function GroupSettingsScreen() {
   const [copied, setCopied] = useState(false);
   const [name, setName] = useState(data?.group.name ?? '');
   const [newPassword, setNewPassword] = useState('');
+  const [phrasebookDraft, setPhrasebookDraft] = useState(data?.group.phrasebookUrl ?? '');
+  const [phrasebookSaved, setPhrasebookSaved] = useState(false);
   const [successorId, setSuccessorId] = useState<string | null>(null);
   const [choosingSuccessor, setChoosingSuccessor] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -74,6 +76,13 @@ export default function GroupSettingsScreen() {
     if (!newPassword.trim()) return;
     await updateGroupSettings({ accessPassword: newPassword.trim() });
     setNewPassword('');
+  };
+
+  const savePhrasebook = async () => {
+    // Guardar vacío quita el enlace; el botón del Perfil desaparece.
+    await updateGroupSettings({ phrasebookUrl: phrasebookDraft.trim() });
+    setPhrasebookSaved(true);
+    setTimeout(() => setPhrasebookSaved(false), 2000);
   };
 
   const changePhoto = async () => {
@@ -193,6 +202,31 @@ export default function GroupSettingsScreen() {
             </View>
             <Button title={t('group.changePassword')} variant="outline" onPress={savePassword} />
           </View>
+        )}
+
+        {/* Frasario: enlace a un Google Docs con frases memorables (solo admin) */}
+        {isAdmin && (
+          <>
+            <ThemedText variant="label">📖 {t('group.phrasebook')}</ThemedText>
+            <ThemedText variant="muted">{t('group.phrasebookHint')}</ThemedText>
+            <View style={styles.inlineRow}>
+              <View style={styles.flex}>
+                <TextField
+                  label={t('group.phrasebookUrl')}
+                  value={phrasebookDraft}
+                  onChangeText={setPhrasebookDraft}
+                  placeholder="https://docs.google.com/..."
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+              </View>
+              <Button
+                title={phrasebookSaved ? t('drivers.carSaved') : t('common.save')}
+                variant="outline"
+                onPress={savePhrasebook}
+              />
+            </View>
+          </>
         )}
 
         {/* Miembros */}

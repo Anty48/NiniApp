@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 
@@ -29,13 +30,23 @@ const ACCENT_PRESETS = [
   '#E84393',
 ];
 
+/** Otros proyectos del desarrollador, enlazados abajo del todo del Perfil. */
+const DEV_LINKS = [
+  { key: 'devRodalies', emoji: '⛏️', url: 'https://www.curseforge.com/minecraft/mc-mods/rodalies-decorations' },
+  { key: 'devCreate', emoji: '⚙️', url: 'https://createmod.com/es/author/anty48' },
+  { key: 'devBuildpaste', emoji: '🏗️', url: 'https://buildpaste.net/profile/io7uXbS485OjMq431nRknR25EoU2' },
+] as const;
+
 /** Perfil propio, estadísticas en el grupo y ajustes de la app. */
 export default function ProfileScreen() {
   const router = useRouter();
   const { t, language, setLanguage } = useLanguage();
   const { theme, mode, setMode, accent, setAccent } = useTheme();
   const { user, group, signOut } = useAuth();
-  const { me, updateMyProfile } = useGroupData();
+  const { data, me, updateMyProfile } = useGroupData();
+
+  // "Más contenido de este desarrollador": plegado por defecto.
+  const [showDevLinks, setShowDevLinks] = useState(false);
 
   // Notificaciones push: estado del permiso en ESTE dispositivo.
   const [pushStatus, setPushStatus] = useState<PushStatus | null>(null);
@@ -121,6 +132,14 @@ export default function ProfileScreen() {
           title={`🚗 ${t('drivers.title')}`}
           variant="outline"
           onPress={() => router.push('/drivers-zone')}
+        />
+      )}
+      {/* Frasario: visible para todos cuando el admin ha puesto el enlace */}
+      {!!data?.group.phrasebookUrl && (
+        <Button
+          title={`📖 ${t('group.phrasebook')}`}
+          variant="outline"
+          onPress={() => WebBrowser.openBrowserAsync(data.group.phrasebookUrl!)}
         />
       )}
       <Button
@@ -245,6 +264,25 @@ export default function ProfileScreen() {
       </View>
 
       <Button title={t('common.logout')} onPress={signOut} variant="ghost" />
+
+      {/* Más contenido de este desarrollador (abajo del todo, plegable) */}
+      <Button
+        title={`${showDevLinks ? '▾' : '▸'} ${t('profile.devContent')}`}
+        variant="ghost"
+        onPress={() => setShowDevLinks((v) => !v)}
+      />
+      {showDevLinks && (
+        <View style={styles.devLinks}>
+          {DEV_LINKS.map((link) => (
+            <Button
+              key={link.key}
+              title={`${link.emoji} ${t(`profile.${link.key}`)}`}
+              variant="outline"
+              onPress={() => WebBrowser.openBrowserAsync(link.url)}
+            />
+          ))}
+        </View>
+      )}
     </Screen>
   );
 }
@@ -260,6 +298,7 @@ const styles = StyleSheet.create({
   swatchSelected: { borderWidth: 3 },
   hexRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-end' },
   downloadWarning: { fontSize: 13, lineHeight: 19 },
+  devLinks: { gap: 8 },
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',

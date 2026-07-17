@@ -44,6 +44,8 @@ export interface Group {
   accessPassword: string;
   /** El creador es admin; puede asignar más admins. */
   memberRoles: Record<UserId, GroupRole>;
+  /** Frasario: enlace a un Google Docs con frases memorables de los miembros (lo pone el admin). */
+  phrasebookUrl?: string;
   createdAt: string;
 }
 

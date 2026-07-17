@@ -83,7 +83,11 @@
     "groupSettings": "Ajustes del grupo",
     "myCommitment": "Compromiso",
     "myContributions": "Aportes",
-    "downloadApp": "Descargar App (Android)"
+    "downloadApp": "Descargar App (Android)",
+    "devContent": "Más contenido de este desarrollador",
+    "devRodalies": "Mod de Minecraft: Rodalies Decorations",
+    "devCreate": "Schematics de Create",
+    "devBuildpaste": "Builds de BuildPaste"
   },
   "gateway": {
     "title": "Bienvenido a NiniApp",
@@ -120,7 +124,10 @@
     "leaveTitle": "¿Salir del grupo?",
     "leaveMessage": "Se borrarán todos tus datos de este grupo (votos, aportes y plazas). Esta acción no se puede deshacer.",
     "chooseSuccessor": "Eres el administrador. Elige quién heredará el rol:",
-    "confirmLeave": "Salir definitivamente"
+    "confirmLeave": "Salir definitivamente",
+    "phrasebook": "Frasario",
+    "phrasebookHint": "Enlace a un Google Docs con las frases memorables de los miembros. Si lo pones, a todo el grupo le aparece el botón \"📖 Frasario\" en su Perfil. Guárdalo vacío para quitarlo.",
+    "phrasebookUrl": "Enlace del Google Docs"
   },
   "events": {
     "upcoming": "Próximos",
@@ -179,6 +186,8 @@
     "configure": "Configurar",
     "name": "Nombre del contador",
     "initialValue": "Valor inicial",
+    "currentValue": "Valor actual",
+    "currentValueHint": "Cámbialo solo para corregir el total acumulado; la racha no se toca.",
     "anyoneCan": "Puede sumar todo el mundo",
     "multiplePerDay": "Se puede sumar varias veces al día",
     "totalLabel": "Total acumulado",
@@ -220,7 +229,7 @@
   },
   "extras": {
     "title": "Funciones extra",
-    "subtitle": "Tres utilidades sin ninguna utilidad. De nada.",
+    "subtitle": "Cuatro utilidades sin ninguna utilidad. De nada.",
     "ifaeTitle": "Distancia al IFAE",
     "ifaeDesc": "Calcula la distancia en línea recta desde donde estás hasta el Institut de Física d'Altes Energies.",
     "ifaeButton": "¿A cuánto estoy?",
@@ -232,6 +241,9 @@
     "diceTitle": "Dado virtual",
     "diceButton": "Tirar el dado",
     "diceRolling": "Girando...",
+    "youtubeTitle": "Un vídeo misterioso",
+    "youtubeDesc": "Un botón, un vídeo, cero explicaciones.",
+    "youtubeButton": "YouTube...???",
     "pantoKicker": "Facto ferroviario",
     "pantoTitle": "El Pantógrafo",
     "pantoDesc": "El pantógrafo es el mecanismo articulado instalado en el techo de los trenes eléctricos que capta la corriente de la catenaria. Mantiene una presión de contacto constante contra el hilo de contacto, adaptándose a las variaciones de altura a cualquier velocidad.",

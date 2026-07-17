@@ -83,7 +83,11 @@
     "groupSettings": "Ajustos del grup",
     "myCommitment": "Compromís",
     "myContributions": "Aportacions",
-    "downloadApp": "Descarregar App (Android)"
+    "downloadApp": "Descarregar App (Android)",
+    "devContent": "Més contingut d'aquest desenvolupador",
+    "devRodalies": "Mod de Minecraft: Rodalies Decorations",
+    "devCreate": "Schematics de Create",
+    "devBuildpaste": "Builds de BuildPaste"
   },
   "gateway": {
     "title": "Benvingut a NiniApp",
@@ -120,7 +124,10 @@
     "leaveTitle": "Sortir del grup?",
     "leaveMessage": "S'esborraran totes les teves dades d'aquest grup (vots, aportacions i places). Aquesta acció no es pot desfer.",
     "chooseSuccessor": "Ets l'administrador. Tria qui heretarà el rol:",
-    "confirmLeave": "Sortir definitivament"
+    "confirmLeave": "Sortir definitivament",
+    "phrasebook": "Frasari",
+    "phrasebookHint": "Enllaç a un Google Docs amb les frases memorables dels membres. Si el poses, a tot el grup li apareix el botó \"📖 Frasari\" al seu Perfil. Desa'l buit per treure'l.",
+    "phrasebookUrl": "Enllaç del Google Docs"
   },
   "events": {
     "upcoming": "Propers",
@@ -179,6 +186,8 @@
     "configure": "Configurar",
     "name": "Nom del comptador",
     "initialValue": "Valor inicial",
+    "currentValue": "Valor actual",
+    "currentValueHint": "Canvia'l només per corregir el total acumulat; la ratxa no es toca.",
     "anyoneCan": "Pot sumar tothom",
     "multiplePerDay": "Es pot sumar diverses vegades al dia",
     "totalLabel": "Total acumulat",
@@ -220,7 +229,7 @@
   },
   "extras": {
     "title": "Funcions extra",
-    "subtitle": "Tres utilitats sense cap utilitat. De res.",
+    "subtitle": "Quatre utilitats sense cap utilitat. De res.",
     "ifaeTitle": "Distància a l'IFAE",
     "ifaeDesc": "Calcula la distància en línia recta des d'on ets fins a l'Institut de Física d'Altes Energies.",
     "ifaeButton": "A quant sóc?",
@@ -232,6 +241,9 @@
     "diceTitle": "Dau virtual",
     "diceButton": "Tirar el dau",
     "diceRolling": "Girant...",
+    "youtubeTitle": "Un vídeo misteriós",
+    "youtubeDesc": "Un botó, un vídeo, zero explicacions.",
+    "youtubeButton": "YouTube...???",
     "pantoKicker": "Facto ferroviari",
     "pantoTitle": "El Pantògraf",
     "pantoDesc": "El pantògraf és el mecanisme articulat instal·lat al sostre dels trens elèctrics que capta el corrent de la catenària. Manté una pressió de contacte constant contra el fil de contacte, adaptant-se a les variacions d'alçada a qualsevol velocitat.",

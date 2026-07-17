@@ -40,7 +40,7 @@ interface GroupDataContextValue {
   saveCounter: (counter: GroupCounter) => Promise<void>;
   contribute: (proofPhotoUrl?: string) => Promise<void>;
   updateGroupSettings: (
-    fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl'>>,
+    fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl' | 'phrasebookUrl'>>,
   ) => Promise<void>;
   setMemberRole: (userId: UserId, role: GroupRole) => Promise<void>;
   /** Sale del grupo borrando los datos propios; si era admin, traspasa el rol. */
@@ -234,7 +234,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   );
 
   const updateGroupSettings = useCallback(
-    async (fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl'>>) => {
+    async (fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl' | 'phrasebookUrl'>>) => {
       const committed = await mutate((d) => ({ ...d, group: { ...d.group, ...fields } }));
       if (committed) await updateGroup(committed.group);
     },

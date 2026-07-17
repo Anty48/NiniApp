@@ -23,6 +23,8 @@ export default function CounterSettingsScreen() {
   const existing = data?.counter ?? null;
   const [name, setName] = useState(existing?.name ?? '');
   const [initialValue, setInitialValue] = useState(String(existing?.initialValue ?? 0));
+  // Al editar, el admin puede corregir a mano el total acumulado.
+  const [currentValue, setCurrentValue] = useState(String(existing?.totalValue ?? 0));
   const [anyoneCan, setAnyoneCan] = useState(existing?.anyoneCanIncrement ?? true);
   const [multiplePerDay, setMultiplePerDay] = useState(existing?.multiplePerDay ?? false);
   const [error, setError] = useState<string | null>(null);
@@ -47,8 +49,9 @@ export default function CounterSettingsScreen() {
     await saveCounter({
       groupId: data.group.id,
       name: name.trim(),
-      // Al crear, el total arranca en el valor inicial; al editar se conserva.
-      totalValue: existing ? existing.totalValue : initial,
+      // Al crear, el total arranca en el valor inicial; al editar vale lo
+      // que el admin haya puesto en el campo (por defecto, el total actual).
+      totalValue: existing ? parseInt(currentValue, 10) || 0 : initial,
       initialValue: initial,
       anyoneCanIncrement: anyoneCan,
       multiplePerDay,
@@ -75,6 +78,17 @@ export default function CounterSettingsScreen() {
             onChangeText={setInitialValue}
             keyboardType="numeric"
           />
+        )}
+        {existing && (
+          <>
+            <TextField
+              label={t('counter.currentValue')}
+              value={currentValue}
+              onChangeText={setCurrentValue}
+              keyboardType="numeric"
+            />
+            <ThemedText variant="muted">{t('counter.currentValueHint')}</ThemedText>
+          </>
         )}
 
         <View style={styles.switchRow}>
