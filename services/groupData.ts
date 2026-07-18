@@ -519,6 +519,30 @@ export function birthdayEvents(
   return list;
 }
 
+/**
+ * Borra una contribución equivocada: se resta del total acumulado y de los
+ * aportes de su autor. Las rachas (de grupo y personal) no se tocan, igual
+ * que cuando el admin corrige el valor del contador a mano.
+ */
+export function removeContribution(data: GroupData, contributionId: string): GroupData {
+  const record = data.contributions.find((c) => c.id === contributionId);
+  if (!record) return data;
+  const counter = data.counter
+    ? { ...data.counter, totalValue: data.counter.totalValue - 1 }
+    : data.counter;
+  const members = data.members.map((m) =>
+    m.userId === record.userId
+      ? { ...m, counterContributions: Math.max(0, m.counterContributions - 1) }
+      : m,
+  );
+  return {
+    ...data,
+    counter,
+    members,
+    contributions: data.contributions.filter((c) => c.id !== contributionId),
+  };
+}
+
 // ---------- Coches de conductores ----------
 
 /** Miembros conductores que ya tienen un coche configurado, activables en eventos. */

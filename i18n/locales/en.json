@@ -273,7 +273,8 @@
     "color": "Event color",
     "colorRandom": "🎲 Random",
     "colorCustom": "Custom color",
-    "birthdayOf": "%{name}'s birthday"
+    "birthdayOf": "%{name}'s birthday",
+    "createdBy": "Created by %{name}"
   },
   "counter": {
     "emptyTitle": "No active counter",
@@ -302,6 +303,10 @@
     "cameraDenied": "Camera permission denied. Enable it in system settings or use the gallery.",
     "top": "Top contributors",
     "recent": "Latest contributions",
+    "editContribs": "Edit",
+    "editContribsHint": "Tap the ✕ to delete a mistaken contribution: it is subtracted from the total and from that person's contributions (the streak is untouched). You can delete your own; the admin, anyone's.",
+    "deleteContribTitle": "Delete this contribution?",
+    "deleteContribMessage": "It will be subtracted from the total and from %{name}'s contributions.",
     "proofs": "Proof photos (24h)",
     "contributionsShort": "%{count} contributions"
   },
@@ -420,10 +425,22 @@
   },
   "member": {
     "personalStreak": "Streak",
-    "phrases": "Their quotes in the Phrasary"
+    "phrases": "Their quotes in the Phrasary",
+    "viewProfile": "View profile"
   },
   "changelog": {
     "title": "Changelog",
+    "v1_1_1": {
+      "name": "Version 1.1.1",
+      "date": "July 2026",
+      "items": [
+        "Birthdays also show in the calendar list view (next 12 months).",
+        "Tapping a birthday opens its detail (and from there, the profile) instead of jumping straight to the profile.",
+        "Event details show the creator, tappable to view their profile.",
+        "Role buttons in Group settings now fit on small screens (own wrapping row).",
+        "New Edit button on the counter's latest contributions to delete mistakes (subtracted from the total; the streak is untouched)."
+      ]
+    },
     "v1_1": {
       "name": "Version 1.1",
       "date": "July 2026",

@@ -14,7 +14,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { BIRTHDAY_EVENT_PREFIX, birthdayEvents } from '@/services/groupData';
 import { GroupEvent } from '@/types/models';
-import { dayKey, eventsOnDay, formatEventRange } from '@/utils/date';
+import { DAY_MS, dayKey, eventsOnDay, formatEventRange } from '@/utils/date';
 
 type ViewMode = 'list' | 'month';
 
@@ -39,9 +39,20 @@ export default function CalendarScreen() {
   }
 
   const now = Date.now();
-  const upcoming = data.events
-    .filter((e) => new Date(e.endsAt).getTime() >= now)
-    .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+  const makeBirthdayTitle = (name: string) => t('events.birthdayOf', { name });
+
+  // Cumpleaños de los próximos 12 meses, también en la vista de lista.
+  const thisYear = new Date().getFullYear();
+  const upcomingBirthdays = birthdayEvents(data, [thisYear, thisYear + 1], makeBirthdayTitle).filter(
+    (e) =>
+      new Date(e.endsAt).getTime() >= now &&
+      new Date(e.startsAt).getTime() <= now + 365 * DAY_MS,
+  );
+
+  const upcoming = [
+    ...data.events.filter((e) => new Date(e.endsAt).getTime() >= now),
+    ...upcomingBirthdays,
+  ].sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   const past = data.events
     .filter((e) => new Date(e.endsAt).getTime() < now)
     .sort((a, b) => b.startsAt.localeCompare(a.startsAt));
@@ -53,9 +64,7 @@ export default function CalendarScreen() {
     month.getFullYear(),
     new Date(month.getFullYear(), month.getMonth() + 1, 7).getFullYear(),
   ]);
-  const birthdays = birthdayEvents(data, [...yearSet], (name) =>
-    t('events.birthdayOf', { name }),
-  );
+  const birthdays = birthdayEvents(data, [...yearSet], makeBirthdayTitle);
   const calendarEvents = [...data.events, ...birthdays];
   const dayEvents = eventsOnDay(calendarEvents, selectedDay);
 
@@ -71,14 +80,17 @@ export default function CalendarScreen() {
           ? theme.danger
           : theme.textMuted;
 
-    // Un cumpleaños lleva al perfil del miembro; el resto, al detalle del evento.
+    // Un cumpleaños abre su detalle (y desde allí, el perfil); el resto, el evento.
     const onPress = isBirthday
       ? () => {
           const userId = event.id.slice(
             BIRTHDAY_EVENT_PREFIX.length,
             event.id.lastIndexOf('-'),
           );
-          router.push({ pathname: '/member/[id]', params: { id: userId } });
+          router.push({
+            pathname: '/birthday/[id]',
+            params: { id: userId, date: dayKey(event.startsAt) },
+          });
         }
       : () => router.push({ pathname: '/event/[id]', params: { id: event.id } });
 

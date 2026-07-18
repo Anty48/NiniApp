@@ -273,7 +273,8 @@
     "color": "Color de l'esdeveniment",
     "colorRandom": "🎲 Aleatori",
     "colorCustom": "Color personalitzat",
-    "birthdayOf": "Aniversari de %{name}"
+    "birthdayOf": "Aniversari de %{name}",
+    "createdBy": "Creat per %{name}"
   },
   "counter": {
     "emptyTitle": "Sense comptador actiu",
@@ -302,6 +303,10 @@
     "cameraDenied": "Permís de càmera denegat. Activa'l als ajustos del sistema o fes servir la galeria.",
     "top": "Top contribuïdors",
     "recent": "Darreres contribucions",
+    "editContribs": "Editar",
+    "editContribsHint": "Toca la ✕ per esborrar una contribució equivocada: es resta del total i de les aportacions de la persona (la ratxa no es toca). Pots esborrar les teves; l'admin, qualsevol.",
+    "deleteContribTitle": "Esborrar aquesta contribució?",
+    "deleteContribMessage": "Es restarà del total acumulat i de les aportacions de %{name}.",
     "proofs": "Fotos de prova (24 h)",
     "contributionsShort": "%{count} aportacions"
   },
@@ -420,10 +425,22 @@
   },
   "member": {
     "personalStreak": "Ratxa",
-    "phrases": "Les seves frases al Frasari"
+    "phrases": "Les seves frases al Frasari",
+    "viewProfile": "Veure perfil"
   },
   "changelog": {
     "title": "Registre de canvis",
+    "v1_1_1": {
+      "name": "Versió 1.1.1",
+      "date": "Juliol 2026",
+      "items": [
+        "Els aniversaris també surten a la vista de llista del calendari (propers 12 mesos).",
+        "Tocar un aniversari obre el seu detall (i des d'allà, el perfil), en comptes de saltar directament al perfil.",
+        "El detall d'un esdeveniment mostra el seu creador i es pot tocar per veure el seu perfil.",
+        "Els botons de rols dels Ajustos del grup ja caben en pantalles petites (fila pròpia amb salt de línia).",
+        "Nou botó Editar a les darreres contribucions del comptador per esborrar equivocacions (es resta del total; la ratxa no es toca)."
+      ]
+    },
     "v1_1": {
       "name": "Versió 1.1",
       "date": "Juliol 2026",

@@ -273,7 +273,8 @@
     "color": "Color del evento",
     "colorRandom": "🎲 Aleatorio",
     "colorCustom": "Color personalizado",
-    "birthdayOf": "Cumpleaños de %{name}"
+    "birthdayOf": "Cumpleaños de %{name}",
+    "createdBy": "Creado por %{name}"
   },
   "counter": {
     "emptyTitle": "Sin contador activo",
@@ -302,6 +303,10 @@
     "cameraDenied": "Permiso de cámara denegado. Actívalo en los ajustes del sistema o usa la galería.",
     "top": "Top contribuidores",
     "recent": "Últimas contribuciones",
+    "editContribs": "Editar",
+    "editContribsHint": "Toca la ✕ para borrar una contribución equivocada: se resta del total y de los aportes de la persona (la racha no se toca). Puedes borrar las tuyas; el admin, cualquiera.",
+    "deleteContribTitle": "¿Borrar esta contribución?",
+    "deleteContribMessage": "Se restará del total acumulado y de los aportes de %{name}.",
     "proofs": "Fotos de prueba (24 h)",
     "contributionsShort": "%{count} aportes"
   },
@@ -420,10 +425,22 @@
   },
   "member": {
     "personalStreak": "Racha",
-    "phrases": "Sus frases en el Frasario"
+    "phrases": "Sus frases en el Frasario",
+    "viewProfile": "Ver perfil"
   },
   "changelog": {
     "title": "Registro de cambios",
+    "v1_1_1": {
+      "name": "Versión 1.1.1",
+      "date": "Julio 2026",
+      "items": [
+        "Los cumpleaños también aparecen en la vista de lista del calendario (próximos 12 meses).",
+        "Tocar un cumpleaños abre su detalle (y desde allí, el perfil), en vez de saltar directo al perfil.",
+        "El detalle de un evento muestra a su creador y se puede tocar para ver su perfil.",
+        "Los botones de roles de Ajustes del grupo ya caben en pantallas pequeñas (fila propia con salto de línea).",
+        "Nuevo botón Editar en las últimas contribuciones del contador para borrar equivocaciones (se resta del total; la racha no se toca)."
+      ]
+    },
     "v1_1": {
       "name": "Versión 1.1",
       "date": "Julio 2026",

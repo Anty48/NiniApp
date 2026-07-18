@@ -43,6 +43,8 @@ interface GroupDataContextValue {
   toggleCarSeat: (eventId: string, carId: string) => Promise<void>;
   saveCounter: (counter: GroupCounter) => Promise<void>;
   contribute: (proofPhotoUrl?: string) => Promise<void>;
+  /** Borra una contribución equivocada (resta total y aportes; la racha no se toca). */
+  removeContribution: (contributionId: string) => Promise<void>;
   updateGroupSettings: (
     fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl'>>,
   ) => Promise<void>;
@@ -279,6 +281,13 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       }
     },
     [user, data],
+  );
+
+  const removeContribution = useCallback(
+    async (contributionId: string) => {
+      await mutate((d) => gd.removeContribution(d, contributionId));
+    },
+    [mutate],
   );
 
   const updateGroupSettings = useCallback(
@@ -567,6 +576,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       toggleCarSeat,
       saveCounter,
       contribute,
+      removeContribution,
       updateGroupSettings,
       setMemberRole,
       leaveGroup,
@@ -602,6 +612,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       toggleCarSeat,
       saveCounter,
       contribute,
+      removeContribution,
       updateGroupSettings,
       setMemberRole,
       leaveGroup,

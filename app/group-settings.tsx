@@ -237,35 +237,37 @@ export default function GroupSettingsScreen() {
                   style={member.role === 'admin' ? { color: theme.primary, fontWeight: '600' } : undefined}>
                   {member.role === 'admin' ? t('group.roleAdmin') : t('group.roleMember')}
                 </ThemedText>
-                {isAdmin && (
+              </Pressable>
+              {/* Botones de roles en fila aparte con salto de línea: en la
+                  fila del nombre no cabían en pantallas pequeñas. */}
+              {isAdmin && (
+                <View style={styles.rolePills}>
                   <Pill
                     label={t('group.driver')}
                     selected={!!member.isDriver}
                     onPress={() => setDriver(member.userId, !member.isDriver)}
                   />
-                )}
-                {isAdmin && (
                   <Pill
                     label={t('group.musician')}
                     selected={!!member.isMusician}
                     onPress={() => setMusician(member.userId, !member.isMusician)}
                   />
-                )}
-                {isAdmin && member.isDriver && (
-                  <Pill
-                    label={member.carDetails ? t('group.editCar') : t('group.assignCar')}
-                    selected={carEditingId === member.userId}
-                    onPress={() => openCarEditor(member)}
-                  />
-                )}
-                {isAdmin && member.role !== 'admin' && member.userId !== user?.id && (
-                  <Pill
-                    label={t('group.makeAdmin')}
-                    selected={false}
-                    onPress={() => setMemberRole(member.userId, 'admin')}
-                  />
-                )}
-              </Pressable>
+                  {member.isDriver && (
+                    <Pill
+                      label={member.carDetails ? t('group.editCar') : t('group.assignCar')}
+                      selected={carEditingId === member.userId}
+                      onPress={() => openCarEditor(member)}
+                    />
+                  )}
+                  {member.role !== 'admin' && member.userId !== user?.id && (
+                    <Pill
+                      label={t('group.makeAdmin')}
+                      selected={false}
+                      onPress={() => setMemberRole(member.userId, 'admin')}
+                    />
+                  )}
+                </View>
+              )}
               {isAdmin && carEditingId === member.userId && (
                 <View
                   style={[
@@ -373,6 +375,13 @@ const styles = StyleSheet.create({
   copyButton: { paddingHorizontal: 16, height: 40, borderRadius: 20, justifyContent: 'center' },
   card: { borderRadius: 16, borderWidth: 1, padding: 12, gap: 10 },
   memberRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  rolePills: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 6,
+    marginBottom: 4,
+  },
   carEditor: {
     borderRadius: 12,
     borderWidth: 1,

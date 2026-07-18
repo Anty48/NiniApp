@@ -111,6 +111,18 @@ export default function EventDetailScreen() {
 
         <ThemedText variant="muted">{formatEventRange(event, language)}</ThemedText>
 
+        {/* Creador del evento: tócalo para abrir su perfil */}
+        <Pressable
+          onPress={() =>
+            router.push({ pathname: '/member/[id]', params: { id: event.createdBy } })
+          }
+          hitSlop={4}
+          style={({ pressed }) => pressed && { opacity: 0.6 }}>
+          <ThemedText style={{ color: theme.primary }}>
+            {t('events.createdBy', { name: memberName(event.createdBy) })} ›
+          </ThemedText>
+        </Pressable>
+
         {event.description && <ThemedText>{event.description}</ThemedText>}
 
         {event.mapsAddress && (

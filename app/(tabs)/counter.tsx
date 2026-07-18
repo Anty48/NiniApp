@@ -24,7 +24,7 @@ import {
   sortByContributions,
 } from '@/services/groupData';
 import { uploadPhoto } from '@/services/photos';
-import { alertMessage, chooseAsync } from '@/utils/confirm';
+import { alertMessage, chooseAsync, confirmAsync } from '@/utils/confirm';
 import { formatDateTime } from '@/utils/date';
 import { pickImage, takePhoto } from '@/utils/pickImage';
 
@@ -34,9 +34,11 @@ export default function CounterScreen() {
   const { t, language } = useLanguage();
   const { theme } = useTheme();
   const { user } = useAuth();
-  const { data, isLoading, isAdmin, contribute } = useGroupData();
+  const { data, isLoading, isAdmin, contribute, removeContribution } = useGroupData();
   // Foto de prueba abierta a pantalla completa (null = visor cerrado).
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  // Modo edición de las últimas contribuciones (para borrar equivocaciones).
+  const [editingContribs, setEditingContribs] = useState(false);
 
   if (isLoading || !data) {
     return (
@@ -118,6 +120,17 @@ export default function CounterScreen() {
     await contribute(photo);
   };
 
+  const deleteContribution = async (contributionId: string, name: string) => {
+    const ok = await confirmAsync({
+      title: t('counter.deleteContribTitle'),
+      message: t('counter.deleteContribMessage', { name }),
+      confirmLabel: t('common.delete'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+    });
+    if (ok) await removeContribution(contributionId);
+  };
+
   const top = sortByContributions(data.members).slice(0, 5);
   const recent = data.contributions.slice(0, 10);
   const proofs = data.contributions.filter((c) => c.proofPhotoUrl);
@@ -178,17 +191,42 @@ export default function CounterScreen() {
           ))}
         </View>
 
-        {/* Últimas contribuciones */}
+        {/* Últimas contribuciones (con modo edición para borrar equivocaciones) */}
         {recent.length > 0 && (
           <>
-            <ThemedText variant="label">{t('counter.recent')}</ThemedText>
+            <View style={styles.recentHeader}>
+              <ThemedText variant="label">{t('counter.recent')}</ThemedText>
+              <Pressable
+                onPress={() => setEditingContribs((v) => !v)}
+                hitSlop={8}
+                style={({ pressed }) => pressed && { opacity: 0.6 }}>
+                <ThemedText style={{ color: theme.primary, fontWeight: '600', fontSize: 13 }}>
+                  {editingContribs ? t('common.cancel') : `✏️ ${t('counter.editContribs')}`}
+                </ThemedText>
+              </Pressable>
+            </View>
+            {editingContribs && (
+              <ThemedText variant="muted">{t('counter.editContribsHint')}</ThemedText>
+            )}
             <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-              {recent.map((c) => (
-                <View key={c.id} style={styles.itemRow}>
-                  <ThemedText>{memberName(c.userId)}</ThemedText>
-                  <ThemedText variant="muted">{formatDateTime(c.at, language)}</ThemedText>
-                </View>
-              ))}
+              {recent.map((c) => {
+                // Cada uno puede borrar las suyas; el admin, cualquiera.
+                const canDelete = editingContribs && (isAdmin || c.userId === user?.id);
+                return (
+                  <View key={c.id} style={styles.itemRow}>
+                    <ThemedText style={styles.flex}>{memberName(c.userId)}</ThemedText>
+                    <ThemedText variant="muted">{formatDateTime(c.at, language)}</ThemedText>
+                    {canDelete && (
+                      <Pressable
+                        onPress={() => deleteContribution(c.id, memberName(c.userId))}
+                        hitSlop={8}
+                        style={({ pressed }) => pressed && { opacity: 0.6 }}>
+                        <ThemedText style={{ color: theme.danger, fontSize: 16 }}>✕</ThemedText>
+                      </Pressable>
+                    )}
+                  </View>
+                );
+              })}
             </View>
           </>
         )}
@@ -242,7 +280,18 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 10 },
   flex: { flex: 1 },
   card: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 10 },
-  itemRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
+  itemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
+  recentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
   proofRow: { flexDirection: 'row', gap: 10 },
   proofItem: { width: 110, gap: 4 },
   proofImage: { width: 110, height: 110, borderRadius: 12 },
