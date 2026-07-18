@@ -8,11 +8,11 @@ import {
   useState,
 } from 'react';
 
-import { useAuth } from '@/contexts/AuthContext';
-import { i18n } from '@/i18n';
+import { ProfileFields, useAuth } from '@/contexts/AuthContext';
+import { i18n, SUPPORTED_LANGUAGES } from '@/i18n';
 import * as gd from '@/services/groupData';
 import { notifyLocal } from '@/services/notifications';
-import { sendPushToUsers } from '@/services/push';
+import { PushPayload, sendPushToUsers } from '@/services/push';
 import {
   CarDetails,
   EventVoteValue,
@@ -22,6 +22,10 @@ import {
   GroupEvent,
   GroupMember,
   GroupRole,
+  Phrase,
+  Poll,
+  SavedColor,
+  Song,
   UserId,
 } from '@/types/models';
 
@@ -40,31 +44,68 @@ interface GroupDataContextValue {
   saveCounter: (counter: GroupCounter) => Promise<void>;
   contribute: (proofPhotoUrl?: string) => Promise<void>;
   updateGroupSettings: (
-    fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl' | 'phrasebookUrl'>>,
+    fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl'>>,
   ) => Promise<void>;
   setMemberRole: (userId: UserId, role: GroupRole) => Promise<void>;
   /** Sale del grupo borrando los datos propios; si era admin, traspasa el rol. */
   leaveGroup: (successorId?: UserId) => Promise<void>;
-  updateMyProfile: (fields: {
-    username?: string;
-    nickname?: string;
-    description?: string;
-    photoUrl?: string;
-    allowPokes?: boolean;
-  }) => Promise<void>;
-  /** "Tocar" a otro miembro (una vez cada 24 h por persona). */
+  updateMyProfile: (fields: ProfileFields) => Promise<void>;
+  /** "Tocar" a otro miembro (cooldown de 12-24 h según tu compromiso). */
   pokeMember: (toUserId: UserId) => Promise<'ok' | 'cooldown' | 'disabled'>;
   /** Suma/resta copipuntos a un miembro (solo conductores, edición directa). */
   adjustCopipoints: (userId: UserId, delta: number) => Promise<void>;
   /** Asigna o retira el rol de conductor (solo admin). */
   setDriver: (userId: UserId, isDriver: boolean) => Promise<void>;
+  /** Asigna o retira el rol de músico (solo admin). */
+  setMusician: (userId: UserId, isMusician: boolean) => Promise<void>;
   /** El conductor edita o quita los datos de su propio coche. */
   updateMyCar: (carDetails: CarDetails | undefined) => Promise<void>;
   /** El admin asigna, edita o quita el coche de cualquier conductor. */
   setMemberCar: (userId: UserId, carDetails: CarDetails | undefined) => Promise<void>;
+  /** Frasario: cualquier miembro añade, edita o borra frases. */
+  addPhrase: (phrase: Phrase) => Promise<void>;
+  updatePhrase: (phraseId: string, text: string) => Promise<void>;
+  deletePhrase: (phraseId: string) => Promise<void>;
+  /** Canciones: crear/editar (upsert) y borrar; solo músicos y admins. */
+  saveSong: (song: Song) => Promise<void>;
+  deleteSong: (songId: string) => Promise<void>;
+  /** Encuestas: cualquiera crea (notifica por push) y vota. */
+  createPoll: (poll: Poll) => Promise<void>;
+  votePoll: (pollId: string, optionIndexes: number[]) => Promise<void>;
+  /** Mi estado efímero (texto y/o foto, caduca a las 24 h). */
+  setMyStatus: (fields: { text?: string; photoUrl?: string }) => Promise<void>;
+  clearMyStatus: () => Promise<void>;
+  /** Colores guardados del grupo, editables por cualquier miembro. */
+  addSavedColor: (color: SavedColor) => Promise<void>;
+  removeSavedColor: (colorId: string) => Promise<void>;
 }
 
 const GroupDataContext = createContext<GroupDataContextValue | null>(null);
+
+/**
+ * Payload de push con el texto en los tres idiomas: el servidor entrega a
+ * cada destinatario la variante de SU idioma. (Antes las notificaciones
+ * llegaban en el idioma de quien disparaba la acción, no del que las recibía.)
+ */
+function localizedPush(
+  titleKey: string,
+  bodyKey: string,
+  params: Record<string, unknown> = {},
+): Omit<PushPayload, 'url'> {
+  return {
+    title: i18n.t(titleKey, params),
+    body: i18n.t(bodyKey, params),
+    i18n: Object.fromEntries(
+      SUPPORTED_LANGUAGES.map((locale) => [
+        locale,
+        {
+          title: i18n.t(titleKey, { ...params, locale }),
+          body: i18n.t(bodyKey, { ...params, locale }),
+        },
+      ]),
+    ),
+  };
+}
 
 export function GroupDataProvider({ children }: { children: ReactNode }) {
   const { user, group, updateGroup, clearGroup, updateProfile } = useAuth();
@@ -125,15 +166,21 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   const createEvent = useCallback(
     async (event: GroupEvent) => {
       const committed = await mutate((d) => ({ ...d, events: [...d.events, event] }));
-      // Push real al resto de miembros (el creador no se notifica a sí mismo).
+      // Push real al resto de miembros (el creador no se notifica a sí mismo),
+      // con texto según la categoría del evento.
       const members = (committed ?? data)?.members ?? [];
       if (data) {
+        const prefix =
+          event.kind === 'informal'
+            ? 'notifications.newInformal'
+            : event.kind === 'specialDay'
+              ? 'notifications.newSpecialDay'
+              : 'notifications.newEvent';
         sendPushToUsers(
           data.group.id,
           members.filter((m) => m.userId !== user?.id).map((m) => m.userId),
           {
-            title: i18n.t('notifications.newEventTitle'),
-            body: i18n.t('notifications.newEventBody', { title: event.title }),
+            ...localizedPush(`${prefix}Title`, `${prefix}Body`, { title: event.title }),
             url: `/event/${event.id}`,
           },
         );
@@ -217,8 +264,9 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
           committed.group.id,
           committed.members.filter((m) => m.userId !== user.id).map((m) => m.userId),
           {
-            title: i18n.t('notifications.groupMilestoneTitle'),
-            body: i18n.t('notifications.groupMilestoneBody', { count: result.groupMilestone }),
+            ...localizedPush('notifications.groupMilestoneTitle', 'notifications.groupMilestoneBody', {
+              count: result.groupMilestone,
+            }),
             url: '/counter',
           },
         );
@@ -234,7 +282,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   );
 
   const updateGroupSettings = useCallback(
-    async (fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl' | 'phrasebookUrl'>>) => {
+    async (fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl'>>) => {
       const committed = await mutate((d) => ({ ...d, group: { ...d.group, ...fields } }));
       if (committed) await updateGroup(committed.group);
     },
@@ -265,13 +313,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   );
 
   const updateMyProfile = useCallback(
-    async (fields: {
-      username?: string;
-      nickname?: string;
-      description?: string;
-      photoUrl?: string;
-      allowPokes?: boolean;
-    }) => {
+    async (fields: ProfileFields) => {
       await updateProfile(fields);
       if (data && user) {
         await mutate((d) => ({
@@ -285,6 +327,8 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
                   description: fields.description ?? m.description,
                   photoUrl: fields.photoUrl ?? m.photoUrl,
                   allowPokes: fields.allowPokes ?? m.allowPokes,
+                  birthday: fields.birthday ?? m.birthday,
+                  showBirthday: fields.showBirthday ?? m.showBirthday,
                 }
               : m,
           ),
@@ -307,8 +351,12 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
           status = 'disabled';
           return null;
         }
+        // El cooldown depende del compromiso de quien toca: 12 h con el 100%
+        // y hasta 24 h con el 0%.
+        const sender = fresh.members.find((m) => m.userId === user.id);
+        const cooldown = gd.pokeCooldownMs(sender?.commitmentScore ?? 100);
         const last = gd.lastPokeAt(fresh, user.id, toUserId);
-        if (last && Date.now() - last < gd.POKE_COOLDOWN_MS) {
+        if (last && Date.now() - last < cooldown) {
           status = 'cooldown';
           return null;
         }
@@ -323,8 +371,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       // de al tocado.)
       const myName = me?.nickname ?? me?.name ?? '';
       sendPushToUsers(data.group.id, [toUserId], {
-        title: i18n.t('poke.notifTitle'),
-        body: i18n.t('poke.notifBody', { name: myName }),
+        ...localizedPush('poke.notifTitle', 'poke.notifBody', { name: myName }),
         url: user ? `/member/${user.id}` : '/',
       });
       return 'ok';
@@ -351,6 +398,135 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       await mutate((d) => ({
         ...d,
         members: d.members.map((m) => (m.userId === userId ? { ...m, isDriver } : m)),
+      }));
+    },
+    [mutate],
+  );
+
+  const setMusician = useCallback(
+    async (userId: UserId, isMusician: boolean) => {
+      await mutate((d) => ({
+        ...d,
+        members: d.members.map((m) => (m.userId === userId ? { ...m, isMusician } : m)),
+      }));
+    },
+    [mutate],
+  );
+
+  const addPhrase = useCallback(
+    async (phrase: Phrase) => {
+      await mutate((d) => ({ ...d, phrases: [...(d.phrases ?? []), phrase] }));
+    },
+    [mutate],
+  );
+
+  const updatePhrase = useCallback(
+    async (phraseId: string, text: string) => {
+      await mutate((d) => ({
+        ...d,
+        phrases: (d.phrases ?? []).map((p) => (p.id === phraseId ? { ...p, text } : p)),
+      }));
+    },
+    [mutate],
+  );
+
+  const deletePhrase = useCallback(
+    async (phraseId: string) => {
+      await mutate((d) => ({
+        ...d,
+        phrases: (d.phrases ?? []).filter((p) => p.id !== phraseId),
+      }));
+    },
+    [mutate],
+  );
+
+  const saveSong = useCallback(
+    async (song: Song) => {
+      await mutate((d) => {
+        const songs = d.songs ?? [];
+        const exists = songs.some((s) => s.id === song.id);
+        return {
+          ...d,
+          songs: exists ? songs.map((s) => (s.id === song.id ? song : s)) : [...songs, song],
+        };
+      });
+    },
+    [mutate],
+  );
+
+  const deleteSong = useCallback(
+    async (songId: string) => {
+      await mutate((d) => ({ ...d, songs: (d.songs ?? []).filter((s) => s.id !== songId) }));
+    },
+    [mutate],
+  );
+
+  const createPoll = useCallback(
+    async (poll: Poll) => {
+      const committed = await mutate((d) => ({ ...d, polls: [...(d.polls ?? []), poll] }));
+      // Push real al resto de miembros al crearse la encuesta.
+      const members = (committed ?? data)?.members ?? [];
+      if (data) {
+        sendPushToUsers(
+          data.group.id,
+          members.filter((m) => m.userId !== user?.id).map((m) => m.userId),
+          {
+            ...localizedPush('polls.notifTitle', 'polls.notifBody', { title: poll.title }),
+            url: '/polls',
+          },
+        );
+      }
+    },
+    [mutate, data, user],
+  );
+
+  const votePoll = useCallback(
+    async (pollId: string, optionIndexes: number[]) => {
+      if (!user) return;
+      await mutate((d) => ({
+        ...d,
+        polls: (d.polls ?? []).map((p) =>
+          p.id === pollId ? { ...p, votes: { ...p.votes, [user.id]: optionIndexes } } : p,
+        ),
+      }));
+    },
+    [mutate, user],
+  );
+
+  const setMyStatus = useCallback(
+    async (fields: { text?: string; photoUrl?: string }) => {
+      if (!user) return;
+      await mutate((d) => ({
+        ...d,
+        statuses: [
+          ...(d.statuses ?? []).filter((s) => s.userId !== user.id),
+          { userId: user.id, ...fields, at: new Date().toISOString() },
+        ],
+      }));
+    },
+    [mutate, user],
+  );
+
+  const clearMyStatus = useCallback(async () => {
+    if (!user) return;
+    await mutate((d) => ({
+      ...d,
+      statuses: (d.statuses ?? []).filter((s) => s.userId !== user.id),
+    }));
+  }, [mutate, user]);
+
+  const addSavedColor = useCallback(
+    async (color: SavedColor) => {
+      await mutate((d) => ({ ...d, savedColors: [...(d.savedColors ?? []), color] }));
+    },
+    [mutate],
+  );
+
+  const removeSavedColor = useCallback(
+    async (colorId: string) => {
+      await mutate((d) => ({
+        ...d,
+        savedColors: (d.savedColors ?? []).filter((c) => c.id !== colorId),
       }));
     },
     [mutate],
@@ -398,8 +574,20 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       pokeMember,
       adjustCopipoints,
       setDriver,
+      setMusician,
       updateMyCar,
       setMemberCar,
+      addPhrase,
+      updatePhrase,
+      deletePhrase,
+      saveSong,
+      deleteSong,
+      createPoll,
+      votePoll,
+      setMyStatus,
+      clearMyStatus,
+      addSavedColor,
+      removeSavedColor,
     }),
     [
       data,
@@ -421,8 +609,20 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       pokeMember,
       adjustCopipoints,
       setDriver,
+      setMusician,
       updateMyCar,
       setMemberCar,
+      addPhrase,
+      updatePhrase,
+      deletePhrase,
+      saveSong,
+      deleteSong,
+      createPoll,
+      votePoll,
+      setMyStatus,
+      clearMyStatus,
+      addSavedColor,
+      removeSavedColor,
     ],
   );
 

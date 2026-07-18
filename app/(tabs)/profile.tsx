@@ -15,6 +15,7 @@ import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { normalizeHexColor, ThemeMode, useTheme } from '@/contexts/ThemeContext';
 import { LANGUAGE_LABELS, SUPPORTED_LANGUAGES } from '@/i18n';
+import { normalizeBirthday, pokeCooldownMs } from '@/services/groupData';
 import { enablePush, getPushStatus, PushStatus } from '@/services/push';
 
 /** Lila de serie + paleta de acentos elegibles desde el Perfil. */
@@ -43,7 +44,7 @@ export default function ProfileScreen() {
   const { t, language, setLanguage } = useLanguage();
   const { theme, mode, setMode, accent, setAccent } = useTheme();
   const { user, group, signOut } = useAuth();
-  const { data, me, updateMyProfile } = useGroupData();
+  const { me, updateMyProfile } = useGroupData();
 
   // "Más contenido de este desarrollador": plegado por defecto.
   const [showDevLinks, setShowDevLinks] = useState(false);
@@ -62,6 +63,18 @@ export default function ProfileScreen() {
       setEnablingPush(false);
     }
   }, []);
+
+  // Cumpleaños (DD/MM): borrador del campo y confirmación de guardado.
+  const [birthdayDraft, setBirthdayDraft] = useState(user?.birthday ?? '');
+  const [birthdaySaved, setBirthdaySaved] = useState(false);
+  const saveBirthday = async () => {
+    const normalized = normalizeBirthday(birthdayDraft);
+    if (!normalized) return;
+    await updateMyProfile({ birthday: normalized });
+    setBirthdayDraft(normalized);
+    setBirthdaySaved(true);
+    setTimeout(() => setBirthdaySaved(false), 2000);
+  };
 
   // Color de acento: borrador del campo hexadecimal libre.
   const [hexDraft, setHexDraft] = useState('');
@@ -118,30 +131,10 @@ export default function ProfileScreen() {
         onPress={() => router.push('/edit-profile')}
       />
       <Button
-        title={t('profile.groupSettings')}
-        variant="outline"
-        onPress={() => router.push('/group-settings')}
-      />
-      <Button
         title={t('groups.change')}
         variant="outline"
         onPress={() => router.push('/groups')}
       />
-      {me?.isDriver && (
-        <Button
-          title={`🚗 ${t('drivers.title')}`}
-          variant="outline"
-          onPress={() => router.push('/drivers-zone')}
-        />
-      )}
-      {/* Frasario: visible para todos cuando el admin ha puesto el enlace */}
-      {!!data?.group.phrasebookUrl && (
-        <Button
-          title={`📖 ${t('group.phrasebook')}`}
-          variant="outline"
-          onPress={() => WebBrowser.openBrowserAsync(data.group.phrasebookUrl!)}
-        />
-      )}
       <Button
         title={t('extras.title')}
         variant="outline"
@@ -193,12 +186,55 @@ export default function ProfileScreen() {
         <View style={styles.flex}>
           <ThemedText>{t('poke.setting')}</ThemedText>
           <ThemedText variant="muted">{t('poke.settingHint')}</ThemedText>
+          {me && (
+            <ThemedText variant="muted">
+              {t('poke.rechargeInfo', {
+                hours: Math.ceil(pokeCooldownMs(me.commitmentScore) / 3_600_000),
+              })}
+            </ThemedText>
+          )}
         </View>
         <Switch
           value={user?.allowPokes ?? true}
           onValueChange={(value) => updateMyProfile({ allowPokes: value })}
         />
       </View>
+
+      {/* Cumpleaños: interruptor + fecha; aparece como día especial en el calendario */}
+      <View style={styles.switchRow}>
+        <View style={styles.flex}>
+          <ThemedText>{t('profile.birthdaySwitch')}</ThemedText>
+          <ThemedText variant="muted">{t('profile.birthdayHint')}</ThemedText>
+        </View>
+        <Switch
+          value={user?.showBirthday ?? false}
+          onValueChange={(value) => updateMyProfile({ showBirthday: value })}
+        />
+      </View>
+      {(user?.showBirthday ?? false) && (
+        <View style={styles.hexRow}>
+          <View style={styles.flex}>
+            <TextField
+              label={t('profile.birthdayLabel')}
+              value={birthdayDraft}
+              onChangeText={setBirthdayDraft}
+              placeholder={t('profile.birthdayFormat')}
+              autoCorrect={false}
+            />
+          </View>
+          <Button
+            title={birthdaySaved ? t('drivers.carSaved') : t('common.save')}
+            variant="outline"
+            onPress={saveBirthday}
+            disabled={!normalizeBirthday(birthdayDraft)}
+          />
+        </View>
+      )}
+      {(user?.showBirthday ?? false) && !!birthdayDraft.trim() && !normalizeBirthday(birthdayDraft) && (
+        <ThemedText variant="muted" style={{ color: theme.danger }}>
+          {t('profile.birthdayInvalid')}
+        </ThemedText>
+      )}
 
       <ThemedText variant="label">{t('settings.appearance')}</ThemedText>
       <View style={styles.row}>
@@ -273,6 +309,11 @@ export default function ProfileScreen() {
       />
       {showDevLinks && (
         <View style={styles.devLinks}>
+          <Button
+            title={`🗒️ ${t('changelog.title')}`}
+            variant="outline"
+            onPress={() => router.push('/changelog')}
+          />
           {DEV_LINKS.map((link) => (
             <Button
               key={link.key}

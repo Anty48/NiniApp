@@ -26,6 +26,20 @@ interface PersistedSession {
   group?: Group | null;
 }
 
+/** Campos del perfil propio editables desde la app. */
+export type ProfileFields = Partial<
+  Pick<
+    User,
+    | 'username'
+    | 'nickname'
+    | 'description'
+    | 'photoUrl'
+    | 'allowPokes'
+    | 'birthday'
+    | 'showBirthday'
+  >
+>;
+
 interface AuthContextValue {
   user: User | null;
   /** Grupo activo. null => onboarding obligatorio de crear/unirse a grupo. */
@@ -46,12 +60,8 @@ interface AuthContextValue {
   updateGroup: (group: Group) => Promise<void>;
   /** Abandona el grupo activo; si quedan otros, activa el siguiente. */
   clearGroup: () => Promise<void>;
-  /** Edita el perfil propio (foto, nombre, apodo, descripción, tocar). */
-  updateProfile: (
-    fields: Partial<
-      Pick<User, 'username' | 'nickname' | 'description' | 'photoUrl' | 'allowPokes'>
-    >,
-  ) => Promise<void>;
+  /** Edita el perfil propio (foto, nombre, apodo, descripción, tocar...). */
+  updateProfile: (fields: ProfileFields) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -224,11 +234,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [persist, user, groups, activeGroupId]);
 
   const updateProfile = useCallback(
-    async (
-      fields: Partial<
-        Pick<User, 'username' | 'nickname' | 'description' | 'photoUrl' | 'allowPokes'>
-      >,
-    ) => {
+    async (fields: ProfileFields) => {
       if (!user) return;
       const nextUser = { ...user, ...fields };
       await persist(nextUser, groups, activeGroupId);

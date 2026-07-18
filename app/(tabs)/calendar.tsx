@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { BIRTHDAY_EVENT_PREFIX, birthdayEvents } from '@/services/groupData';
 import { GroupEvent } from '@/types/models';
 import { dayKey, eventsOnDay, formatEventRange } from '@/utils/date';
 
@@ -44,9 +45,23 @@ export default function CalendarScreen() {
   const past = data.events
     .filter((e) => new Date(e.endsAt).getTime() < now)
     .sort((a, b) => b.startsAt.localeCompare(a.startsAt));
-  const dayEvents = eventsOnDay(data.events, selectedDay);
+
+  // Cumpleaños como días especiales sintéticos (no se guardan): se generan
+  // para los años que puede abarcar la cuadrícula del mes visible.
+  const yearSet = new Set([
+    new Date(month.getFullYear(), month.getMonth() - 1, 24).getFullYear(),
+    month.getFullYear(),
+    new Date(month.getFullYear(), month.getMonth() + 1, 7).getFullYear(),
+  ]);
+  const birthdays = birthdayEvents(data, [...yearSet], (name) =>
+    t('events.birthdayOf', { name }),
+  );
+  const calendarEvents = [...data.events, ...birthdays];
+  const dayEvents = eventsOnDay(calendarEvents, selectedDay);
 
   const renderEvent = (event: GroupEvent) => {
+    const isBirthday = event.id.startsWith(BIRTHDAY_EVENT_PREFIX);
+    const hasVoting = !isBirthday && (!event.kind || event.kind === 'standard');
     const myVote = data.votes.find((v) => v.eventId === event.id && v.userId === user?.id);
     const yesCount = data.votes.filter((v) => v.eventId === event.id && v.value === 'yes').length;
     const voteColor =
@@ -56,10 +71,21 @@ export default function CalendarScreen() {
           ? theme.danger
           : theme.textMuted;
 
+    // Un cumpleaños lleva al perfil del miembro; el resto, al detalle del evento.
+    const onPress = isBirthday
+      ? () => {
+          const userId = event.id.slice(
+            BIRTHDAY_EVENT_PREFIX.length,
+            event.id.lastIndexOf('-'),
+          );
+          router.push({ pathname: '/member/[id]', params: { id: userId } });
+        }
+      : () => router.push({ pathname: '/event/[id]', params: { id: event.id } });
+
     return (
       <Pressable
         key={event.id}
-        onPress={() => router.push({ pathname: '/event/[id]', params: { id: event.id } })}
+        onPress={onPress}
         style={({ pressed }) => [
           styles.card,
           { backgroundColor: event.color ?? theme.surface, borderColor: theme.border },
@@ -67,25 +93,33 @@ export default function CalendarScreen() {
         ]}>
         <View style={styles.cardHeader}>
           <ThemedText variant="subtitle" style={styles.cardTitle} numberOfLines={1}>
-            {event.title}
+            {isBirthday ? `🎂 ${event.title}` : event.title}
           </ThemedText>
           {event.isSpecial && (
             <ThemedText style={{ color: theme.primary }}>{t('events.specialBadge')}</ThemedText>
           )}
-        </View>
-        <ThemedText variant="muted">{formatEventRange(event, language)}</ThemedText>
-        <View style={styles.cardFooter}>
-          <ThemedText variant="muted">{t('events.yesCount', { count: yesCount })}</ThemedText>
-          {myVote && (
-            <ThemedText style={{ color: voteColor, fontWeight: '600' }}>
-              {t(
-                `events.vote${
-                  myVote.value === 'yes' ? 'Yes' : myVote.value === 'no' ? 'No' : 'Deciding'
-                }`,
-              )}
-            </ThemedText>
+          {(isBirthday || event.kind === 'specialDay') && (
+            <ThemedText style={{ color: theme.primary }}>{t('events.specialDayBadge')}</ThemedText>
+          )}
+          {event.kind === 'informal' && (
+            <ThemedText style={{ color: theme.primary }}>{t('events.informalBadge')}</ThemedText>
           )}
         </View>
+        <ThemedText variant="muted">{formatEventRange(event, language)}</ThemedText>
+        {hasVoting && (
+          <View style={styles.cardFooter}>
+            <ThemedText variant="muted">{t('events.yesCount', { count: yesCount })}</ThemedText>
+            {myVote && (
+              <ThemedText style={{ color: voteColor, fontWeight: '600' }}>
+                {t(
+                  `events.vote${
+                    myVote.value === 'yes' ? 'Yes' : myVote.value === 'no' ? 'No' : 'Deciding'
+                  }`,
+                )}
+              </ThemedText>
+            )}
+          </View>
+        )}
       </Pressable>
     );
   };
@@ -131,7 +165,7 @@ export default function CalendarScreen() {
             onChangeMonth={setMonth}
             selectedDay={selectedDay}
             onSelectDay={setSelectedDay}
-            events={data.events}
+            events={calendarEvents}
             language={language}
           />
           <ThemedText variant="label" style={styles.pastHeader}>

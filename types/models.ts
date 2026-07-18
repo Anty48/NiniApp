@@ -21,6 +21,10 @@ export interface User {
   photoUrl?: string;
   /** Función "Tocar": si acepta recibir toques. Activada por defecto. */
   allowPokes?: boolean;
+  /** Cumpleaños en formato DD/MM (ej. "24/05"). */
+  birthday?: string;
+  /** Si el cumpleaños se muestra como día especial en el calendario del grupo. */
+  showBirthday?: boolean;
   /**
    * Idioma de la interfaz ('es' | 'en' | 'ca'). Se sincroniza al abrir la app
    * para que el servidor (api/vote-reminders.js) notifique en el idioma del
@@ -44,7 +48,7 @@ export interface Group {
   accessPassword: string;
   /** El creador es admin; puede asignar más admins. */
   memberRoles: Record<UserId, GroupRole>;
-  /** Frasario: enlace a un Google Docs con frases memorables de los miembros (lo pone el admin). */
+  /** LEGADO: antiguo enlace a Google Docs del Frasario (hoy las frases viven en GroupData.phrases). */
   phrasebookUrl?: string;
   createdAt: string;
 }
@@ -55,6 +59,8 @@ export interface Group {
  * después tanto el admin como el propio conductor.
  */
 export interface CarDetails {
+  /** Nombre propio del coche (ej. "La Pantera"), aparte del modelo. */
+  name?: string;
   model?: string;
   color?: string;
   seats?: number;
@@ -86,6 +92,13 @@ export interface GroupMember {
   isDriver?: boolean;
   /** Coche del conductor, editable por él en la Zona de Conductores. */
   carDetails?: CarDetails;
+  /** Músico del grupo: lo asigna el admin; puede añadir canciones. */
+  isMusician?: boolean;
+  /** Cumpleaños (DD/MM) copiado del perfil, para pintarlo en el calendario. */
+  birthday?: string;
+  showBirthday?: boolean;
+  /** Último día (YYYY-MM-DD) en que el cron anunció su cumpleaños al grupo. */
+  birthdayNotifiedOn?: string;
 }
 
 /** "Toque" entre miembros (estilo poke). Máx. uno cada 24 h por destinatario. */
@@ -93,6 +106,60 @@ export interface Poke {
   fromUserId: UserId;
   toUserId: UserId;
   at: string; // ISO 8601
+}
+
+/** Frase memorable del Frasario. Cualquier miembro puede añadirla o editarla. */
+export interface Phrase {
+  id: string;
+  /** La frase, sin comillas (la UI la pinta entre comillas y con — autor). */
+  text: string;
+  /** Autor si es un miembro del grupo... */
+  memberId?: UserId;
+  /** ...o su nombre libre si la dijo alguien de fuera del grupo. */
+  externalName?: string;
+  addedBy: UserId;
+  createdAt: string;
+}
+
+/** Canción del grupo, la crean los músicos (título + letra con su formato). */
+export interface Song {
+  id: string;
+  title: string;
+  /** Letra en texto plano: se respetan saltos de línea, espacios e indentación. */
+  lyrics: string;
+  createdBy: UserId;
+  createdAt: string;
+}
+
+/** Encuesta rápida: se borra sola a las 24 h y no afecta a nada más. */
+export interface Poll {
+  id: string;
+  title: string;
+  options: string[];
+  /** Votación anónima: no se muestra quién ha votado cada opción. */
+  anonymous: boolean;
+  /** Si cada persona puede marcar varias opciones. */
+  multi: boolean;
+  createdBy: UserId;
+  createdAt: string;
+  /** Índices de opción votados por cada usuario. */
+  votes: Record<UserId, number[]>;
+}
+
+/** Estado efímero de un miembro (texto y/o foto); caduca a las 24 h. */
+export interface MemberStatus {
+  userId: UserId;
+  text?: string;
+  photoUrl?: string;
+  at: string;
+}
+
+/** Color guardado del grupo con nombre (ej. "Verde UAB"), reutilizable. */
+export interface SavedColor {
+  id: string;
+  name: string;
+  /** Hexadecimal #RRGGBB. */
+  color: string;
 }
 
 /** Estado completo de un grupo tal y como lo consume la UI. */
@@ -104,11 +171,24 @@ export interface GroupData {
   counter: GroupCounter | null;
   contributions: CounterContribution[];
   pokes?: Poke[];
+  phrases?: Phrase[];
+  songs?: Song[];
+  polls?: Poll[];
+  statuses?: MemberStatus[];
+  savedColors?: SavedColor[];
 }
 
 // ---------- Eventos y votación ----------
 
 export type EventVoteValue = 'yes' | 'no' | 'deciding';
+
+/**
+ * Categoría del evento:
+ *  - standard: evento normal con votación de asistencia.
+ *  - informal: quedada informal, sin votación ni penalizaciones.
+ *  - specialDay: día especial (fiestas mayores, cumpleaños...), sin votación.
+ */
+export type EventKind = 'standard' | 'informal' | 'specialDay';
 
 export interface GroupEvent {
   id: EventId;
@@ -116,6 +196,8 @@ export interface GroupEvent {
   createdBy: UserId;
   /** Solo los admins pueden crear eventos especiales. */
   isSpecial: boolean;
+  /** Categoría (los eventos antiguos sin campo son 'standard'). */
+  kind?: EventKind;
   title: string;
   description?: string;
   /** Dirección/enlace de Google Maps. */
@@ -134,6 +216,8 @@ export interface GroupEvent {
   archivedAt?: string;
   /** Marca del recordatorio "queda <1 h de votación" (lo escribe api/vote-reminders.js). */
   voteReminderSentAt?: string;
+  /** Marca del aviso "hoy es el día especial" (lo escribe api/vote-reminders.js). */
+  specialDayNotifiedAt?: string;
 }
 
 export interface EventVote {

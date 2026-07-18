@@ -195,6 +195,17 @@ export async function refreshPushIfEnabled(): Promise<void> {
 
 // ---------- Envío ----------
 
+export interface PushPayload {
+  title: string;
+  body: string;
+  url?: string;
+  /**
+   * Variantes por idioma ({ es: {title, body}, ... }): el servidor entrega a
+   * cada destinatario la de SU idioma; title/body quedan como reserva.
+   */
+  i18n?: Record<string, { title: string; body: string }>;
+}
+
 /**
  * Notifica a otros miembros del grupo en todos sus dispositivos registrados.
  * Fire-and-forget: nunca bloquea ni rompe la acción que lo dispara.
@@ -202,7 +213,7 @@ export async function refreshPushIfEnabled(): Promise<void> {
 export function sendPushToUsers(
   groupId: string,
   toUserIds: string[],
-  payload: { title: string; body: string; url?: string },
+  payload: PushPayload,
 ): void {
   if (toUserIds.length === 0) return;
   (async () => {

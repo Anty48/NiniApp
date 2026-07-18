@@ -50,6 +50,13 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="group"
+        options={{
+          title: t('tabs.group'),
+          tabBarIcon: ({ color }) => <TabIcon name="users" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: t('tabs.profile'),

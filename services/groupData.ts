@@ -9,6 +9,7 @@ import {
   GroupEvent,
   GroupMember,
   GroupRole,
+  Phrase,
   User,
   UserId,
 } from '@/types/models';
@@ -40,8 +41,21 @@ export const GROUP_MILESTONES = [7, 30, 67, 365];
 export const PERSONAL_MILESTONES = [5, 10];
 /** A partir del 4º clic del día la foto de prueba es obligatoria. */
 export const CLICKS_BEFORE_PROOF_REQUIRED = 3;
-/** "Tocar": una vez cada 24 h por destinatario. */
-export const POKE_COOLDOWN_MS = 24 * 3600 * 1000;
+/**
+ * "Tocar": cooldown por destinatario que depende del compromiso de quien
+ * toca. Mínimo 12 h con 100% de compromiso; con menos compromiso tarda más,
+ * hasta 24 h con 0%.
+ */
+export const POKE_MIN_COOLDOWN_MS = 12 * 3600 * 1000;
+export const POKE_MAX_COOLDOWN_MS = 24 * 3600 * 1000;
+export function pokeCooldownMs(commitmentScore: number): number {
+  const score = Math.max(0, Math.min(100, commitmentScore));
+  return POKE_MIN_COOLDOWN_MS + ((100 - score) / 100) * (POKE_MAX_COOLDOWN_MS - POKE_MIN_COOLDOWN_MS);
+}
+/** Los estados de miembros caducan a las 24 h. */
+export const STATUS_TTL_MS = 24 * 3600 * 1000;
+/** Las encuestas se borran solas a las 24 h de crearse. */
+export const POLL_TTL_MS = 24 * 3600 * 1000;
 /** Copipuntos con los que arranca todo miembro al crear/unirse a un grupo. */
 export const COPIPOINTS_START = 100;
 
@@ -53,6 +67,8 @@ export function makeMember(user: User, role: GroupRole): GroupMember {
     description: user.description,
     photoUrl: user.photoUrl,
     allowPokes: user.allowPokes ?? true,
+    birthday: user.birthday,
+    showBirthday: user.showBirthday,
     role,
     commitmentScore: SCORE_START,
     lastRecoveryAt: new Date().toISOString(),
@@ -150,9 +166,17 @@ export function runMaintenance(data: GroupData, now: Date = new Date()): GroupDa
       : c,
   );
 
-  // 2b) Toques caducados: solo sirven para el cooldown de 24 h.
+  // 2b) Toques caducados: solo sirven para el cooldown (24 h como máximo).
   const pokes = (data.pokes ?? []).filter(
-    (p) => nowMs - new Date(p.at).getTime() < POKE_COOLDOWN_MS,
+    (p) => nowMs - new Date(p.at).getTime() < POKE_MAX_COOLDOWN_MS,
+  );
+
+  // 2c) Estados de miembros y encuestas: caducan a las 24 h.
+  const statuses = (data.statuses ?? []).filter(
+    (s) => nowMs - new Date(s.at).getTime() < STATUS_TTL_MS,
+  );
+  const polls = (data.polls ?? []).filter(
+    (p) => nowMs - new Date(p.createdAt).getTime() < POLL_TTL_MS,
   );
 
   // 3) Racha del grupo: si pasó un día entero sin que nadie sumara, se
@@ -192,7 +216,7 @@ export function runMaintenance(data: GroupData, now: Date = new Date()): GroupDa
     return member;
   });
 
-  return { ...data, events, votes, contributions, pokes, counter, members };
+  return { ...data, events, votes, contributions, pokes, statuses, polls, counter, members };
 }
 
 // ---------- "Tocar" ----------
@@ -412,6 +436,89 @@ export function contribute(
   };
 }
 
+// ---------- Frasario ----------
+
+/** Nombre visible del autor de una frase (miembro del grupo o externo). */
+export function phraseAuthorName(phrase: Phrase, members: GroupMember[]): string {
+  if (phrase.memberId) {
+    const m = members.find((x) => x.userId === phrase.memberId);
+    if (m) return m.nickname ?? m.name;
+  }
+  return phrase.externalName ?? '—';
+}
+
+/** Frases agrupadas por autor, autores en orden alfabético. */
+export function phrasesByAuthor(
+  phrases: Phrase[],
+  members: GroupMember[],
+): { author: string; memberId?: UserId; phrases: Phrase[] }[] {
+  const groups = new Map<string, { author: string; memberId?: UserId; phrases: Phrase[] }>();
+  for (const phrase of phrases) {
+    const author = phraseAuthorName(phrase, members);
+    const key = phrase.memberId ?? `ext:${author.toLocaleLowerCase()}`;
+    const entry = groups.get(key) ?? { author, memberId: phrase.memberId, phrases: [] };
+    entry.phrases.push(phrase);
+    groups.set(key, entry);
+  }
+  return [...groups.values()].sort((a, b) =>
+    a.author.localeCompare(b.author, undefined, { sensitivity: 'base' }),
+  );
+}
+
+// ---------- Cumpleaños ----------
+
+export const BIRTHDAY_EVENT_PREFIX = 'bday-';
+/** Dorado festivo, translúcido como el resto de colores de evento. */
+export const BIRTHDAY_COLOR = 'hsla(45, 90%, 55%, 0.28)';
+
+/** Valida y normaliza un cumpleaños escrito como DD/MM; null si no es válido. */
+export function normalizeBirthday(input: string): string | null {
+  const m = input.trim().match(/^(\d{1,2})[/\-.](\d{1,2})$/);
+  if (!m) return null;
+  const day = parseInt(m[1], 10);
+  const month = parseInt(m[2], 10);
+  if (day < 1 || day > 31 || month < 1 || month > 12) return null;
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}`;
+}
+
+/**
+ * Eventos sintéticos de cumpleaños (uno por miembro con el interruptor
+ * activado y por año pedido). No se guardan: se generan al pintar el
+ * calendario.
+ */
+export function birthdayEvents(
+  data: GroupData,
+  years: number[],
+  makeTitle: (name: string) => string,
+): GroupEvent[] {
+  const list: GroupEvent[] = [];
+  for (const member of data.members) {
+    if (!member.showBirthday || !member.birthday) continue;
+    const [dayStr, monthStr] = member.birthday.split('/');
+    const day = parseInt(dayStr, 10);
+    const month = parseInt(monthStr, 10);
+    if (!day || !month) continue;
+    for (const year of years) {
+      const start = new Date(year, month - 1, day, 0, 0, 0);
+      if (start.getMonth() !== month - 1) continue; // 29/02 en año no bisiesto
+      list.push({
+        id: `${BIRTHDAY_EVENT_PREFIX}${member.userId}-${year}`,
+        groupId: data.group.id,
+        createdBy: member.userId,
+        isSpecial: false,
+        kind: 'specialDay',
+        title: makeTitle(member.nickname ?? member.name),
+        startsAt: start.toISOString(),
+        endsAt: new Date(year, month - 1, day, 23, 59, 0).toISOString(),
+        allDay: true,
+        color: BIRTHDAY_COLOR,
+        voteLockHoursBefore: 0,
+      });
+    }
+  }
+  return list;
+}
+
 // ---------- Coches de conductores ----------
 
 /** Miembros conductores que ya tienen un coche configurado, activables en eventos. */
@@ -459,5 +566,30 @@ export function removeMember(data: GroupData, userId: UserId, successorId?: User
   delete memberRoles[userId];
   if (leaving?.role === 'admin' && successorId) memberRoles[successorId] = 'admin';
 
-  return { ...data, group: { ...data.group, memberRoles }, members, votes, contributions, events };
+  // Su estado desaparece y sus votos de encuesta se retiran. Sus frases del
+  // Frasario se conservan (son patrimonio del grupo) pasando a autor externo
+  // con el nombre que tenía al salir.
+  const statuses = (data.statuses ?? []).filter((s) => s.userId !== userId);
+  const polls = (data.polls ?? []).map((p) => {
+    if (!(userId in p.votes)) return p;
+    const pollVotes = { ...p.votes };
+    delete pollVotes[userId];
+    return { ...p, votes: pollVotes };
+  });
+  const leavingName = leaving ? (leaving.nickname ?? leaving.name) : '—';
+  const phrases = (data.phrases ?? []).map((p) =>
+    p.memberId === userId ? { ...p, memberId: undefined, externalName: leavingName } : p,
+  );
+
+  return {
+    ...data,
+    group: { ...data.group, memberRoles },
+    members,
+    votes,
+    contributions,
+    events,
+    statuses,
+    polls,
+    phrases,
+  };
 }

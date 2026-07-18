@@ -34,6 +34,7 @@ export default function GroupSettingsScreen() {
     updateGroupSettings,
     setMemberRole,
     setDriver,
+    setMusician,
     setMemberCar,
     leaveGroup,
   } = useGroupData();
@@ -41,12 +42,11 @@ export default function GroupSettingsScreen() {
   const [copied, setCopied] = useState(false);
   const [name, setName] = useState(data?.group.name ?? '');
   const [newPassword, setNewPassword] = useState('');
-  const [phrasebookDraft, setPhrasebookDraft] = useState(data?.group.phrasebookUrl ?? '');
-  const [phrasebookSaved, setPhrasebookSaved] = useState(false);
   const [successorId, setSuccessorId] = useState<string | null>(null);
   const [choosingSuccessor, setChoosingSuccessor] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [carEditingId, setCarEditingId] = useState<string | null>(null);
+  const [carName, setCarName] = useState('');
   const [carModel, setCarModel] = useState('');
   const [carColor, setCarColor] = useState('');
   const [carSeatsInput, setCarSeatsInput] = useState('4');
@@ -78,13 +78,6 @@ export default function GroupSettingsScreen() {
     setNewPassword('');
   };
 
-  const savePhrasebook = async () => {
-    // Guardar vacío quita el enlace; el botón del Perfil desaparece.
-    await updateGroupSettings({ phrasebookUrl: phrasebookDraft.trim() });
-    setPhrasebookSaved(true);
-    setTimeout(() => setPhrasebookSaved(false), 2000);
-  };
-
   const changePhoto = async () => {
     const photo = await pickImage(true);
     if (!photo) return;
@@ -102,6 +95,7 @@ export default function GroupSettingsScreen() {
       return;
     }
     setCarEditingId(member.userId);
+    setCarName(member.carDetails?.name ?? '');
     setCarModel(member.carDetails?.model ?? '');
     setCarColor(member.carDetails?.color ?? '');
     setCarSeatsInput(String(member.carDetails?.seats ?? 4));
@@ -110,6 +104,7 @@ export default function GroupSettingsScreen() {
   const saveMemberCar = async (userId: string) => {
     setSavingCar(true);
     await setMemberCar(userId, {
+      name: carName.trim() || undefined,
       model: carModel.trim() || undefined,
       color: carColor.trim() || undefined,
       seats: Math.max(1, parseInt(carSeatsInput, 10) || 4),
@@ -204,31 +199,6 @@ export default function GroupSettingsScreen() {
           </View>
         )}
 
-        {/* Frasario: enlace a un Google Docs con frases memorables (solo admin) */}
-        {isAdmin && (
-          <>
-            <ThemedText variant="label">📖 {t('group.phrasebook')}</ThemedText>
-            <ThemedText variant="muted">{t('group.phrasebookHint')}</ThemedText>
-            <View style={styles.inlineRow}>
-              <View style={styles.flex}>
-                <TextField
-                  label={t('group.phrasebookUrl')}
-                  value={phrasebookDraft}
-                  onChangeText={setPhrasebookDraft}
-                  placeholder="https://docs.google.com/..."
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
-              <Button
-                title={phrasebookSaved ? t('drivers.carSaved') : t('common.save')}
-                variant="outline"
-                onPress={savePhrasebook}
-              />
-            </View>
-          </>
-        )}
-
         {/* Miembros */}
         <ThemedText variant="label">{t('group.members')}</ThemedText>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -244,11 +214,13 @@ export default function GroupSettingsScreen() {
                   <ThemedText numberOfLines={1}>
                     {member.nickname ?? member.name}
                     {member.isDriver ? ' 🚗' : ''}
+                    {member.isMusician ? ' 🎵' : ''}
                     {member.userId === user?.id ? ` (${t('common.you')})` : ''}
                   </ThemedText>
                   {member.isDriver && member.carDetails && (
                     <ThemedText variant="muted" numberOfLines={1}>
                       {[
+                        member.carDetails.name,
                         member.carDetails.model,
                         member.carDetails.color,
                         member.carDetails.seats
@@ -272,6 +244,13 @@ export default function GroupSettingsScreen() {
                     onPress={() => setDriver(member.userId, !member.isDriver)}
                   />
                 )}
+                {isAdmin && (
+                  <Pill
+                    label={t('group.musician')}
+                    selected={!!member.isMusician}
+                    onPress={() => setMusician(member.userId, !member.isMusician)}
+                  />
+                )}
                 {isAdmin && member.isDriver && (
                   <Pill
                     label={member.carDetails ? t('group.editCar') : t('group.assignCar')}
@@ -293,6 +272,12 @@ export default function GroupSettingsScreen() {
                     styles.carEditor,
                     { backgroundColor: theme.background, borderColor: theme.border },
                   ]}>
+                  <TextField
+                    label={t('group.carName')}
+                    value={carName}
+                    onChangeText={setCarName}
+                    placeholder={t('drivers.carNamePlaceholder')}
+                  />
                   <View style={styles.inlineRow}>
                     <View style={styles.flex}>
                       <TextField

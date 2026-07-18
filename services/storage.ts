@@ -9,6 +9,8 @@ export const StorageKeys = {
   themeMode: 'niniapp.themeMode',
   accentColor: 'niniapp.accentColor',
   session: 'niniapp.session',
+  /** Estados de miembros ya vistos: mapa "groupId:userId" -> timestamp del estado. */
+  seenStatuses: 'niniapp.seenStatuses',
 } as const;
 
 export type StorageKey = (typeof StorageKeys)[keyof typeof StorageKeys];

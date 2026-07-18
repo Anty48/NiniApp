@@ -2,7 +2,7 @@
   "expo": {
     "name": "NiniApp",
     "slug": "mi-red-social",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo_app_icon.png",
     "scheme": "miredsocial",
@@ -11,9 +11,7 @@
     "updates": {
       "url": "https://u.expo.dev/d85cbc5a-c975-4e6a-a2ff-1b1e12f958e6"
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "ios": {
       "supportsTablet": true
     },

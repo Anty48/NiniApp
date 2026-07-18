@@ -3,8 +3,11 @@
  * usuario dispara con sus acciones (tocar, crear evento, hito de racha).
  * (Vercel despliega todo lo que hay en /api junto a la web estática.)
  *
- * POST /api/push  { groupId, toUserIds[], title, body, url? }
+ * POST /api/push  { groupId, toUserIds[], title, body, url?, i18n? }
  *   - Authorization: Bearer <Firebase ID token> del remitente.
+ *   - i18n (opcional): { es: {title, body}, en: {...}, ca: {...} }. Si llega,
+ *     cada destinatario recibe el texto en SU idioma (users/{uid}.language);
+ *     title/body quedan como reserva si falta su idioma.
  *   - Verifica el token, comprueba que remitente y destinatarios son miembros
  *     del grupo y entrega a cada dispositivo registrado en users/{uid}:
  *       · kind 'web' -> web-push (VAPID), lo pinta public/push-sw.js
@@ -38,7 +41,7 @@ module.exports = async (req, res) => {
   const sender = await getAuth().verifyIdToken(idToken).catch(() => null);
   if (!sender) return res.status(401).json({ error: 'unauthorized' });
 
-  const { groupId, toUserIds, title, body, url } = req.body || {};
+  const { groupId, toUserIds, title, body, url, i18n } = req.body || {};
   if (
     typeof groupId !== 'string' ||
     !Array.isArray(toUserIds) ||
@@ -51,6 +54,17 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'bad-request' });
   }
 
+  // Variantes por idioma saneadas: { es: {title, body}, ... }
+  const variants = {};
+  if (i18n && typeof i18n === 'object') {
+    for (const lang of Object.keys(i18n)) {
+      const v = i18n[lang];
+      if (v && typeof v.title === 'string' && typeof v.body === 'string') {
+        variants[lang] = clampPayload({ title: v.title, body: v.body, url });
+      }
+    }
+  }
+
   const db = getFirestore();
 
   // El remitente y todos los destinatarios deben ser miembros del grupo.
@@ -59,8 +73,10 @@ module.exports = async (req, res) => {
   if (!(sender.uid in roles)) return res.status(403).json({ error: 'not-a-member' });
   const targets = [...new Set(toUserIds)].filter((id) => id !== sender.uid && id in roles);
 
-  const payload = clampPayload({ title, body, url });
-  const counts = await Promise.all(targets.map((uid) => deliverToUser(db, uid, payload)));
+  // Cada destinatario recibe el texto en su idioma si hay variante.
+  const fallback = clampPayload({ title, body, url });
+  const payloadFor = (userData) => variants[userData.language] || fallback;
+  const counts = await Promise.all(targets.map((uid) => deliverToUser(db, uid, payloadFor)));
 
   return res.status(200).json({ delivered: counts.reduce((a, b) => a + b, 0) });
 };

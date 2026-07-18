@@ -34,6 +34,8 @@ export default function EventDetailScreen() {
   }
 
   const isCreator = event.createdBy === user?.id;
+  // Solo los eventos "normales" tienen votación (informal y día especial, no).
+  const hasVoting = !event.kind || event.kind === 'standard';
   const started = hasStarted(event);
   const ended = hasEnded(event);
   const locked = isVoteLocked(event);
@@ -99,6 +101,12 @@ export default function EventDetailScreen() {
           {event.isSpecial && (
             <ThemedText style={{ color: theme.primary }}>{t('events.specialBadge')}</ThemedText>
           )}
+          {event.kind === 'informal' && (
+            <ThemedText style={{ color: theme.primary }}>{t('events.informalBadge')}</ThemedText>
+          )}
+          {event.kind === 'specialDay' && (
+            <ThemedText style={{ color: theme.primary }}>{t('events.specialDayBadge')}</ThemedText>
+          )}
         </View>
 
         <ThemedText variant="muted">{formatEventRange(event, language)}</ThemedText>
@@ -109,7 +117,12 @@ export default function EventDetailScreen() {
           <Button title={t('events.openMap')} onPress={openMap} variant="outline" />
         )}
 
-        {/* Votación */}
+        {/* Votación (solo eventos normales) */}
+        {!hasVoting && (
+          <ThemedText variant="muted">{t('events.noVotingHint')}</ThemedText>
+        )}
+        {hasVoting && (
+          <>
         <ThemedText variant="label">{t('events.attendance')}</ThemedText>
         <ThemedText variant="muted">
           {locked
@@ -165,19 +178,29 @@ export default function EventDetailScreen() {
             );
           })}
         </View>
+          </>
+        )}
 
         {/* Coches */}
         {event.cars && event.cars.length > 0 && (
           <>
             <ThemedText variant="label">{t('events.carsSection')}</ThemedText>
-            {myVote?.value !== 'yes' && (
+            {hasVoting && myVote?.value !== 'yes' && (
               <ThemedText variant="muted">{t('events.seatHint')}</ThemedText>
             )}
             {event.cars.map((car) => {
               const owner = car.driverId ? data.members.find((m) => m.userId === car.driverId) : null;
-              const title = owner ? (owner.nickname ?? owner.name) : (car.name ?? t('events.carsSection'));
+              const title = owner
+                ? (owner.carDetails?.name ?? owner.nickname ?? owner.name)
+                : (car.name ?? t('events.carsSection'));
               const subtitle = owner?.carDetails
-                ? [owner.carDetails.model, owner.carDetails.color].filter(Boolean).join(' · ')
+                ? [
+                    owner.carDetails.name ? (owner.nickname ?? owner.name) : null,
+                    owner.carDetails.model,
+                    owner.carDetails.color,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')
                 : null;
               return (
               <View
@@ -191,7 +214,9 @@ export default function EventDetailScreen() {
                 {Array.from({ length: car.seats }).map((_, seatIndex) => {
                   const occupant = car.occupants[seatIndex];
                   const isMe = occupant === user?.id;
-                  const canTake = !occupant && myVote?.value === 'yes' && !ended;
+                  // En quedadas informales no hay votación: cualquiera coge plaza.
+                  const canTake =
+                    !occupant && !ended && (!hasVoting || myVote?.value === 'yes');
                   return (
                     <Pressable
                       key={seatIndex}
@@ -217,7 +242,7 @@ export default function EventDetailScreen() {
         )}
 
         {/* Validación de asistencia (creador, tras el evento) */}
-        {isCreator && ended && yesVotes.length > 0 && (
+        {hasVoting && isCreator && ended && yesVotes.length > 0 && (
           <>
             <ThemedText variant="label">{t('events.validateTitle')}</ThemedText>
             <ThemedText variant="muted">{t('events.validateHint')}</ThemedText>

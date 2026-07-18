@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
@@ -10,19 +10,33 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { lastPokeAt, POKE_COOLDOWN_MS } from '@/services/groupData';
+import { lastPokeAt, pokeCooldownMs } from '@/services/groupData';
+import { getItem, setItem, StorageKeys } from '@/services/storage';
 
-/** Perfil de un miembro del grupo, con el botón de "Tocar". */
+/** Perfil de un miembro: estado, estadísticas, frases del Frasario y "Tocar". */
 export default function MemberProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useLanguage();
   const { theme } = useTheme();
   const { user } = useAuth();
-  const { data, pokeMember } = useGroupData();
+  const { data, me, pokeMember } = useGroupData();
 
   const [status, setStatus] = useState<'idle' | 'sent' | 'cooldown'>('idle');
 
   const member = data?.members.find((m) => m.userId === id);
+  const memberStatus = data?.statuses?.find((s) => s.userId === id);
+
+  // Ver el perfil marca su estado como visto en este dispositivo.
+  useEffect(() => {
+    if (!data || !memberStatus) return;
+    (async () => {
+      const seen = (await getItem<Record<string, string>>(StorageKeys.seenStatuses)) ?? {};
+      const key = `${data.group.id}:${memberStatus.userId}`;
+      if (seen[key] !== memberStatus.at) {
+        await setItem(StorageKeys.seenStatuses, { ...seen, [key]: memberStatus.at });
+      }
+    })();
+  }, [data?.group.id, memberStatus?.userId, memberStatus?.at]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!data || !member) {
     return (
@@ -34,12 +48,16 @@ export default function MemberProfileScreen() {
 
   const isMe = member.userId === user?.id;
   const pokesDisabled = member.allowPokes === false;
+  // El cooldown depende de MI compromiso: 12 h al 100%, hasta 24 h al 0%.
+  const cooldownMs = pokeCooldownMs(me?.commitmentScore ?? 100);
   const last = user ? lastPokeAt(data, user.id, member.userId) : null;
   const onCooldown =
-    status === 'cooldown' || (last !== null && Date.now() - last < POKE_COOLDOWN_MS);
+    status === 'cooldown' || (last !== null && Date.now() - last < cooldownMs);
   const hoursLeft = last
-    ? Math.max(1, Math.ceil((POKE_COOLDOWN_MS - (Date.now() - last)) / 3_600_000))
-    : 24;
+    ? Math.max(1, Math.ceil((cooldownMs - (Date.now() - last)) / 3_600_000))
+    : Math.ceil(cooldownMs / 3_600_000);
+
+  const myPhrases = (data.phrases ?? []).filter((p) => p.memberId === member.userId);
 
   const poke = async () => {
     const result = await pokeMember(member.userId);
@@ -60,11 +78,28 @@ export default function MemberProfileScreen() {
               variant="muted"
               style={member.role === 'admin' ? { color: theme.primary, fontWeight: '600' } : undefined}>
               {member.role === 'admin' ? t('group.roleAdmin') : t('group.roleMember')}
+              {member.isDriver ? ' · 🚗' : ''}
+              {member.isMusician ? ' · 🎵' : ''}
             </ThemedText>
           </View>
         </View>
 
         {member.description && <ThemedText>{member.description}</ThemedText>}
+
+        {/* Estado efímero (24 h) */}
+        {memberStatus && (
+          <View
+            style={[
+              styles.statusCard,
+              { backgroundColor: theme.primary + '15', borderColor: theme.primary },
+            ]}>
+            <ThemedText variant="label">{t('statuses.label')}</ThemedText>
+            {memberStatus.text && <ThemedText>{memberStatus.text}</ThemedText>}
+            {memberStatus.photoUrl && (
+              <Image source={{ uri: memberStatus.photoUrl }} style={styles.statusPhoto} />
+            )}
+          </View>
+        )}
 
         {/* Estadísticas en el grupo */}
         <View style={[styles.statsCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -95,6 +130,20 @@ export default function MemberProfileScreen() {
           ) : (
             <Button title={t('poke.button')} onPress={poke} />
           ))}
+
+        {/* Frases suyas en el Frasario del grupo */}
+        {myPhrases.length > 0 && (
+          <>
+            <ThemedText variant="label">📖 {t('member.phrases')}</ThemedText>
+            <View style={[styles.statsCard, styles.phrasesCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+              {myPhrases.map((phrase) => (
+                <ThemedText key={phrase.id}>
+                  {`"${phrase.text}" — ${member.nickname ?? member.name}`}
+                </ThemedText>
+              ))}
+            </View>
+          </>
+        )}
       </Screen>
     </>
   );
@@ -105,6 +154,8 @@ const styles = StyleSheet.create({
   center: { alignItems: 'center', justifyContent: 'center' },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   flex: { flex: 1 },
+  statusCard: { borderRadius: 16, borderWidth: 1, padding: 12, gap: 6 },
+  statusPhoto: { width: '100%', height: 220, borderRadius: 12, resizeMode: 'cover' },
   statsCard: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -112,5 +163,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 16,
   },
+  phrasesCard: { flexDirection: 'column', justifyContent: 'flex-start', gap: 8 },
   stat: { alignItems: 'center' },
 });

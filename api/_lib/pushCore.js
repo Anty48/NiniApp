@@ -50,11 +50,16 @@ function clampPayload({ title, body, url }) {
  * Entrega el payload a todos los dispositivos registrados del usuario
  * (users/{uid}.pushDevices) y elimina del doc los dispositivos muertos.
  * Devuelve el número de entregas correctas.
+ *
+ * `payload` puede ser una función (userData) => payload para construir el
+ * texto en el idioma del destinatario (users/{uid}.language).
  */
 async function deliverToUser(db, uid, payload) {
   const userRef = db.doc(`users/${uid}`);
   const userSnap = await userRef.get();
-  const devices = (userSnap.exists && userSnap.data().pushDevices) || [];
+  const userData = (userSnap.exists && userSnap.data()) || {};
+  if (typeof payload === 'function') payload = payload(userData);
+  const devices = userData.pushDevices || [];
   if (!devices.length) return 0;
 
   let delivered = 0;

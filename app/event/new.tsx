@@ -4,17 +4,18 @@ import { Pressable, StyleSheet, Switch, TextInput, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { FONT_REGULAR } from '@/constants/typography';
+import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { normalizeHexColor, useTheme } from '@/contexts/ThemeContext';
 import { driversWithCar } from '@/services/groupData';
-import { EventCar, GroupEvent } from '@/types/models';
+import { EventCar, EventKind, GroupEvent } from '@/types/models';
 import { dayKey, parseDateTime, toDateInput, toTimeInput } from '@/utils/date';
-import { randomEventColor } from '@/utils/eventColor';
+import { hexToEventColor, randomEventColor, solidEventColor } from '@/utils/eventColor';
 
 interface TempCarDraft {
   id: string;
@@ -52,6 +53,10 @@ export default function EventFormScreen() {
   const [endTime, setEndTime] = useState(editing ? toTimeInput(editing.endsAt) : '21:00');
   const [lockHours, setLockHours] = useState(String(editing?.voteLockHoursBefore ?? 12));
   const [isSpecial, setIsSpecial] = useState(editing?.isSpecial ?? false);
+  const [kind, setKind] = useState<EventKind>(editing?.kind ?? 'standard');
+  // Color del evento: null = aleatorio (o el que ya tenía, si se edita).
+  const [pickedColor, setPickedColor] = useState<string | null>(null);
+  const [colorHexDraft, setColorHexDraft] = useState('');
   const [carsEnabled, setCarsEnabled] = useState((editing?.cars?.length ?? 0) > 0);
   const [selectedDriverIds, setSelectedDriverIds] = useState<string[]>(
     editing?.cars?.filter((c) => c.driverId).map((c) => c.driverId!) ?? [],
@@ -106,21 +111,24 @@ export default function EventFormScreen() {
         seats: Math.max(1, parseInt(c.seats, 10) || 4),
         occupants: editing?.cars?.find((x) => x.id === c.id)?.occupants ?? [],
       }));
-    const finalCars = carsEnabled ? [...driverCars, ...temporaryCars] : [];
+    const finalCars =
+      carsEnabled && kind !== 'specialDay' ? [...driverCars, ...temporaryCars] : [];
 
     const event: GroupEvent = {
       id: editing?.id ?? `e-${Date.now()}`,
       groupId: data.group.id,
       createdBy: editing?.createdBy ?? user.id,
       isSpecial: isAdmin ? isSpecial : (editing?.isSpecial ?? false),
+      kind,
       title: title.trim(),
       description: description.trim() || undefined,
       mapsAddress: address.trim() || undefined,
       startsAt: starts.toISOString(),
       endsAt: ends.toISOString(),
       allDay,
-      color: editing?.color ?? randomEventColor(),
-      voteLockHoursBefore: Math.max(0, parseInt(lockHours, 10) || 12),
+      color: pickedColor ?? editing?.color ?? randomEventColor(),
+      voteLockHoursBefore:
+        kind === 'standard' ? Math.max(0, parseInt(lockHours, 10) || 12) : 0,
       cars: finalCars.length > 0 ? finalCars : undefined,
     };
 
@@ -142,6 +150,26 @@ export default function EventFormScreen() {
         options={{ headerShown: true, title: editing ? t('events.editTitle') : t('events.create') }}
       />
       <Screen scroll style={styles.container}>
+        {/* Categoría: normal (con votación), quedada informal o día especial */}
+        <ThemedText variant="label">{t('events.kind')}</ThemedText>
+        <View style={styles.row}>
+          {(['standard', 'informal', 'specialDay'] as EventKind[]).map((k) => (
+            <Pill
+              key={k}
+              label={t(`events.kind${k === 'standard' ? 'Standard' : k === 'informal' ? 'Informal' : 'SpecialDay'}`)}
+              selected={kind === k}
+              onPress={() => setKind(k)}
+            />
+          ))}
+        </View>
+        <ThemedText variant="muted">
+          {kind === 'standard'
+            ? t('events.kindStandardHint')
+            : kind === 'informal'
+              ? t('events.kindInformalHint')
+              : t('events.kindSpecialDayHint')}
+        </ThemedText>
+
         <TextField label={t('events.formTitle')} value={title} onChangeText={setTitle} />
         <TextField
           label={t('events.formDescription')}
@@ -182,12 +210,84 @@ export default function EventFormScreen() {
           )}
         </View>
 
-        <TextField
-          label={t('events.voteLockHours')}
-          value={lockHours}
-          onChangeText={setLockHours}
-          keyboardType="numeric"
-        />
+        {kind === 'standard' && (
+          <TextField
+            label={t('events.voteLockHours')}
+            value={lockHours}
+            onChangeText={setLockHours}
+            keyboardType="numeric"
+          />
+        )}
+
+        {/* Color del evento: aleatorio, guardado del grupo o hexadecimal */}
+        <ThemedText variant="label">{t('events.color')}</ThemedText>
+        <View style={styles.row}>
+          <Pill
+            label={t('events.colorRandom')}
+            selected={pickedColor === null}
+            onPress={() => setPickedColor(null)}
+          />
+        </View>
+        {(data?.savedColors?.length ?? 0) > 0 && (
+          <View style={styles.colorRow}>
+            {data!.savedColors!.map((saved) => {
+              const eventColor = hexToEventColor(saved.color);
+              const selected = pickedColor === eventColor;
+              return (
+                <Pressable
+                  key={saved.id}
+                  onPress={() => setPickedColor(eventColor)}
+                  style={styles.colorItem}>
+                  <View
+                    style={[
+                      styles.swatch,
+                      { backgroundColor: saved.color, borderColor: theme.border },
+                      selected && [styles.swatchSelected, { borderColor: theme.text }],
+                    ]}
+                  />
+                  <ThemedText variant="muted" numberOfLines={1} style={styles.swatchName}>
+                    {saved.name}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
+        <View style={[styles.row, styles.alignEnd]}>
+          <View style={styles.flex}>
+            <TextField
+              label={t('events.colorCustom')}
+              value={colorHexDraft}
+              onChangeText={setColorHexDraft}
+              placeholder="#1A9E75"
+              autoCapitalize="characters"
+              autoCorrect={false}
+            />
+          </View>
+          <View
+            style={[
+              styles.swatch,
+              styles.colorPreview,
+              {
+                borderColor: theme.border,
+                backgroundColor:
+                  solidEventColor(pickedColor ?? editing?.color ?? undefined) ?? theme.surface,
+              },
+            ]}
+          />
+          <Button
+            title={t('settings.accentApply')}
+            variant="outline"
+            disabled={!normalizeHexColor(colorHexDraft)}
+            onPress={() => {
+              const normalized = normalizeHexColor(colorHexDraft);
+              if (normalized) {
+                setPickedColor(hexToEventColor(normalized));
+                setColorHexDraft('');
+              }
+            }}
+          />
+        </View>
 
         {isAdmin && (
           <View style={styles.switchRow}>
@@ -196,12 +296,14 @@ export default function EventFormScreen() {
           </View>
         )}
 
-        <View style={styles.switchRow}>
-          <ThemedText>{t('events.carsToggle')}</ThemedText>
-          <Switch value={carsEnabled} onValueChange={setCarsEnabled} />
-        </View>
+        {kind !== 'specialDay' && (
+          <View style={styles.switchRow}>
+            <ThemedText>{t('events.carsToggle')}</ThemedText>
+            <Switch value={carsEnabled} onValueChange={setCarsEnabled} />
+          </View>
+        )}
 
-        {carsEnabled && (
+        {carsEnabled && kind !== 'specialDay' && (
           <>
             <ThemedText variant="muted">{t('events.driverCarsHint')}</ThemedText>
             {driverMembers.length === 0 && (
@@ -226,6 +328,7 @@ export default function EventFormScreen() {
                   </ThemedText>
                   <ThemedText variant="muted">
                     {[
+                      m.carDetails?.name,
                       m.carDetails?.model,
                       m.carDetails?.color,
                       `${m.carDetails?.seats ?? 4} ${t('group.carSeats').toLowerCase()}`,
@@ -286,7 +389,8 @@ export default function EventFormScreen() {
 
 const styles = StyleSheet.create({
   container: { paddingBottom: 40 },
-  row: { flexDirection: 'row', gap: 10 },
+  row: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
+  alignEnd: { alignItems: 'flex-end', flexWrap: 'nowrap' },
   flex: { flex: 1 },
   switchRow: {
     flexDirection: 'row',
@@ -301,6 +405,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   carRow: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  colorRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  colorItem: { alignItems: 'center', width: 64, gap: 2 },
+  swatch: { width: 36, height: 36, borderRadius: 18, borderWidth: 1 },
+  swatchSelected: { borderWidth: 3 },
+  swatchName: { fontSize: 11, maxWidth: 64 },
+  colorPreview: { marginBottom: 6 },
   carInput: {
     height: 48,
     borderRadius: 12,

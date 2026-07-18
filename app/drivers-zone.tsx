@@ -28,6 +28,7 @@ export default function DriversZoneScreen() {
   const { user } = useAuth();
   const { data, me, adjustCopipoints, updateMyCar } = useGroupData();
 
+  const [carName, setCarName] = useState(me?.carDetails?.name ?? '');
   const [model, setModel] = useState(me?.carDetails?.model ?? '');
   const [color, setColor] = useState(me?.carDetails?.color ?? '');
   const [seats, setSeats] = useState(String(me?.carDetails?.seats ?? 4));
@@ -52,6 +53,7 @@ export default function DriversZoneScreen() {
   const saveCar = async () => {
     setSavingCar(true);
     await updateMyCar({
+      name: carName.trim() || undefined,
       model: model.trim() || undefined,
       color: color.trim() || undefined,
       seats: Math.max(1, parseInt(seats, 10) || 4),
@@ -72,6 +74,7 @@ export default function DriversZoneScreen() {
     if (!ok) return;
     setRemovingCar(true);
     await updateMyCar(undefined);
+    setCarName('');
     setModel('');
     setColor('');
     setSeats('4');
@@ -96,6 +99,12 @@ export default function DriversZoneScreen() {
         {/* Mi coche */}
         <ThemedText variant="label">{t('drivers.myCar')}</ThemedText>
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <TextField
+            label={t('group.carName')}
+            value={carName}
+            onChangeText={setCarName}
+            placeholder={t('drivers.carNamePlaceholder')}
+          />
           <View style={styles.inlineRow}>
             <View style={styles.flex}>
               <TextField label={t('drivers.carModel')} value={model} onChangeText={setModel} />

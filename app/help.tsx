@@ -9,12 +9,18 @@ import { useTheme } from '@/contexts/ThemeContext';
 /** Claves i18n de cada sección de ayuda (título + cuerpo en help.*). */
 const SECTIONS = [
   'events',
+  'birthdays',
   'commitment',
   'counter',
   'copipoints',
   'drivers',
   'cars',
   'poke',
+  'phrasebook',
+  'songs',
+  'statuses',
+  'polls',
+  'colors',
   'groups',
   'suggestions',
   'ios',
