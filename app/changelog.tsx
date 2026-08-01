@@ -8,7 +8,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { i18n } from '@/i18n';
 
 /** Versiones listadas, de la más nueva a la más antigua (claves en changelog.*). */
-const VERSIONS = ['v1_1_1', 'v1_1', 'v1_0'] as const;
+const VERSIONS = ['v1_2', 'v1_1_1', 'v1_1', 'v1_0'] as const;
 
 /** Registro de cambios de la app, accesible desde el Perfil. */
 export default function ChangelogScreen() {

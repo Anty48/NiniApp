@@ -444,6 +444,15 @@
     "viewProfile": "Veure perfil"
   },
   "changelog": {
+    "v1_2": {
+      "name": "Versió 1.2",
+      "date": "Agost 2026",
+      "items": [
+        "Noves estadístiques del comptador: gràfic de barres de les contribucions dels últims 30 dies, amb filtre per tot el grup o per membre, resum (total, dies actius, millor dia) i desglossament per membre. S'obre des del botó \"Veure estadístiques\".",
+        "Tipus de tocar propis del grup: defineix paraules a mida (p. ex. \"saludat\") i quantes notificacions s'envien de cop (1-10). El botó Tocar del perfil es desplega amb el toc normal més els tipus del grup. Es gestionen a la pestanya Grup.",
+        "Corregida l'alineació del calendari: els números dels dies tornen a quadrar amb la capçalera de dies de la setmana."
+      ]
+    },
     "title": "Registre de canvis",
     "v1_1_1": {
       "name": "Versió 1.1.1",

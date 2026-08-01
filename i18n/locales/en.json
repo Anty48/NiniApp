@@ -444,6 +444,15 @@
     "viewProfile": "View profile"
   },
   "changelog": {
+    "v1_2": {
+      "name": "Version 1.2",
+      "date": "August 2026",
+      "items": [
+        "New counter stats: a bar chart of contributions over the last 30 days, with a filter for the whole group or a single member, a summary (total, active days, best day) and a per-member breakdown. Opens from the \"View stats\" button.",
+        "Group's own poke types: define custom words (e.g. \"greeted\") and how many notifications are sent at once (1-10). The Poke button on a profile expands with the normal poke plus the group's types. Managed in the Group tab.",
+        "Fixed calendar alignment: the day numbers line up with the weekday header again."
+      ]
+    },
     "title": "Changelog",
     "v1_1_1": {
       "name": "Version 1.1.1",

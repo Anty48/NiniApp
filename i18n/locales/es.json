@@ -444,6 +444,15 @@
     "viewProfile": "Ver perfil"
   },
   "changelog": {
+    "v1_2": {
+      "name": "Versión 1.2",
+      "date": "Agosto 2026",
+      "items": [
+        "Nuevas estadísticas del contador: gráfico de barras de las contribuciones de los últimos 30 días, con filtro por todo el grupo o por miembro, resumen (total, días activos, mejor día) y desglose por miembro. Se abre desde el botón \"Ver estadísticas\".",
+        "Tipos de tocar propios del grupo: define palabras a medida (p. ej. \"saludado\") y cuántas notificaciones se mandan de golpe (1-10). El botón Tocar del perfil se despliega con el toque normal más los tipos del grupo. Se gestionan en la pestaña Grupo.",
+        "Corregida la alineación del calendario: los números de los días vuelven a cuadrar con la cabecera de días de la semana."
+      ]
+    },
     "title": "Registro de cambios",
     "v1_1_1": {
       "name": "Versión 1.1.1",
