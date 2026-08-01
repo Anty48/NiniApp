@@ -53,14 +53,18 @@ function clampPayload({ title, body, url }) {
  *
  * `payload` puede ser una función (userData) => payload para construir el
  * texto en el idioma del destinatario (users/{uid}.language).
+ *
+ * `repeat` (1-10) manda esa misma notificación varias veces de golpe (lo usan
+ * los "tipos de tocar" del grupo). Cada envío es una notificación separada.
  */
-async function deliverToUser(db, uid, payload) {
+async function deliverToUser(db, uid, payload, repeat = 1) {
   const userRef = db.doc(`users/${uid}`);
   const userSnap = await userRef.get();
   const userData = (userSnap.exists && userSnap.data()) || {};
   if (typeof payload === 'function') payload = payload(userData);
   const devices = userData.pushDevices || [];
   if (!devices.length) return 0;
+  const times = Math.max(1, Math.min(10, Math.floor(Number(repeat) || 1)));
 
   let delivered = 0;
   const dead = [];
@@ -68,16 +72,24 @@ async function deliverToUser(db, uid, payload) {
     devices.map(async (device) => {
       try {
         if (device.kind === 'web' && device.subscription) {
-          await webpush.sendNotification(device.subscription, JSON.stringify(payload), {
-            TTL: 24 * 3600,
-          });
+          for (let i = 0; i < times; i++) {
+            await webpush.sendNotification(device.subscription, JSON.stringify(payload), {
+              TTL: 24 * 3600,
+            });
+          }
         } else if (device.kind === 'fcm' && device.token) {
-          await getMessaging().send({
-            token: device.token,
-            notification: { title: payload.title, body: payload.body },
-            data: { url: payload.url },
-            android: { priority: 'high', notification: { channelId: 'default' } },
-          });
+          for (let i = 0; i < times; i++) {
+            await getMessaging().send({
+              token: device.token,
+              notification: { title: payload.title, body: payload.body },
+              // tag único por envío: Android/FCM no colapsa las repeticiones.
+              data: { url: payload.url, tag: `${Date.now()}-${i}` },
+              android: {
+                priority: 'high',
+                notification: { channelId: 'default', tag: `poke-${Date.now()}-${i}` },
+              },
+            });
+          }
         } else {
           return;
         }

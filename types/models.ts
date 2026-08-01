@@ -108,6 +108,20 @@ export interface Poke {
   at: string; // ISO 8601
 }
 
+/**
+ * Tipo de "toque" personalizado del grupo. Decide qué palabra sale en la
+ * notificación ("X te ha <participle>") y cuántas notificaciones se envían de
+ * golpe al destinatario (1-10). El tipo estándar ("te ha tocado", 1 aviso) es
+ * fijo y no vive aquí: estos son los añadidos por el grupo.
+ */
+export interface PokeType {
+  id: string;
+  /** Participio que aparece en la notificación (ej. "saludado", "abrazado"). */
+  participle: string;
+  /** Cuántas notificaciones se mandan a la vez (1-10). */
+  count: number;
+}
+
 /** Frase memorable del Frasario. Cualquier miembro puede añadirla o editarla. */
 export interface Phrase {
   id: string;
@@ -171,6 +185,8 @@ export interface GroupData {
   counter: GroupCounter | null;
   contributions: CounterContribution[];
   pokes?: Poke[];
+  /** Tipos de "toque" personalizados del grupo (además del estándar fijo). */
+  pokeTypes?: PokeType[];
   phrases?: Phrase[];
   songs?: Song[];
   polls?: Poll[];

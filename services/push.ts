@@ -204,6 +204,8 @@ export interface PushPayload {
    * cada destinatario la de SU idioma; title/body quedan como reserva.
    */
   i18n?: Record<string, { title: string; body: string }>;
+  /** Nº de notificaciones a enviar de golpe a cada destinatario (1-10). */
+  repeat?: number;
 }
 
 /**

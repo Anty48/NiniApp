@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +12,12 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { lastPokeAt, pokeCooldownMs } from '@/services/groupData';
 import { getItem, setItem, StorageKeys } from '@/services/storage';
+import { PokeType } from '@/types/models';
+
+/** "saludado" -> "Saludado" (solo la primera letra, respeta el resto). */
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
 
 /** Perfil de un miembro: estado, estadísticas, frases del Frasario y "Tocar". */
 export default function MemberProfileScreen() {
@@ -22,6 +28,8 @@ export default function MemberProfileScreen() {
   const { data, me, pokeMember } = useGroupData();
 
   const [status, setStatus] = useState<'idle' | 'sent' | 'cooldown'>('idle');
+  // Panel desplegable con los tipos de toque del grupo.
+  const [pokeOpen, setPokeOpen] = useState(false);
 
   const member = data?.members.find((m) => m.userId === id);
   const memberStatus = data?.statuses?.find((s) => s.userId === id);
@@ -58,9 +66,12 @@ export default function MemberProfileScreen() {
     : Math.ceil(cooldownMs / 3_600_000);
 
   const myPhrases = (data.phrases ?? []).filter((p) => p.memberId === member.userId);
+  const pokeTypes = data.pokeTypes ?? [];
 
-  const poke = async () => {
-    const result = await pokeMember(member.userId);
+  // `type` undefined = toque estándar ("te ha tocado", 1 aviso).
+  const poke = async (type?: PokeType) => {
+    setPokeOpen(false);
+    const result = await pokeMember(member.userId, type);
     if (result === 'ok') setStatus('sent');
     else if (result === 'cooldown') setStatus('cooldown');
   };
@@ -127,8 +138,45 @@ export default function MemberProfileScreen() {
             </ThemedText>
           ) : onCooldown ? (
             <ThemedText variant="muted">{t('poke.cooldown', { hours: hoursLeft })}</ThemedText>
+          ) : pokeTypes.length === 0 ? (
+            // Sin tipos personalizados: el botón toca directamente (estándar).
+            <Button title={t('poke.button')} onPress={() => poke()} />
           ) : (
-            <Button title={t('poke.button')} onPress={poke} />
+            // Con tipos: el botón despliega el estándar + los del grupo.
+            <View style={styles.pokeSection}>
+              <Button
+                title={pokeOpen ? t('poke.close') : t('poke.button')}
+                variant={pokeOpen ? 'outline' : 'primary'}
+                onPress={() => setPokeOpen((v) => !v)}
+              />
+              {pokeOpen && (
+                <View
+                  style={[styles.pokeMenu, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                  <Pressable
+                    onPress={() => poke()}
+                    style={({ pressed }) => [styles.pokeOption, pressed && { opacity: 0.6 }]}>
+                    <ThemedText style={styles.flex}>👉 {t('poke.standardLabel')}</ThemedText>
+                  </Pressable>
+                  {pokeTypes.map((type) => (
+                    <Pressable
+                      key={type.id}
+                      onPress={() => poke(type)}
+                      style={({ pressed }) => [
+                        styles.pokeOption,
+                        { borderTopColor: theme.border, borderTopWidth: 1 },
+                        pressed && { opacity: 0.6 },
+                      ]}>
+                      <ThemedText style={styles.flex}>👉 {capitalize(type.participle)}</ThemedText>
+                      {type.count > 1 && (
+                        <ThemedText style={{ color: theme.primary, fontWeight: '600' }}>
+                          ×{type.count}
+                        </ThemedText>
+                      )}
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+            </View>
           ))}
 
         {/* Frases suyas en el Frasario del grupo */}
@@ -165,4 +213,7 @@ const styles = StyleSheet.create({
   },
   phrasesCard: { flexDirection: 'column', justifyContent: 'flex-start', gap: 8 },
   stat: { alignItems: 'center' },
+  pokeSection: { gap: 8 },
+  pokeMenu: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },
+  pokeOption: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 14 },
 });

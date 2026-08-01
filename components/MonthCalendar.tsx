@@ -29,6 +29,10 @@ export function MonthCalendar({
   const days = buildMonthGrid(month);
   const weekdays = weekdayLabels(language);
   const today = dayKey();
+  // Se pinta por filas explícitas de 7 (6 semanas). Con `flexWrap` sobre celdas
+  // al 14,28 % el redondeo de subpíxeles podía colar 6 columnas por fila en
+  // algunos anchos y los días dejaban de cuadrar con la cabecera de la semana.
+  const weeks = Array.from({ length: 6 }, (_, w) => days.slice(w * 7, w * 7 + 7));
 
   return (
     <View style={styles.container}>
@@ -55,50 +59,54 @@ export function MonthCalendar({
       </View>
 
       <View style={styles.grid}>
-        {days.map((d) => {
-          const key = dayKey(d);
-          const inMonth = d.getMonth() === month.getMonth();
-          const isToday = key === today;
-          const isSelected = key === selectedDay;
-          const dayEvents = eventsOnDay(events, key);
-          return (
-            <Pressable
-              key={key}
-              onPress={() => onSelectDay(key)}
-              style={[
-                styles.dayCell,
-                { borderColor: isSelected ? theme.primary : 'transparent' },
-              ]}>
-              <View
-                style={[
-                  styles.dayNumberWrap,
-                  isToday && { backgroundColor: theme.primary },
-                ]}>
-                <ThemedText
-                  style={{
-                    color: isToday ? theme.onPrimary : inMonth ? theme.text : theme.textMuted,
-                    fontWeight: isToday ? '700' : '400',
-                    fontSize: 13,
-                  }}>
-                  {d.getDate()}
-                </ThemedText>
-              </View>
-              <View style={styles.bars}>
-                {dayEvents.slice(0, MAX_BARS_PER_DAY).map((e) => (
+        {weeks.map((week, wi) => (
+          <View key={wi} style={styles.weekGridRow}>
+            {week.map((d) => {
+              const key = dayKey(d);
+              const inMonth = d.getMonth() === month.getMonth();
+              const isToday = key === today;
+              const isSelected = key === selectedDay;
+              const dayEvents = eventsOnDay(events, key);
+              return (
+                <Pressable
+                  key={key}
+                  onPress={() => onSelectDay(key)}
+                  style={[
+                    styles.dayCell,
+                    { borderColor: isSelected ? theme.primary : 'transparent' },
+                  ]}>
                   <View
-                    key={e.id}
-                    style={[styles.bar, { backgroundColor: e.color ?? theme.primary }]}
-                  />
-                ))}
-                {dayEvents.length > MAX_BARS_PER_DAY && (
-                  <ThemedText variant="muted" style={styles.moreLabel}>
-                    +{dayEvents.length - MAX_BARS_PER_DAY}
-                  </ThemedText>
-                )}
-              </View>
-            </Pressable>
-          );
-        })}
+                    style={[
+                      styles.dayNumberWrap,
+                      isToday && { backgroundColor: theme.primary },
+                    ]}>
+                    <ThemedText
+                      style={{
+                        color: isToday ? theme.onPrimary : inMonth ? theme.text : theme.textMuted,
+                        fontWeight: isToday ? '700' : '400',
+                        fontSize: 13,
+                      }}>
+                      {d.getDate()}
+                    </ThemedText>
+                  </View>
+                  <View style={styles.bars}>
+                    {dayEvents.slice(0, MAX_BARS_PER_DAY).map((e) => (
+                      <View
+                        key={e.id}
+                        style={[styles.bar, { backgroundColor: e.color ?? theme.primary }]}
+                      />
+                    ))}
+                    {dayEvents.length > MAX_BARS_PER_DAY && (
+                      <ThemedText variant="muted" style={styles.moreLabel}>
+                        +{dayEvents.length - MAX_BARS_PER_DAY}
+                      </ThemedText>
+                    )}
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -115,9 +123,10 @@ const styles = StyleSheet.create({
   navButton: { paddingHorizontal: 14, paddingVertical: 4 },
   weekRow: { flexDirection: 'row' },
   weekdayCell: { flex: 1, textAlign: 'center', fontSize: 12, textTransform: 'capitalize' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap' },
+  grid: { gap: 0 },
+  weekGridRow: { flexDirection: 'row' },
   dayCell: {
-    width: `${100 / 7}%`,
+    flex: 1,
     minHeight: 52,
     borderWidth: 1,
     borderRadius: 8,

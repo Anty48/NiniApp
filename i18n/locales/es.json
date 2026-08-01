@@ -71,7 +71,8 @@
     "polls": "Encuestas",
     "colors": "Colores del grupo",
     "drivers": "Zona de Conductores",
-    "settings": "Ajustes del grupo"
+    "settings": "Ajustes del grupo",
+    "pokeTypes": "Tipos de tocar"
   },
   "statuses": {
     "section": "Estados",
@@ -308,7 +309,18 @@
     "deleteContribTitle": "¿Borrar esta contribución?",
     "deleteContribMessage": "Se restará del total acumulado y de los aportes de %{name}.",
     "proofs": "Fotos de prueba (24 h)",
-    "contributionsShort": "%{count} aportes"
+    "contributionsShort": "%{count} aportes",
+    "viewStats": "Ver estadísticas",
+    "statsTitle": "Estadísticas",
+    "statsSubtitle": "Contribuciones de los últimos 30 días.",
+    "statsEveryone": "Todos",
+    "statsTotal30": "Total (30 días)",
+    "statsActiveDays": "Días activos",
+    "statsBestDay": "Mejor día",
+    "statsDaily": "Por día",
+    "statsToday": "Hoy",
+    "statsByMember": "Por miembro",
+    "statsNoData": "Aún no hay contribuciones en este periodo."
   },
   "leaderboard": {
     "byCommitment": "Compromiso",
@@ -366,7 +378,10 @@
     "disabledByUser": "Esta persona tiene el tocar desactivado",
     "cooldown": "Podrás volver a tocarle en %{hours} h",
     "notifTitle": "👉 ¡Toque!",
-    "notifBody": "%{name} te ha tocado"
+    "notifBody": "%{name} te ha tocado",
+    "notifBodyVerb": "%{name} te ha %{participle}",
+    "standardLabel": "Tocar",
+    "close": "Cerrar"
   },
   "push": {
     "section": "Notificaciones",
@@ -483,5 +498,18 @@
     "calendar": "",
     "counter": "",
     "leaderboard": ""
+  },
+  "pokeTypes": {
+    "subtitle": "Crea formas de tocar propias del grupo. Cada tipo cambia la palabra del aviso y cuántas notificaciones se mandan de golpe (1-10). El toque normal siempre está disponible.",
+    "preview": "Aviso: «Alguien te ha %{participle}»",
+    "participleLabel": "Palabra (participio)",
+    "participlePlaceholder": "saludado, abrazado, avisado...",
+    "countLabel": "Notificaciones por toque",
+    "countHint": "Máximo %{count} notificaciones de golpe.",
+    "countBadge": "%{count} notificaciones",
+    "add": "Añadir tipo",
+    "empty": "Todavía no hay tipos de tocar. El toque normal sigue disponible.",
+    "deleteTitle": "Eliminar tipo",
+    "deleteMessage": "¿Eliminar «%{name}»?"
   }
 }

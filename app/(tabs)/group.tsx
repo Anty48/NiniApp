@@ -99,6 +99,7 @@ export default function GroupTabScreen() {
     { key: 'phrasebook', emoji: '📖', route: '/phrasebook', visible: true },
     { key: 'songs', emoji: '🎵', route: '/songs', visible: true },
     { key: 'polls', emoji: '📊', route: '/polls', visible: true },
+    { key: 'pokeTypes', emoji: '👉', route: '/poke-types', visible: true },
     { key: 'colors', emoji: '🎨', route: '/group-colors', visible: true },
     { key: 'drivers', emoji: '🚗', route: '/drivers-zone', visible: !!me?.isDriver },
     { key: 'settings', emoji: '⚙️', route: '/group-settings', visible: true },

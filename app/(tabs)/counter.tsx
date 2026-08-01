@@ -160,6 +160,12 @@ export default function CounterScreen() {
           </ThemedText>
         </View>
 
+        <Button
+          title={`📈 ${t('counter.viewStats')}`}
+          variant="outline"
+          onPress={() => router.push('/counter-stats')}
+        />
+
         {!canIncrement && <ThemedText variant="muted">{t('counter.adminOnly')}</ThemedText>}
         {canIncrement && dailyLimitReached && (
           <ThemedText variant="muted">{t('counter.alreadyToday')}</ThemedText>

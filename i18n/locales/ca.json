@@ -71,7 +71,8 @@
     "polls": "Enquestes",
     "colors": "Colors del grup",
     "drivers": "Zona de Conductors",
-    "settings": "Ajustos del grup"
+    "settings": "Ajustos del grup",
+    "pokeTypes": "Tipus de tocar"
   },
   "statuses": {
     "section": "Estats",
@@ -308,7 +309,18 @@
     "deleteContribTitle": "Esborrar aquesta contribució?",
     "deleteContribMessage": "Es restarà del total acumulat i de les aportacions de %{name}.",
     "proofs": "Fotos de prova (24 h)",
-    "contributionsShort": "%{count} aportacions"
+    "contributionsShort": "%{count} aportacions",
+    "viewStats": "Veure estadístiques",
+    "statsTitle": "Estadístiques",
+    "statsSubtitle": "Contribucions dels últims 30 dies.",
+    "statsEveryone": "Tots",
+    "statsTotal30": "Total (30 dies)",
+    "statsActiveDays": "Dies actius",
+    "statsBestDay": "Millor dia",
+    "statsDaily": "Per dia",
+    "statsToday": "Avui",
+    "statsByMember": "Per membre",
+    "statsNoData": "Encara no hi ha contribucions en aquest període."
   },
   "leaderboard": {
     "byCommitment": "Compromís",
@@ -366,7 +378,10 @@
     "disabledByUser": "Aquesta persona té el tocar desactivat",
     "cooldown": "Podràs tornar a tocar-lo d'aquí a %{hours} h",
     "notifTitle": "👉 Toc!",
-    "notifBody": "%{name} t'ha tocat"
+    "notifBody": "%{name} t'ha tocat",
+    "notifBodyVerb": "%{name} t'ha %{participle}",
+    "standardLabel": "Tocar",
+    "close": "Tancar"
   },
   "push": {
     "section": "Notificacions",
@@ -483,5 +498,18 @@
     "calendar": "",
     "counter": "",
     "leaderboard": ""
+  },
+  "pokeTypes": {
+    "subtitle": "Crea maneres de tocar pròpies del grup. Cada tipus canvia la paraula de l'avís i quantes notificacions s'envien de cop (1-10). El toc normal sempre està disponible.",
+    "preview": "Avís: «Algú t'ha %{participle}»",
+    "participleLabel": "Paraula (participi)",
+    "participlePlaceholder": "saludat, abraçat, avisat...",
+    "countLabel": "Notificacions per toc",
+    "countHint": "Màxim %{count} notificacions de cop.",
+    "countBadge": "%{count} notificacions",
+    "add": "Afegir tipus",
+    "empty": "Encara no hi ha tipus de tocar. El toc normal continua disponible.",
+    "deleteTitle": "Eliminar tipus",
+    "deleteMessage": "Vols eliminar «%{name}»?"
   }
 }

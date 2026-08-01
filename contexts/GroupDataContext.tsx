@@ -23,6 +23,7 @@ import {
   GroupMember,
   GroupRole,
   Phrase,
+  PokeType,
   Poll,
   SavedColor,
   Song,
@@ -52,8 +53,14 @@ interface GroupDataContextValue {
   /** Sale del grupo borrando los datos propios; si era admin, traspasa el rol. */
   leaveGroup: (successorId?: UserId) => Promise<void>;
   updateMyProfile: (fields: ProfileFields) => Promise<void>;
-  /** "Tocar" a otro miembro (cooldown de 12-24 h según tu compromiso). */
-  pokeMember: (toUserId: UserId) => Promise<'ok' | 'cooldown' | 'disabled'>;
+  /**
+   * "Tocar" a otro miembro (cooldown de 12-24 h según tu compromiso). Con un
+   * tipo de toque del grupo se envían varias notificaciones y con su palabra.
+   */
+  pokeMember: (toUserId: UserId, type?: PokeType) => Promise<'ok' | 'cooldown' | 'disabled'>;
+  /** Tipos de "toque" del grupo: cualquier miembro los crea/edita/borra. */
+  savePokeType: (type: PokeType) => Promise<void>;
+  removePokeType: (typeId: string) => Promise<void>;
   /** Suma/resta copipuntos a un miembro (solo conductores, edición directa). */
   adjustCopipoints: (userId: UserId, delta: number) => Promise<void>;
   /** Asigna o retira el rol de conductor (solo admin). */
@@ -348,7 +355,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
   );
 
   const pokeMember = useCallback(
-    async (toUserId: UserId): Promise<'ok' | 'cooldown' | 'disabled'> => {
+    async (toUserId: UserId, type?: PokeType): Promise<'ok' | 'cooldown' | 'disabled'> => {
       if (!user || !data) return 'disabled';
       // El cooldown y el permiso se comprueban sobre el estado fresco dentro
       // de la transacción: dos toques simultáneos no lo saltan.
@@ -377,15 +384,54 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       if ((status as string) !== 'ok') return status;
       // Push real AL DESTINATARIO en todos sus dispositivos. (Antes aquí se
       // mostraba una notificación local, que le llegaba al que tocaba en vez
-      // de al tocado.)
+      // de al tocado.) Un tipo de toque del grupo cambia la palabra ("te ha
+      // <participle>") y manda `count` notificaciones de golpe (máx. 10).
       const myName = me?.nickname ?? me?.name ?? '';
+      const count = type ? Math.max(1, Math.min(10, Math.floor(type.count))) : 1;
+      const text = type
+        ? localizedPush('poke.notifTitle', 'poke.notifBodyVerb', {
+            name: myName,
+            participle: type.participle,
+          })
+        : localizedPush('poke.notifTitle', 'poke.notifBody', { name: myName });
       sendPushToUsers(data.group.id, [toUserId], {
-        ...localizedPush('poke.notifTitle', 'poke.notifBody', { name: myName }),
+        ...text,
         url: user ? `/member/${user.id}` : '/',
+        repeat: count,
       });
       return 'ok';
     },
     [user, data, me],
+  );
+
+  const savePokeType = useCallback(
+    async (type: PokeType) => {
+      // Saneo: participio recortado y recuento acotado a 1-10.
+      const clean: PokeType = {
+        id: type.id,
+        participle: type.participle.trim().slice(0, 40),
+        count: Math.max(1, Math.min(10, Math.floor(type.count) || 1)),
+      };
+      await mutate((d) => {
+        const list = d.pokeTypes ?? [];
+        const exists = list.some((p) => p.id === clean.id);
+        return {
+          ...d,
+          pokeTypes: exists ? list.map((p) => (p.id === clean.id ? clean : p)) : [...list, clean],
+        };
+      });
+    },
+    [mutate],
+  );
+
+  const removePokeType = useCallback(
+    async (typeId: string) => {
+      await mutate((d) => ({
+        ...d,
+        pokeTypes: (d.pokeTypes ?? []).filter((p) => p.id !== typeId),
+      }));
+    },
+    [mutate],
   );
 
   const adjustCopipoints = useCallback(
@@ -582,6 +628,8 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       leaveGroup,
       updateMyProfile,
       pokeMember,
+      savePokeType,
+      removePokeType,
       adjustCopipoints,
       setDriver,
       setMusician,
@@ -618,6 +666,8 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       leaveGroup,
       updateMyProfile,
       pokeMember,
+      savePokeType,
+      removePokeType,
       adjustCopipoints,
       setDriver,
       setMusician,

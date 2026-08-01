@@ -71,7 +71,8 @@
     "polls": "Polls",
     "colors": "Group colors",
     "drivers": "Drivers' Zone",
-    "settings": "Group settings"
+    "settings": "Group settings",
+    "pokeTypes": "Poke types"
   },
   "statuses": {
     "section": "Statuses",
@@ -308,7 +309,18 @@
     "deleteContribTitle": "Delete this contribution?",
     "deleteContribMessage": "It will be subtracted from the total and from %{name}'s contributions.",
     "proofs": "Proof photos (24h)",
-    "contributionsShort": "%{count} contributions"
+    "contributionsShort": "%{count} contributions",
+    "viewStats": "View stats",
+    "statsTitle": "Stats",
+    "statsSubtitle": "Contributions over the last 30 days.",
+    "statsEveryone": "Everyone",
+    "statsTotal30": "Total (30 days)",
+    "statsActiveDays": "Active days",
+    "statsBestDay": "Best day",
+    "statsDaily": "By day",
+    "statsToday": "Today",
+    "statsByMember": "By member",
+    "statsNoData": "No contributions in this period yet."
   },
   "leaderboard": {
     "byCommitment": "Commitment",
@@ -366,7 +378,10 @@
     "disabledByUser": "This person has pokes disabled",
     "cooldown": "You can poke them again in %{hours}h",
     "notifTitle": "👉 Poke!",
-    "notifBody": "%{name} poked you"
+    "notifBody": "%{name} poked you",
+    "notifBodyVerb": "%{name} %{participle} you",
+    "standardLabel": "Poke",
+    "close": "Close"
   },
   "push": {
     "section": "Notifications",
@@ -483,5 +498,18 @@
     "calendar": "",
     "counter": "",
     "leaderboard": ""
+  },
+  "pokeTypes": {
+    "subtitle": "Create the group's own ways to poke. Each type changes the notification word and how many notifications are sent at once (1-10). The normal poke is always available.",
+    "preview": "Notification: \"Someone %{participle} you\"",
+    "participleLabel": "Word (past participle)",
+    "participlePlaceholder": "greeted, hugged, nudged...",
+    "countLabel": "Notifications per poke",
+    "countHint": "Up to %{count} notifications at once.",
+    "countBadge": "%{count} notifications",
+    "add": "Add type",
+    "empty": "No poke types yet. The normal poke is still available.",
+    "deleteTitle": "Delete type",
+    "deleteMessage": "Delete \"%{name}\"?"
   }
 }

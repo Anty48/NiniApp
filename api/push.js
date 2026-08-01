@@ -41,7 +41,8 @@ module.exports = async (req, res) => {
   const sender = await getAuth().verifyIdToken(idToken).catch(() => null);
   if (!sender) return res.status(401).json({ error: 'unauthorized' });
 
-  const { groupId, toUserIds, title, body, url, i18n } = req.body || {};
+  const { groupId, toUserIds, title, body, url, i18n, repeat } = req.body || {};
+  const times = Math.max(1, Math.min(10, Math.floor(Number(repeat) || 1)));
   if (
     typeof groupId !== 'string' ||
     !Array.isArray(toUserIds) ||
@@ -76,7 +77,9 @@ module.exports = async (req, res) => {
   // Cada destinatario recibe el texto en su idioma si hay variante.
   const fallback = clampPayload({ title, body, url });
   const payloadFor = (userData) => variants[userData.language] || fallback;
-  const counts = await Promise.all(targets.map((uid) => deliverToUser(db, uid, payloadFor)));
+  const counts = await Promise.all(
+    targets.map((uid) => deliverToUser(db, uid, payloadFor, times)),
+  );
 
   return res.status(200).json({ delivered: counts.reduce((a, b) => a + b, 0) });
 };
