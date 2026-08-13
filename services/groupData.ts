@@ -376,6 +376,34 @@ export function toggleCarSeat(
   return { ...data, events };
 }
 
+/**
+ * Apunta o quita al usuario de un transporte público/alternativo. Capacidad
+ * infinita, así que solo alterna su presencia; además lo saca de cualquier
+ * otro transporte del mismo evento (solo puede ir en uno).
+ */
+export function toggleTransportSeat(
+  data: GroupData,
+  eventId: string,
+  transportId: string,
+  userId: UserId,
+): GroupData {
+  const events = data.events.map((e) => {
+    if (e.id !== eventId || !e.transports) return e;
+    const target = e.transports.find((tr) => tr.id === transportId);
+    if (!target) return e;
+    const alreadyInTarget = target.occupants.includes(userId);
+    return {
+      ...e,
+      transports: e.transports.map((tr) => {
+        const without = tr.occupants.filter((u) => u !== userId);
+        if (tr.id !== transportId || alreadyInTarget) return { ...tr, occupants: without };
+        return { ...tr, occupants: [...without, userId] };
+      }),
+    };
+  });
+  return { ...data, events };
+}
+
 // ---------- Contador de rachas ----------
 
 export function contributionsToday(data: GroupData, userId: UserId, now: Date = new Date()): number {

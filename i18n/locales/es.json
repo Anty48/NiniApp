@@ -239,6 +239,14 @@
     "tempCarHint": "Solo para este evento",
     "tempCarNamePlaceholder": "Nombre (ej. coche de alquiler)",
     "carsSection": "Coches",
+    "transportToggle": "Activar transporte público/alternativo",
+    "transportHint": "Medios de capacidad ilimitada (tren, bus, a pie...) para saber quién va en cada uno. Ej.: unos en el R4 y otros en el R3.",
+    "transportNamePlaceholder": "Nombre (ej. R4)",
+    "addTransport": "Añadir transporte",
+    "transportSection": "Transporte público/alternativo",
+    "transportCount": "%{count} apuntados",
+    "transportJoin": "Apuntarme",
+    "transportLeave": "Salir",
     "viewList": "Lista",
     "viewMonth": "Mes",
     "agendaEmpty": "Sin eventos este día",
@@ -326,6 +334,31 @@
     "byCommitment": "Compromiso",
     "byContributions": "Contribuciones",
     "byCopipoints": "Copipuntos"
+  },
+  "quickAccess": {
+    "tab": "Acceso",
+    "emptyTitle": "Tu acceso rápido",
+    "emptyHint": "Pon aquí lo que más uses del grupo: el frasario, las canciones, las encuestas o el ranking. Podrás cambiarlo cuando quieras.",
+    "add": "Añadir acceso rápido",
+    "change": "Cambiar acceso rápido",
+    "chooseTitle": "¿Qué quieres tener a mano?",
+    "remove": "Quitar acceso rápido"
+  },
+  "landing": {
+    "tagline": "La app de tu grupo de amigos.",
+    "intro": "NiniApp reúne en un solo sitio los planes, las rachas, la logística y las bromas internas de tu grupo. Crea un grupo o únete a uno y llevadlo todo al día.",
+    "enter": "Acceder a la app",
+    "enterNote": "Te pediremos iniciar sesión (o entrarás directo si ya te recordamos).",
+    "whatTitle": "¿Qué hace NiniApp?",
+    "featureEventsTitle": "Eventos y votación",
+    "featureEventsBody": "Calendario del grupo con votación de asistencia, quedadas informales, días especiales y cumpleaños.",
+    "featureCounterTitle": "Contador de rachas",
+    "featureCounterBody": "Contad juntos lo que queráis y mantened viva la racha del grupo, con ranking y estadísticas.",
+    "featureCarsTitle": "Coches y transporte",
+    "featureCarsBody": "Organizad quién lleva coche y quién va en tren o bus en cada plan, sin líos.",
+    "featureSocialTitle": "Vuestro rincón",
+    "featureSocialBody": "Frasario, cancionero, encuestas, estados de 24 h y toques entre miembros.",
+    "installTitle": "¿Prefieres instalarla?"
   },
   "drivers": {
     "title": "Zona de Conductores",
@@ -454,6 +487,15 @@
       ]
     },
     "title": "Registro de cambios",
+    "v1_3": {
+      "name": "Versión 1.3",
+      "date": "Agosto 2026",
+      "items": [
+        "Nueva pestaña central de acceso rápido: pon a mano lo que más uses (frasario, canciones, encuestas o ranking) y cámbialo cuando quieras con el botón de abajo.",
+        "Transporte público/alternativo en los eventos: además de coches, apúntate a medios de capacidad ilimitada como el tren R4 o R3.",
+        "Nueva web de recepción que explica la app, con selector de idioma y un botón grande de acceso; solo la ven los usuarios nuevos y no reaparece al volver."
+      ]
+    },
     "v1_1_1": {
       "name": "Versión 1.1.1",
       "date": "Julio 2026",

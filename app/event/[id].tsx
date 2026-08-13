@@ -21,7 +21,8 @@ export default function EventDetailScreen() {
   const { t, language } = useLanguage();
   const { theme } = useTheme();
   const { user } = useAuth();
-  const { data, vote, setAttendance, toggleCarSeat, deleteEvent } = useGroupData();
+  const { data, vote, setAttendance, toggleCarSeat, toggleTransportSeat, deleteEvent } =
+    useGroupData();
 
   const event = data?.events.find((e) => e.id === id);
 
@@ -248,6 +249,48 @@ export default function EventDetailScreen() {
                   );
                 })}
               </View>
+              );
+            })}
+          </>
+        )}
+
+        {/* Transporte público/alternativo (capacidad infinita) */}
+        {event.transports && event.transports.length > 0 && (
+          <>
+            <ThemedText variant="label">{t('events.transportSection')}</ThemedText>
+            {hasVoting && myVote?.value !== 'yes' && (
+              <ThemedText variant="muted">{t('events.seatHint')}</ThemedText>
+            )}
+            {event.transports.map((transport) => {
+              const iAmIn = user ? transport.occupants.includes(user.id) : false;
+              const canJoin = !ended && (!hasVoting || myVote?.value === 'yes');
+              return (
+                <View
+                  key={transport.id}
+                  style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                  <View style={styles.titleRow}>
+                    <ThemedText variant="subtitle" style={styles.flex}>
+                      🚆 {transport.name}
+                    </ThemedText>
+                    <ThemedText variant="muted">
+                      {t('events.transportCount', { count: transport.occupants.length })}
+                    </ThemedText>
+                  </View>
+                  {transport.occupants.length > 0 && (
+                    <ThemedText>
+                      {transport.occupants
+                        .map((uid) => `${memberName(uid)}${uid === user?.id ? ` (${t('common.you')})` : ''}`)
+                        .join(', ')}
+                    </ThemedText>
+                  )}
+                  {(iAmIn || canJoin) && (
+                    <Button
+                      title={iAmIn ? t('events.transportLeave') : t('events.transportJoin')}
+                      variant="outline"
+                      onPress={() => toggleTransportSeat(event.id, transport.id)}
+                    />
+                  )}
+                </View>
               );
             })}
           </>

@@ -13,7 +13,7 @@ import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { normalizeHexColor, useTheme } from '@/contexts/ThemeContext';
 import { driversWithCar } from '@/services/groupData';
-import { EventCar, EventKind, GroupEvent } from '@/types/models';
+import { EventCar, EventKind, EventTransport, GroupEvent } from '@/types/models';
 import { dayKey, parseDateTime, toDateInput, toTimeInput } from '@/utils/date';
 import { hexToEventColor, randomEventColor, solidEventColor } from '@/utils/eventColor';
 
@@ -21,6 +21,11 @@ interface TempCarDraft {
   id: string;
   name: string;
   seats: string;
+}
+
+interface TransportDraft {
+  id: string;
+  name: string;
 }
 
 /**
@@ -66,8 +71,15 @@ export default function EventFormScreen() {
       ?.filter((c) => !c.driverId)
       .map((c) => ({ id: c.id, name: c.name ?? '', seats: String(c.seats) })) ?? [],
   );
+  const [transportEnabled, setTransportEnabled] = useState((editing?.transports?.length ?? 0) > 0);
+  const [transports, setTransports] = useState<TransportDraft[]>(
+    editing?.transports?.map((tr) => ({ id: tr.id, name: tr.name })) ?? [],
+  );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const addTransport = () =>
+    setTransports((prev) => [...prev, { id: `tr-${Date.now()}-${prev.length}`, name: '' }]);
 
   const toggleDriverCar = (userId: string) =>
     setSelectedDriverIds((prev) =>
@@ -114,6 +126,17 @@ export default function EventFormScreen() {
     const finalCars =
       carsEnabled && kind !== 'specialDay' ? [...driverCars, ...temporaryCars] : [];
 
+    const finalTransports: EventTransport[] =
+      transportEnabled && kind !== 'specialDay'
+        ? transports
+            .filter((tr) => tr.name.trim())
+            .map((tr) => ({
+              id: tr.id,
+              name: tr.name.trim(),
+              occupants: editing?.transports?.find((x) => x.id === tr.id)?.occupants ?? [],
+            }))
+        : [];
+
     const event: GroupEvent = {
       id: editing?.id ?? `e-${Date.now()}`,
       groupId: data.group.id,
@@ -130,6 +153,7 @@ export default function EventFormScreen() {
       voteLockHoursBefore:
         kind === 'standard' ? Math.max(0, parseInt(lockHours, 10) || 12) : 0,
       cars: finalCars.length > 0 ? finalCars : undefined,
+      transports: finalTransports.length > 0 ? finalTransports : undefined,
     };
 
     if (editing) await updateEvent(event);
@@ -376,6 +400,41 @@ export default function EventFormScreen() {
               </View>
             ))}
             <Button title={t('events.addTempCar')} onPress={addTempCar} variant="outline" />
+          </>
+        )}
+
+        {/* Transporte público/alternativo: capacidad infinita, solo nombre */}
+        {kind !== 'specialDay' && (
+          <View style={styles.switchRow}>
+            <ThemedText>{t('events.transportToggle')}</ThemedText>
+            <Switch value={transportEnabled} onValueChange={setTransportEnabled} />
+          </View>
+        )}
+
+        {transportEnabled && kind !== 'specialDay' && (
+          <>
+            <ThemedText variant="muted">{t('events.transportHint')}</ThemedText>
+            {transports.map((transport, index) => (
+              <View key={transport.id} style={styles.carRow}>
+                <TextInput
+                  placeholder={t('events.transportNamePlaceholder')}
+                  placeholderTextColor={theme.textMuted}
+                  value={transport.name}
+                  onChangeText={(text) =>
+                    setTransports((prev) =>
+                      prev.map((tr, i) => (i === index ? { ...tr, name: text } : tr)),
+                    )
+                  }
+                  style={[styles.carInput, styles.flex, inputStyle]}
+                />
+                <Pressable
+                  onPress={() => setTransports((prev) => prev.filter((_, i) => i !== index))}
+                  style={styles.removeButton}>
+                  <ThemedText style={{ color: theme.danger, fontSize: 18 }}>✕</ThemedText>
+                </Pressable>
+              </View>
+            ))}
+            <Button title={t('events.addTransport')} onPress={addTransport} variant="outline" />
           </>
         )}
 

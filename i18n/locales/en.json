@@ -239,6 +239,14 @@
     "tempCarHint": "Only for this event",
     "tempCarNamePlaceholder": "Name (e.g. rental car)",
     "carsSection": "Cars",
+    "transportToggle": "Enable public/alternative transport",
+    "transportHint": "Unlimited-capacity options (train, bus, on foot...) to see who takes each one. E.g. some on the R4 and others on the R3.",
+    "transportNamePlaceholder": "Name (e.g. R4)",
+    "addTransport": "Add transport",
+    "transportSection": "Public/alternative transport",
+    "transportCount": "%{count} signed up",
+    "transportJoin": "Sign me up",
+    "transportLeave": "Leave",
     "viewList": "List",
     "viewMonth": "Month",
     "agendaEmpty": "No events this day",
@@ -326,6 +334,31 @@
     "byCommitment": "Commitment",
     "byContributions": "Contributions",
     "byCopipoints": "Copipoints"
+  },
+  "quickAccess": {
+    "tab": "Quick access",
+    "emptyTitle": "Your quick access",
+    "emptyHint": "Put whatever you use most from the group here: the phrasebook, songs, polls or the ranking. You can change it whenever you want.",
+    "add": "Add quick access",
+    "change": "Change quick access",
+    "chooseTitle": "What do you want at hand?",
+    "remove": "Remove quick access"
+  },
+  "landing": {
+    "tagline": "The app for your group of friends.",
+    "intro": "NiniApp brings your group's plans, streaks, logistics and inside jokes together in one place. Create a group or join one and keep it all up to date.",
+    "enter": "Open the app",
+    "enterNote": "We'll ask you to sign in (or take you straight in if we already remember you).",
+    "whatTitle": "What does NiniApp do?",
+    "featureEventsTitle": "Events and voting",
+    "featureEventsBody": "Group calendar with attendance voting, casual meetups, special days and birthdays.",
+    "featureCounterTitle": "Streak counter",
+    "featureCounterBody": "Count whatever you like together and keep the group streak alive, with ranking and stats.",
+    "featureCarsTitle": "Cars and transport",
+    "featureCarsBody": "Sort out who drives and who takes the train or bus for each plan, hassle-free.",
+    "featureSocialTitle": "Your corner",
+    "featureSocialBody": "Phrasebook, songbook, polls, 24 h statuses and pokes between members.",
+    "installTitle": "Prefer to install it?"
   },
   "drivers": {
     "title": "Drivers' Zone",
@@ -454,6 +487,15 @@
       ]
     },
     "title": "Changelog",
+    "v1_3": {
+      "name": "Version 1.3",
+      "date": "August 2026",
+      "items": [
+        "New customizable center tab (quick access): keep whatever you use most at hand (phrasebook, songs, polls or ranking) and change it any time with the button at the bottom.",
+        "Public/alternative transport in events: besides cars, sign up for unlimited-capacity options like the R4 or R3 train.",
+        "New reception website that explains the app, with a language selector and a big access button; only new users see it and it no longer reappears on return."
+      ]
+    },
     "v1_1_1": {
       "name": "Version 1.1.1",
       "date": "July 2026",

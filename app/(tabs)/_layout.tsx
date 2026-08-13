@@ -3,6 +3,11 @@ import { Tabs } from 'expo-router';
 
 import { FONT_REGULAR } from '@/constants/typography';
 import { useLanguage } from '@/contexts/LanguageContext';
+import {
+  QUICK_ACCESS_ICONS,
+  QUICK_ACCESS_LABEL_KEYS,
+  useQuickAccess,
+} from '@/contexts/QuickAccessContext';
 import { useTheme } from '@/contexts/ThemeContext';
 
 function TabIcon(props: {
@@ -15,6 +20,12 @@ function TabIcon(props: {
 export default function TabsLayout() {
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const { target } = useQuickAccess();
+
+  const quickIcon = (target ? QUICK_ACCESS_ICONS[target] : QUICK_ACCESS_ICONS.empty) as React.ComponentProps<
+    typeof FontAwesome
+  >['name'];
+  const quickLabel = target ? t(QUICK_ACCESS_LABEL_KEYS[target]) : t('quickAccess.tab');
 
   return (
     <Tabs
@@ -45,8 +56,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="leaderboard"
         options={{
-          title: t('tabs.leaderboard'),
-          tabBarIcon: ({ color }) => <TabIcon name="trophy" color={color} />,
+          title: quickLabel,
+          tabBarIcon: ({ color }) => <TabIcon name={quickIcon} color={color} />,
         }}
       />
       <Tabs.Screen

@@ -42,6 +42,8 @@ interface GroupDataContextValue {
   vote: (eventId: string, value: EventVoteValue) => Promise<void>;
   setAttendance: (eventId: string, userId: UserId, attended: boolean) => Promise<void>;
   toggleCarSeat: (eventId: string, carId: string) => Promise<void>;
+  /** Apuntarse/salir de un transporte público del evento (capacidad infinita). */
+  toggleTransportSeat: (eventId: string, transportId: string) => Promise<void>;
   saveCounter: (counter: GroupCounter) => Promise<void>;
   contribute: (proofPhotoUrl?: string) => Promise<void>;
   /** Borra una contribución equivocada (resta total y aportes; la racha no se toca). */
@@ -238,6 +240,14 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
     async (eventId: string, carId: string) => {
       if (!user) return;
       await mutate((d) => gd.toggleCarSeat(d, eventId, carId, user.id));
+    },
+    [mutate, user],
+  );
+
+  const toggleTransportSeat = useCallback(
+    async (eventId: string, transportId: string) => {
+      if (!user) return;
+      await mutate((d) => gd.toggleTransportSeat(d, eventId, transportId, user.id));
     },
     [mutate, user],
   );
@@ -620,6 +630,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       vote,
       setAttendance,
       toggleCarSeat,
+      toggleTransportSeat,
       saveCounter,
       contribute,
       removeContribution,
@@ -658,6 +669,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       vote,
       setAttendance,
       toggleCarSeat,
+      toggleTransportSeat,
       saveCounter,
       contribute,
       removeContribution,

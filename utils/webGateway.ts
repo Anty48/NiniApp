@@ -1,17 +1,27 @@
 /**
- * Recuerda, durante la sesión de la app, que el usuario ya cruzó la puerta de
- * entrada web ("Entrar a la Web" en `app/gateway.tsx`), para que el guard de
- * navegación (`app/_layout.tsx`) no lo devuelva a ella una y otra vez.
+ * Recuerda que el usuario ya cruzó la web de recepción ("Acceder a la app" en
+ * `app/gateway.tsx`), para que el guard de navegación (`app/_layout.tsx`) no la
+ * vuelva a mostrar. Antes era un flag solo en memoria (reaparecía al recargar);
+ * ahora se persiste en `localStorage`, así los usuarios que ya entraron —sobre
+ * todo los de iOS con la web anclada— no ven la recepción cada vez que abren.
  *
- * Es un simple flag en memoria: si recarga la página (web) vuelve a verla, lo
- * cual es el comportamiento deseado para una "landing" de entrada.
+ * Solo tiene sentido en web; en nativo (sin `localStorage`) siempre es `false`
+ * y, además, el guard nunca llega a mostrar la recepción fuera de la web.
  */
-let entered = false;
+const KEY = 'niniapp.enteredWeb';
 
 export function hasEnteredWeb(): boolean {
-  return entered;
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem(KEY) === '1';
+  } catch {
+    return false;
+  }
 }
 
 export function markEnteredWeb(): void {
-  entered = true;
+  try {
+    if (typeof localStorage !== 'undefined') localStorage.setItem(KEY, '1');
+  } catch {
+    // Modo privado / almacenamiento bloqueado: la recepción reaparecerá, sin más.
+  }
 }

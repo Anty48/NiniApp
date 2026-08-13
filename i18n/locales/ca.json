@@ -239,6 +239,14 @@
     "tempCarHint": "Només per a aquest esdeveniment",
     "tempCarNamePlaceholder": "Nom (ex. cotxe de lloguer)",
     "carsSection": "Cotxes",
+    "transportToggle": "Activar transport públic/alternatiu",
+    "transportHint": "Mitjans de capacitat il·limitada (tren, bus, a peu...) per saber qui va en cadascun. Ex.: uns al R4 i altres al R3.",
+    "transportNamePlaceholder": "Nom (ex. R4)",
+    "addTransport": "Afegir transport",
+    "transportSection": "Transport públic/alternatiu",
+    "transportCount": "%{count} apuntats",
+    "transportJoin": "Apuntar-m'hi",
+    "transportLeave": "Sortir",
     "viewList": "Llista",
     "viewMonth": "Mes",
     "agendaEmpty": "Sense esdeveniments aquest dia",
@@ -326,6 +334,31 @@
     "byCommitment": "Compromís",
     "byContributions": "Contribucions",
     "byCopipoints": "Copipunts"
+  },
+  "quickAccess": {
+    "tab": "Accés",
+    "emptyTitle": "El teu accés ràpid",
+    "emptyHint": "Posa aquí allò que més facis servir del grup: el frasari, les cançons, les enquestes o el rànquing. Ho podràs canviar quan vulguis.",
+    "add": "Afegir accés ràpid",
+    "change": "Canviar l'accés ràpid",
+    "chooseTitle": "Què vols tenir a mà?",
+    "remove": "Treure l'accés ràpid"
+  },
+  "landing": {
+    "tagline": "L'app del teu grup d'amics.",
+    "intro": "NiniApp reuneix en un sol lloc els plans, les ratxes, la logística i les bromes internes del teu grup. Crea un grup o uneix-te a un i porteu-ho tot al dia.",
+    "enter": "Accedir a l'app",
+    "enterNote": "Et demanarem iniciar sessió (o entraràs directe si ja et recordem).",
+    "whatTitle": "Què fa NiniApp?",
+    "featureEventsTitle": "Esdeveniments i votació",
+    "featureEventsBody": "Calendari del grup amb votació d'assistència, quedades informals, dies especials i aniversaris.",
+    "featureCounterTitle": "Comptador de ratxes",
+    "featureCounterBody": "Compteu junts el que vulgueu i manteniu viva la ratxa del grup, amb rànquing i estadístiques.",
+    "featureCarsTitle": "Cotxes i transport",
+    "featureCarsBody": "Organitzeu qui porta cotxe i qui va en tren o bus a cada pla, sense embolics.",
+    "featureSocialTitle": "El vostre racó",
+    "featureSocialBody": "Frasari, cançoner, enquestes, estats de 24 h i tocs entre membres.",
+    "installTitle": "Prefereixes instal·lar-la?"
   },
   "drivers": {
     "title": "Zona de Conductors",
@@ -454,6 +487,15 @@
       ]
     },
     "title": "Registre de canvis",
+    "v1_3": {
+      "name": "Versió 1.3",
+      "date": "Agost 2026",
+      "items": [
+        "Nova pestanya central d'accés ràpid: posa a mà allò que més facis servir (frasari, cançons, enquestes o rànquing) i canvia-ho quan vulguis amb el botó de sota.",
+        "Transport públic/alternatiu als esdeveniments: a més dels cotxes, apunta't a mitjans de capacitat il·limitada com el tren R4 o R3.",
+        "Nova web de recepció que explica l'app, amb selector d'idioma i un botó gran d'accés; només la veuen els usuaris nous i no reapareix en tornar."
+      ]
+    },
     "v1_1_1": {
       "name": "Versió 1.1.1",
       "date": "Juliol 2026",

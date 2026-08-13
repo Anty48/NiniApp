@@ -19,6 +19,7 @@ import { FONT_BOLD } from '@/constants/typography';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { GroupDataProvider } from '@/contexts/GroupDataContext';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
+import { QuickAccessProvider } from '@/contexts/QuickAccessContext';
 import { ThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { refreshPushIfEnabled } from '@/services/push';
 import { hasEnteredWeb } from '@/utils/webGateway';
@@ -56,7 +57,9 @@ export default function RootLayout() {
       <ThemeProvider>
         <AuthProvider>
           <GroupDataProvider>
-            <RootNavigator />
+            <QuickAccessProvider>
+              <RootNavigator />
+            </QuickAccessProvider>
           </GroupDataProvider>
         </AuthProvider>
       </ThemeProvider>
@@ -83,15 +86,17 @@ function useAuthGate(booted: boolean) {
     if (!booted) return;
     const section = segments[0] as string | undefined;
 
-    if (!language) {
-      if (section !== 'language') router.replace('/language');
-      return;
-    }
-    // Solo web: antes de dejar entrar al login se muestra la puerta de entrada
-    // (entrar a la web o descargar el APK), hasta que el usuario la cruce. En
-    // nativo nunca aparece.
+    // Solo web: los usuarios nuevos (sin sesión y que no han cruzado nunca) ven
+    // primero la web de recepción, que explica la app y tiene su propio
+    // desplegable de idioma. Se muestra antes que la pantalla de idioma para
+    // que la recepción sea de verdad la primera pantalla. En nativo nunca
+    // aparece; y una vez cruzada, no reaparece (flag persistido).
     if (Platform.OS === 'web' && !user && !hasEnteredWeb()) {
       if (section !== 'gateway') router.replace('/gateway');
+      return;
+    }
+    if (!language) {
+      if (section !== 'language') router.replace('/language');
       return;
     }
     if (!user) {

@@ -11,6 +11,8 @@ export const StorageKeys = {
   session: 'niniapp.session',
   /** Estados de miembros ya vistos: mapa "groupId:userId" -> timestamp del estado. */
   seenStatuses: 'niniapp.seenStatuses',
+  /** Acceso rápido elegido para la pestaña central (frasario/canciones/encuestas/ranking). */
+  quickAccess: 'niniapp.quickAccess',
 } as const;
 
 export type StorageKey = (typeof StorageKeys)[keyof typeof StorageKeys];

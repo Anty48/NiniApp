@@ -228,6 +228,8 @@ export interface GroupEvent {
   /** Horas antes del inicio en que se cierra la votación (por defecto 12). */
   voteLockHoursBefore: number;
   cars?: EventCar[];
+  /** Transportes públicos/alternativos (capacidad infinita), ej. tren R4. */
+  transports?: EventTransport[];
   /** Los eventos pasados se guardan 1 mes en histórico antes de borrarse. */
   archivedAt?: string;
   /** Marca del recordatorio "queda <1 h de votación" (lo escribe api/vote-reminders.js). */
@@ -257,6 +259,20 @@ export interface EventCar {
   name?: string;
   seats: number;
   /** Usuarios (con voto SÍ) asignados a plaza, en orden. */
+  occupants: UserId[];
+}
+
+/**
+ * Transporte público o alternativo de un evento (tren, bus, a pie...). A
+ * diferencia de los coches, tiene capacidad ilimitada: se apunta quien quiera.
+ * Sirve para agrupar a la gente por medio (ej. quién va en el R4 y quién en el
+ * R3). Siempre son temporales del evento (no atados a nadie).
+ */
+export interface EventTransport {
+  id: string;
+  /** Nombre del transporte (ej. "R4", "Bus nocturno", "A pie"). */
+  name: string;
+  /** Apuntados a este transporte (sin límite de plazas). */
   occupants: UserId[];
 }
 
