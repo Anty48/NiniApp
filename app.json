@@ -55,13 +55,6 @@
         {
           "locationWhenInUsePermission": "NiniApp usa tu ubicación solo para calcular en tu dispositivo la distancia al IFAE; nunca se envía a ningún servidor."
         }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/images/notification-icon.png",
-          "color": "#6C5CE7"
-        }
       ]
     ],
     "experiments": {

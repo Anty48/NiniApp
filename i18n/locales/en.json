@@ -552,8 +552,7 @@
         "Admins can manually adjust any member's commitment percentage from their profile.",
         "Birthday alerts now arrive at 00:00 and are triggered by the app itself, with no dependency on external services.",
         "New “bomb notification” in the Group tab: admins (or anyone at 100% commitment) can send a message to the whole group once a week, with prior confirmations and an opt-out.",
-        "The Group tab now shows the member list and the group ranking directly, without needing to pin it in quick access.",
-        "The notification icon is no longer a white square: it is now the NiniApp trebuchet (on Android it requires updating the app)."
+        "The Group tab now shows the member list and the group ranking directly, without needing to pin it in quick access."
       ]
     }
   },
