@@ -15,7 +15,8 @@
     "edit": "Editar",
     "add": "Añadir",
     "you": "tú",
-    "optional": "opcional"
+    "optional": "opcional",
+    "close": "Cerrar"
   },
   "language": {
     "title": "Elige tu idioma",
@@ -328,7 +329,13 @@
     "statsDaily": "Por día",
     "statsToday": "Hoy",
     "statsByMember": "Por miembro",
-    "statsNoData": "Aún no hay contribuciones en este periodo."
+    "statsNoData": "Aún no hay contribuciones en este periodo.",
+    "statsTotalPeriod": "Total (%{days} días)",
+    "statsAvgActive": "Media/día activo",
+    "statsCurrentStreak": "Racha actual",
+    "statsBestStreak": "Mejor racha",
+    "statsDays": "%{days} días",
+    "statsByWeekday": "Por día de la semana"
   },
   "leaderboard": {
     "byCommitment": "Compromiso",
@@ -474,7 +481,10 @@
   "member": {
     "personalStreak": "Racha",
     "phrases": "Sus frases en el Frasario",
-    "viewProfile": "Ver perfil"
+    "viewProfile": "Ver perfil",
+    "adjustCommitment": "Ajustar compromiso",
+    "adjustCommitmentHint": "Fija el % de compromiso (0-100) de esta persona. La recuperación pasiva seguirá desde el nuevo valor.",
+    "commitmentValueLabel": "Compromiso (0-100)"
   },
   "changelog": {
     "v1_2": {
@@ -531,6 +541,16 @@
       "items": [
         "Lanzamiento inicial: grupos, calendario con votación de asistencia, coches, contador con rachas, ranking, copipuntos, conductores, toques, notificaciones push, funciones extra y más."
       ]
+    },
+    "v1_4": {
+      "name": "Versión 1.4",
+      "date": "Septiembre 2026",
+      "items": [
+        "Estadísticas del contador renovadas: gráficos con guías, selector de periodo (7/30/90 días), medias, racha actual y mejor racha, reparto por día de la semana y desglose por miembro con porcentaje.",
+        "Los administradores pueden ajustar a mano el porcentaje de compromiso de cualquier miembro desde su perfil.",
+        "El aviso de cumpleaños llega a las 00:00 del día y ahora lo dispara la propia app, sin depender de servicios externos.",
+        "Nueva “notificación bomba” en la pestaña Grupo: admins (o quien tenga el 100 % de compromiso) pueden enviar un mensaje a todo el grupo una vez por semana, con confirmaciones previas y opción de desactivarlas."
+      ]
     }
   },
   "notifications": {
@@ -543,7 +563,9 @@
     "groupMilestoneTitle": "¡Hito de racha del grupo! 🔥",
     "groupMilestoneBody": "¡Lleváis %{count} días seguidos sumando!",
     "personalMilestoneTitle": "¡Racha personal! 🔥",
-    "personalMilestoneBody": "Llevas %{count} días seguidos contribuyendo."
+    "personalMilestoneBody": "Llevas %{count} días seguidos contribuyendo.",
+    "birthdayTitle": "🎂 ¡Cumpleaños!",
+    "birthdayBody": "¡Hoy es el cumpleaños de %{name}!"
   },
   "placeholder": {
     "calendar": "",
@@ -562,5 +584,31 @@
     "empty": "Todavía no hay tipos de tocar. El toque normal sigue disponible.",
     "deleteTitle": "Eliminar tipo",
     "deleteMessage": "¿Eliminar «%{name}»?"
+  },
+  "bomb": {
+    "section": "Notificación bomba",
+    "title": "Notificación bomba",
+    "cardHint": "Un aviso a todo el grupo. Solo admins o quien tenga el 100 % de compromiso, una vez por semana.",
+    "intro": "Al enviarla, TODO el grupo (salvo quien la haya desactivado) recibirá tu mensaje. Solo puedes hacerlo una vez por semana: piénsatelo bien.",
+    "messageLabel": "Mensaje para todos",
+    "defaultMessage": "¡Ha sido un día propicio!",
+    "receiveToggle": "Recibir notificaciones bomba",
+    "receiveHint": "Si lo desactivas, ni las envías ni las recibes.",
+    "optedOutHint": "Tienes las notificaciones bomba desactivadas: actívalas para poder enviar.",
+    "notEligibleHint": "Solo los admins o quienes tengan el 100 % de compromiso pueden lanzarla.",
+    "readyHint": "Puedes lanzarla ahora. Recuerda: llega a todo el grupo y no podrás repetir en una semana.",
+    "cooldownWait": "Ya la enviaste esta semana. Podrás volver a hacerlo en %{days} día(s).",
+    "send": "Enviar a todo el grupo",
+    "warnTitle": "¿Seguro?",
+    "warnContinue": "Continuar",
+    "warn1": "Esto enviará una notificación a TODAS las personas del grupo. ¿Continuar?",
+    "warn2": "No hay vuelta atrás: una vez enviada, no se puede cancelar. ¿Sigues?",
+    "warn3": "No podrás volver a lanzar otra notificación bomba hasta dentro de una semana. ¿Lo tienes claro?",
+    "warn4": "Todo el mundo verá tu mensaje en su teléfono. Piénsatelo bien. ¿Seguimos?",
+    "warn5": "Última confirmación: ¿enviar la notificación bomba a todo el grupo ahora?",
+    "pushTitle": "💣 Notificación bomba",
+    "optedOutError": "No puedes enviarla con las notificaciones bomba desactivadas.",
+    "sentOkTitle": "Enviada",
+    "sentOkMessage": "Tu notificación bomba ha salido para todo el grupo."
   }
 }

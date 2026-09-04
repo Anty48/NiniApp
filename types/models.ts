@@ -97,8 +97,12 @@ export interface GroupMember {
   /** Cumpleaños (DD/MM) copiado del perfil, para pintarlo en el calendario. */
   birthday?: string;
   showBirthday?: boolean;
-  /** Último día (YYYY-MM-DD) en que el cron anunció su cumpleaños al grupo. */
+  /** Último día (YYYY-MM-DD) en que se anunció su cumpleaños al grupo. */
   birthdayNotifiedOn?: string;
+  /** Última vez (ISO) que envió una "notificación bomba" (cooldown semanal). */
+  bombLastSentAt?: string;
+  /** Si desactivó las notificaciones bomba: ni las envía ni las recibe. */
+  bombOptOut?: boolean;
 }
 
 /** "Toque" entre miembros (estilo poke). Máx. uno cada 24 h por destinatario. */

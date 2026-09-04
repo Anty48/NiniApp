@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Modal, Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
@@ -12,9 +12,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { BOMB_COOLDOWN_MS, canSendBomb } from '@/services/groupData';
 import { ensurePhotoUploaded } from '@/services/photos';
 import { getItem, StorageKeys } from '@/services/storage';
-import { alertMessage } from '@/utils/confirm';
+import { alertMessage, confirmAsync } from '@/utils/confirm';
+import { DAY_MS } from '@/utils/date';
 import { pickImage } from '@/utils/pickImage';
 
 /**
@@ -27,7 +29,13 @@ export default function GroupTabScreen() {
   const { t } = useLanguage();
   const { theme } = useTheme();
   const { user } = useAuth();
-  const { data, me, isLoading, setMyStatus, clearMyStatus } = useGroupData();
+  const { data, me, isLoading, setMyStatus, clearMyStatus, sendBomb, setBombOptOut } =
+    useGroupData();
+
+  // Notificación bomba: menú, texto editable y envío.
+  const [bombOpen, setBombOpen] = useState(false);
+  const [bombMessage, setBombMessage] = useState('');
+  const [sendingBomb, setSendingBomb] = useState(false);
 
   // Estados ya vistos en este dispositivo: "groupId:userId" -> timestamp.
   const [seen, setSeen] = useState<Record<string, string>>({});
@@ -94,6 +102,46 @@ export default function GroupTabScreen() {
   };
 
   const memberOf = (userId: string) => data.members.find((m) => m.userId === userId);
+
+  // --- Notificación bomba ---
+  const bombOptOut = me?.bombOptOut ?? false;
+  const bombEligible = !!me && canSendBomb(me) && !bombOptOut;
+  const bombLast = me?.bombLastSentAt ? new Date(me.bombLastSentAt).getTime() : 0;
+  const bombCooldownLeftMs = Math.max(0, BOMB_COOLDOWN_MS - (Date.now() - bombLast));
+  const bombOnCooldown = bombCooldownLeftMs > 0;
+  const bombDaysLeft = Math.ceil(bombCooldownLeftMs / DAY_MS);
+
+  const openBomb = () => {
+    setBombMessage(t('bomb.defaultMessage'));
+    setBombOpen(true);
+  };
+
+  const handleSendBomb = async () => {
+    // Cinco avisos distintos y en serie: hay que confirmarlos todos.
+    for (const key of ['bomb.warn1', 'bomb.warn2', 'bomb.warn3', 'bomb.warn4', 'bomb.warn5'] as const) {
+      const ok = await confirmAsync({
+        title: t('bomb.warnTitle'),
+        message: t(key),
+        confirmLabel: t('bomb.warnContinue'),
+        cancelLabel: t('common.cancel'),
+        destructive: true,
+      });
+      if (!ok) return;
+    }
+    setSendingBomb(true);
+    const result = await sendBomb(bombMessage);
+    setSendingBomb(false);
+    if (result === 'ok') {
+      setBombOpen(false);
+      alertMessage(t('bomb.sentOkTitle'), t('bomb.sentOkMessage'));
+    } else if (result === 'cooldown') {
+      alertMessage(t('bomb.title'), t('bomb.cooldownWait', { days: bombDaysLeft }));
+    } else if (result === 'opted-out') {
+      alertMessage(t('bomb.title'), t('bomb.optedOutError'));
+    } else {
+      alertMessage(t('bomb.title'), t('bomb.notEligibleHint'));
+    }
+  };
 
   const features: { key: string; emoji: string; route: string; visible: boolean }[] = [
     { key: 'phrasebook', emoji: '📖', route: '/phrasebook', visible: true },
@@ -245,6 +293,74 @@ export default function GroupTabScreen() {
             onPress={() => router.push(f.route as any)}
           />
         ))}
+
+      {/* Notificación bomba */}
+      <ThemedText variant="label">{t('bomb.section')}</ThemedText>
+      <Pressable
+        onPress={openBomb}
+        style={({ pressed }) => [
+          styles.bombCard,
+          { backgroundColor: theme.danger + '15', borderColor: theme.danger },
+          pressed && { opacity: 0.7 },
+        ]}>
+        <ThemedText style={styles.bombEmoji}>💣</ThemedText>
+        <View style={styles.flex}>
+          <ThemedText style={{ color: theme.danger, fontWeight: '700' }}>
+            {t('bomb.title')}
+          </ThemedText>
+          <ThemedText variant="muted">{t('bomb.cardHint')}</ThemedText>
+        </View>
+      </Pressable>
+
+      {/* Menú de la notificación bomba */}
+      <Modal
+        visible={bombOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setBombOpen(false)}>
+        <View style={styles.bombBackdrop}>
+          <View style={[styles.bombModal, { backgroundColor: theme.background, borderColor: theme.border }]}>
+            <ThemedText variant="title">💣 {t('bomb.title')}</ThemedText>
+            <ThemedText variant="muted">{t('bomb.intro')}</ThemedText>
+
+            <TextField
+              label={t('bomb.messageLabel')}
+              value={bombMessage}
+              onChangeText={setBombMessage}
+              placeholder={t('bomb.defaultMessage')}
+              multiline
+              maxLength={200}
+            />
+
+            {/* Recibir notificaciones bomba (si lo desactivas, ni envías ni recibes) */}
+            <View style={styles.bombToggleRow}>
+              <View style={styles.flex}>
+                <ThemedText>{t('bomb.receiveToggle')}</ThemedText>
+                <ThemedText variant="muted">{t('bomb.receiveHint')}</ThemedText>
+              </View>
+              <Switch value={!bombOptOut} onValueChange={(v) => setBombOptOut(!v)} />
+            </View>
+
+            {bombOptOut ? (
+              <ThemedText variant="muted">{t('bomb.optedOutHint')}</ThemedText>
+            ) : !me || !canSendBomb(me) ? (
+              <ThemedText variant="muted">{t('bomb.notEligibleHint')}</ThemedText>
+            ) : bombOnCooldown ? (
+              <ThemedText variant="muted">{t('bomb.cooldownWait', { days: bombDaysLeft })}</ThemedText>
+            ) : (
+              <ThemedText variant="muted">{t('bomb.readyHint')}</ThemedText>
+            )}
+
+            <Button
+              title={t('bomb.send')}
+              onPress={handleSendBomb}
+              loading={sendingBomb}
+              disabled={!bombEligible || bombOnCooldown || !bombMessage.trim()}
+            />
+            <Button title={t('common.close')} variant="ghost" onPress={() => setBombOpen(false)} />
+          </View>
+        </View>
+      </Modal>
     </Screen>
   );
 }
@@ -261,4 +377,21 @@ const styles = StyleSheet.create({
   statusAvatarWrap: { borderWidth: 2, borderRadius: 30, padding: 2 },
   statusAvatarUnseen: { borderWidth: 3 },
   statusName: { fontSize: 11, maxWidth: 64 },
+  bombCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 14,
+  },
+  bombEmoji: { fontSize: 30 },
+  bombBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  bombModal: { borderRadius: 20, borderWidth: 1, padding: 20, gap: 12 },
+  bombToggleRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
 });

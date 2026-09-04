@@ -149,13 +149,18 @@ module.exports = async (req, res) => {
     }
 
     // ---------- 2 y 3) Avisos de día: días especiales y cumpleaños ----------
-    if (!dayNoticesActive) continue;
-    const dueSpecial = (data.events || []).filter(
-      (e) =>
-        e.kind === 'specialDay' &&
-        !e.specialDayNotifiedAt &&
-        madridParts(new Date(e.startsAt)).dayKey === today.dayKey,
-    );
+    // Los días especiales esperan a las 08:00 (no notificar de madrugada). Los
+    // cumpleaños van desde las 00:00 del día (así lo pidió el usuario) y como
+    // respaldo del disparo desde la propia app; la marca birthdayNotifiedOn
+    // evita duplicados con cualquiera de los dos caminos.
+    const dueSpecial = dayNoticesActive
+      ? (data.events || []).filter(
+          (e) =>
+            e.kind === 'specialDay' &&
+            !e.specialDayNotifiedAt &&
+            madridParts(new Date(e.startsAt)).dayKey === today.dayKey,
+        )
+      : [];
     const dueBirthdays = (data.members || []).filter(
       (m) => m.showBirthday && m.birthday === today.ddmm && m.birthdayNotifiedOn !== today.dayKey,
     );

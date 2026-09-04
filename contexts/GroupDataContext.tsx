@@ -7,12 +7,14 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { AppState } from 'react-native';
 
 import { ProfileFields, useAuth } from '@/contexts/AuthContext';
 import { i18n, SUPPORTED_LANGUAGES } from '@/i18n';
 import * as gd from '@/services/groupData';
 import { notifyLocal } from '@/services/notifications';
 import { PushPayload, sendPushToUsers } from '@/services/push';
+import { madridToday } from '@/utils/date';
 import {
   CarDetails,
   EventVoteValue,
@@ -52,6 +54,16 @@ interface GroupDataContextValue {
     fields: Partial<Pick<Group, 'name' | 'accessPassword' | 'photoUrl'>>,
   ) => Promise<void>;
   setMemberRole: (userId: UserId, role: GroupRole) => Promise<void>;
+  /** El admin ajusta a mano el % de compromiso (0-100) de cualquier miembro. */
+  setCommitmentScore: (userId: UserId, score: number) => Promise<void>;
+  /**
+   * "Notificación bomba": la mandan admins (siempre) y quien tenga el 100 % de
+   * compromiso, una vez por semana. Llega a todo el grupo salvo quien la haya
+   * desactivado. Devuelve el resultado para que la UI avise.
+   */
+  sendBomb: (message: string) => Promise<'ok' | 'cooldown' | 'not-eligible' | 'opted-out'>;
+  /** Activa/desactiva las notificaciones bomba para mí (ni envío ni recibo). */
+  setBombOptOut: (optOut: boolean) => Promise<void>;
   /** Sale del grupo borrando los datos propios; si era admin, traspasa el rol. */
   leaveGroup: (successorId?: UserId) => Promise<void>;
   updateMyProfile: (fields: ProfileFields) => Promise<void>;
@@ -322,6 +334,13 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
         group: { ...d.group, memberRoles: { ...d.group.memberRoles, [userId]: role } },
         members: d.members.map((m) => (m.userId === userId ? { ...m, role } : m)),
       }));
+    },
+    [mutate],
+  );
+
+  const setCommitmentScore = useCallback(
+    async (userId: UserId, score: number) => {
+      await mutate((d) => gd.setCommitmentScore(d, userId, score));
     },
     [mutate],
   );
@@ -618,6 +637,131 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
     [mutate],
   );
 
+  const setBombOptOut = useCallback(
+    async (optOut: boolean) => {
+      if (!user) return;
+      await mutate((d) => ({
+        ...d,
+        members: d.members.map((m) => (m.userId === user.id ? { ...m, bombOptOut: optOut } : m)),
+      }));
+    },
+    [mutate, user],
+  );
+
+  const sendBomb = useCallback(
+    async (message: string): Promise<'ok' | 'cooldown' | 'not-eligible' | 'opted-out'> => {
+      if (!user || !data) return 'not-eligible';
+      // El permiso y el cooldown se comprueban sobre el estado fresco dentro de
+      // la transacción (dos envíos simultáneos no lo saltan).
+      let outcome: 'ok' | 'cooldown' | 'not-eligible' | 'opted-out' = 'not-eligible';
+      const committed = await gd.mutateGroupData(data.group.id, (fresh) => {
+        if (!fresh) return null;
+        const sender = fresh.members.find((m) => m.userId === user.id);
+        if (!sender) {
+          outcome = 'not-eligible';
+          return null;
+        }
+        if (sender.bombOptOut) {
+          outcome = 'opted-out';
+          return null;
+        }
+        if (!gd.canSendBomb(sender)) {
+          outcome = 'not-eligible';
+          return null;
+        }
+        const last = sender.bombLastSentAt ? new Date(sender.bombLastSentAt).getTime() : 0;
+        if (Date.now() - last < gd.BOMB_COOLDOWN_MS) {
+          outcome = 'cooldown';
+          return null;
+        }
+        outcome = 'ok';
+        return {
+          ...fresh,
+          members: fresh.members.map((m) =>
+            m.userId === user.id ? { ...m, bombLastSentAt: new Date().toISOString() } : m,
+          ),
+        };
+      });
+      if (committed) setData(committed);
+      if ((outcome as string) !== 'ok') return outcome;
+      // Llega a todo el grupo salvo quien la haya desactivado (y salvo el
+      // remitente, que el servidor excluye siempre). El texto es libre, así
+      // que va igual en los tres idiomas; solo el título se localiza.
+      const body = message.trim().slice(0, 300) || i18n.t('bomb.defaultMessage');
+      const recipients = (committed ?? data).members
+        .filter((m) => m.userId !== user.id && !m.bombOptOut)
+        .map((m) => m.userId);
+      if (recipients.length) {
+        sendPushToUsers(data.group.id, recipients, {
+          title: i18n.t('bomb.pushTitle'),
+          body,
+          i18n: Object.fromEntries(
+            SUPPORTED_LANGUAGES.map((locale) => [locale, { title: i18n.t('bomb.pushTitle', { locale }), body }]),
+          ),
+          url: '/group',
+        });
+      }
+      return 'ok';
+    },
+    [user, data],
+  );
+
+  // Cumpleaños servidos por la propia app (sin depender del cron de GitHub): el
+  // primer miembro que la abre pasada la medianoche del cumpleaños reclama el
+  // aviso en una transacción y notifica a todo el grupo. Idempotente por la
+  // marca birthdayNotifiedOn, así que solo se envía una vez.
+  const checkBirthdays = useCallback(async () => {
+    if (!user || !data) return;
+    const { dayKey, ddmm } = madridToday();
+    let claimed: GroupMember[] = [];
+    const committed = await gd.mutateGroupData(data.group.id, (fresh) => {
+      if (!fresh) return null;
+      const res = gd.claimDueBirthdays(fresh, dayKey, ddmm);
+      claimed = res.claimed;
+      return res.claimed.length ? res.data : null;
+    });
+    if (committed) setData(committed);
+    const list = claimed as GroupMember[];
+    if (!list.length) return;
+    const everyone = (committed ?? data).members.map((m) => m.userId);
+    for (const member of list) {
+      const name = member.nickname ?? member.name;
+      sendPushToUsers(
+        data.group.id,
+        everyone.filter((id) => id !== user.id),
+        {
+          ...localizedPush('notifications.birthdayTitle', 'notifications.birthdayBody', { name }),
+          url: `/member/${member.userId}`,
+        },
+      );
+      // El servidor de push excluye siempre al remitente, así que quien dispara
+      // el aviso (y no es el cumpleañero) lo ve con una notificación local.
+      if (member.userId !== user.id) {
+        notifyLocal(
+          i18n.t('notifications.birthdayTitle'),
+          i18n.t('notifications.birthdayBody', { name }),
+        );
+      }
+    }
+    // Estable por grupo/usuario (no por cada snapshot): mutateGroupData relee el
+    // doc fresco, así que no depende del `data` local salvo por los ids.
+  }, [user?.id, data?.group.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Al abrir el grupo, al volver a primer plano y cada 30 min mientras está
+  // abierto: comprueba si hoy hay algún cumpleaños por anunciar.
+  useEffect(() => {
+    if (!data?.group.id) return;
+    checkBirthdays();
+    const interval = setInterval(checkBirthdays, 30 * 60 * 1000);
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') checkBirthdays();
+    });
+    return () => {
+      clearInterval(interval);
+      sub.remove();
+    };
+  }, [data?.group.id, checkBirthdays]);
+
   const value = useMemo(
     () => ({
       data,
@@ -636,6 +780,9 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       removeContribution,
       updateGroupSettings,
       setMemberRole,
+      setCommitmentScore,
+      sendBomb,
+      setBombOptOut,
       leaveGroup,
       updateMyProfile,
       pokeMember,
@@ -675,6 +822,9 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       removeContribution,
       updateGroupSettings,
       setMemberRole,
+      setCommitmentScore,
+      sendBomb,
+      setBombOptOut,
       leaveGroup,
       updateMyProfile,
       pokeMember,

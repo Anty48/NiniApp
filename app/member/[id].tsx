@@ -5,6 +5,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
+import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
@@ -25,11 +26,15 @@ export default function MemberProfileScreen() {
   const { t } = useLanguage();
   const { theme } = useTheme();
   const { user } = useAuth();
-  const { data, me, pokeMember } = useGroupData();
+  const { data, me, isAdmin, pokeMember, setCommitmentScore } = useGroupData();
 
   const [status, setStatus] = useState<'idle' | 'sent' | 'cooldown'>('idle');
   // Panel desplegable con los tipos de toque del grupo.
   const [pokeOpen, setPokeOpen] = useState(false);
+  // Ajuste manual del compromiso (solo admin).
+  const [editingCommitment, setEditingCommitment] = useState(false);
+  const [commitmentInput, setCommitmentInput] = useState('');
+  const [savingCommitment, setSavingCommitment] = useState(false);
 
   const member = data?.members.find((m) => m.userId === id);
   const memberStatus = data?.statuses?.find((s) => s.userId === id);
@@ -74,6 +79,20 @@ export default function MemberProfileScreen() {
     const result = await pokeMember(member.userId, type);
     if (result === 'ok') setStatus('sent');
     else if (result === 'cooldown') setStatus('cooldown');
+  };
+
+  const openCommitmentEditor = () => {
+    setCommitmentInput(String(Math.round(member.commitmentScore)));
+    setEditingCommitment(true);
+  };
+
+  const saveCommitment = async () => {
+    const value = Math.max(0, Math.min(100, Math.round(Number(commitmentInput))));
+    if (Number.isNaN(value)) return;
+    setSavingCommitment(true);
+    await setCommitmentScore(member.userId, value);
+    setSavingCommitment(false);
+    setEditingCommitment(false);
   };
 
   return (
@@ -127,6 +146,40 @@ export default function MemberProfileScreen() {
             <ThemedText variant="muted">{t('member.personalStreak')}</ThemedText>
           </View>
         </View>
+
+        {/* Ajuste manual del compromiso (solo admin) */}
+        {isAdmin &&
+          (editingCommitment ? (
+            <View style={[styles.commitmentCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+              <ThemedText variant="label">{t('member.adjustCommitment')}</ThemedText>
+              <ThemedText variant="muted">{t('member.adjustCommitmentHint')}</ThemedText>
+              <TextField
+                label={t('member.commitmentValueLabel')}
+                value={commitmentInput}
+                onChangeText={(text) => setCommitmentInput(text.replace(/[^0-9]/g, '').slice(0, 3))}
+                keyboardType="number-pad"
+                placeholder="0-100"
+              />
+              <View style={styles.commitmentRow}>
+                <View style={styles.flex}>
+                  <Button title={t('common.save')} onPress={saveCommitment} loading={savingCommitment} />
+                </View>
+                <View style={styles.flex}>
+                  <Button
+                    title={t('common.cancel')}
+                    variant="ghost"
+                    onPress={() => setEditingCommitment(false)}
+                  />
+                </View>
+              </View>
+            </View>
+          ) : (
+            <Button
+              title={`✏️ ${t('member.adjustCommitment')}`}
+              variant="outline"
+              onPress={openCommitmentEditor}
+            />
+          ))}
 
         {/* Tocar */}
         {!isMe &&
@@ -212,6 +265,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   phrasesCard: { flexDirection: 'column', justifyContent: 'flex-start', gap: 8 },
+  commitmentCard: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 10 },
+  commitmentRow: { flexDirection: 'row', gap: 8 },
   stat: { alignItems: 'center' },
   pokeSection: { gap: 8 },
   pokeMenu: { borderRadius: 16, borderWidth: 1, overflow: 'hidden' },

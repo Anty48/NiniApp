@@ -15,7 +15,8 @@
     "edit": "Editar",
     "add": "Afegir",
     "you": "tu",
-    "optional": "opcional"
+    "optional": "opcional",
+    "close": "Tancar"
   },
   "language": {
     "title": "Tria el teu idioma",
@@ -328,7 +329,13 @@
     "statsDaily": "Per dia",
     "statsToday": "Avui",
     "statsByMember": "Per membre",
-    "statsNoData": "Encara no hi ha contribucions en aquest període."
+    "statsNoData": "Encara no hi ha contribucions en aquest període.",
+    "statsTotalPeriod": "Total (%{days} dies)",
+    "statsAvgActive": "Mitjana/dia actiu",
+    "statsCurrentStreak": "Ratxa actual",
+    "statsBestStreak": "Millor ratxa",
+    "statsDays": "%{days} dies",
+    "statsByWeekday": "Per dia de la setmana"
   },
   "leaderboard": {
     "byCommitment": "Compromís",
@@ -474,7 +481,10 @@
   "member": {
     "personalStreak": "Ratxa",
     "phrases": "Les seves frases al Frasari",
-    "viewProfile": "Veure perfil"
+    "viewProfile": "Veure perfil",
+    "adjustCommitment": "Ajustar compromís",
+    "adjustCommitmentHint": "Fixa el % de compromís (0-100) d'aquesta persona. La recuperació passiva continuarà des del nou valor.",
+    "commitmentValueLabel": "Compromís (0-100)"
   },
   "changelog": {
     "v1_2": {
@@ -531,6 +541,16 @@
       "items": [
         "Llançament inicial: grups, calendari amb votació d'assistència, cotxes, comptador amb ratxes, rànquing, copipunts, conductors, tocs, notificacions push, funcions extra i més."
       ]
+    },
+    "v1_4": {
+      "name": "Versió 1.4",
+      "date": "Setembre 2026",
+      "items": [
+        "Estadístiques del comptador renovades: gràfics amb guies, selector de període (7/30/90 dies), mitjanes, ratxa actual i millor ratxa, repartiment per dia de la setmana i desglossament per membre amb percentatge.",
+        "Els administradors poden ajustar a mà el percentatge de compromís de qualsevol membre des del seu perfil.",
+        "L'avís d'aniversari arriba a les 00:00 del dia i ara el dispara la mateixa app, sense dependre de serveis externs.",
+        "Nova «notificació bomba» a la pestanya Grup: administradors (o qui tingui el 100 % de compromís) poden enviar un missatge a tot el grup un cop per setmana, amb confirmacions prèvies i opció de desactivar-les."
+      ]
     }
   },
   "notifications": {
@@ -543,7 +563,9 @@
     "groupMilestoneTitle": "Fita de ratxa del grup! 🔥",
     "groupMilestoneBody": "Porteu %{count} dies seguits sumant!",
     "personalMilestoneTitle": "Ratxa personal! 🔥",
-    "personalMilestoneBody": "Portes %{count} dies seguits contribuint."
+    "personalMilestoneBody": "Portes %{count} dies seguits contribuint.",
+    "birthdayTitle": "🎂 Aniversari!",
+    "birthdayBody": "Avui és l'aniversari de %{name}!"
   },
   "placeholder": {
     "calendar": "",
@@ -562,5 +584,31 @@
     "empty": "Encara no hi ha tipus de tocar. El toc normal continua disponible.",
     "deleteTitle": "Eliminar tipus",
     "deleteMessage": "Vols eliminar «%{name}»?"
+  },
+  "bomb": {
+    "section": "Notificació bomba",
+    "title": "Notificació bomba",
+    "cardHint": "Un avís a tot el grup. Només administradors o qui tingui el 100 % de compromís, un cop per setmana.",
+    "intro": "En enviar-la, TOT el grup (tret de qui l'hagi desactivada) rebrà el teu missatge. Només ho pots fer un cop per setmana: pensa-t'ho bé.",
+    "messageLabel": "Missatge per a tothom",
+    "defaultMessage": "Ha estat un dia propici!",
+    "receiveToggle": "Rebre notificacions bomba",
+    "receiveHint": "Si ho desactives, ni les envies ni les reps.",
+    "optedOutHint": "Tens les notificacions bomba desactivades: activa-les per poder enviar.",
+    "notEligibleHint": "Només els administradors o qui tingui el 100 % de compromís poden llançar-la.",
+    "readyHint": "Pots llançar-la ara. Recorda: arriba a tot el grup i no podràs repetir en una setmana.",
+    "cooldownWait": "Ja l'has enviada aquesta setmana. Podràs tornar-ho a fer d'aquí a %{days} dia(es).",
+    "send": "Enviar a tot el grup",
+    "warnTitle": "Segur?",
+    "warnContinue": "Continuar",
+    "warn1": "Això enviarà una notificació a TOTES les persones del grup. Continuar?",
+    "warn2": "No hi ha marxa enrere: un cop enviada, no es pot cancel·lar. Segueixes?",
+    "warn3": "No podràs tornar a llançar una altra notificació bomba fins d'aquí a una setmana. Ho tens clar?",
+    "warn4": "Tothom veurà el teu missatge al telèfon. Pensa-t'ho bé. Continuem?",
+    "warn5": "Última confirmació: enviar la notificació bomba a tot el grup ara?",
+    "pushTitle": "💣 Notificació bomba",
+    "optedOutError": "No pots enviar-la amb les notificacions bomba desactivades.",
+    "sentOkTitle": "Enviada",
+    "sentOkMessage": "La teva notificació bomba ha sortit cap a tot el grup."
   }
 }

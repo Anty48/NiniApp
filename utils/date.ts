@@ -9,6 +9,23 @@ export function dayKey(d: Date | string = new Date()): string {
   return `${y}-${m}-${day}`;
 }
 
+/**
+ * Fecha de hoy en hora española (el grupo es de España), como clave
+ * YYYY-MM-DD y como día/mes DD/MM. Se usa para decidir cuándo cae un
+ * cumpleaños con independencia de la zona horaria del dispositivo.
+ */
+export function madridToday(date: Date = new Date()): { dayKey: string; ddmm: string } {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .formatToParts(date)
+    .reduce<Record<string, string>>((acc, p) => ((acc[p.type] = p.value), acc), {});
+  return { dayKey: `${parts.year}-${parts.month}-${parts.day}`, ddmm: `${parts.day}/${parts.month}` };
+}
+
 /** Días entre dos claves YYYY-MM-DD (b - a). */
 export function daysBetweenKeys(a: string, b: string): number {
   return Math.round((Date.parse(b) - Date.parse(a)) / DAY_MS);

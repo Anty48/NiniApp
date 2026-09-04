@@ -52,6 +52,14 @@ export function pokeCooldownMs(commitmentScore: number): number {
   const score = Math.max(0, Math.min(100, commitmentScore));
   return POKE_MIN_COOLDOWN_MS + ((100 - score) / 100) * (POKE_MAX_COOLDOWN_MS - POKE_MIN_COOLDOWN_MS);
 }
+/**
+ * "Notificación bomba": cooldown semanal por persona. La pueden lanzar los
+ * admins (siempre) y quien tenga el 100 % de compromiso.
+ */
+export const BOMB_COOLDOWN_MS = 7 * DAY_MS;
+export function canSendBomb(member: GroupMember): boolean {
+  return member.role === 'admin' || member.commitmentScore >= 100;
+}
 /** Los estados de miembros caducan a las 24 h. */
 export const STATUS_TTL_MS = 24 * 3600 * 1000;
 /** Las encuestas se borran solas a las 24 h de crearse. */
@@ -270,6 +278,25 @@ function applyPenalty(members: GroupMember[], userId: UserId, amount: number): G
         }
       : m,
   );
+}
+
+/**
+ * Ajuste manual del compromiso por un admin (0-100). Reinicia la marca de
+ * recuperación pasiva para que el +0,5/día siga desde el nuevo valor.
+ */
+export function setCommitmentScore(
+  data: GroupData,
+  userId: UserId,
+  score: number,
+): GroupData {
+  const clamped = Math.max(0, Math.min(100, Math.round(score)));
+  const nowIso = new Date().toISOString();
+  return {
+    ...data,
+    members: data.members.map((m) =>
+      m.userId === userId ? { ...m, commitmentScore: clamped, lastRecoveryAt: nowIso } : m,
+    ),
+  };
 }
 
 export function castVote(
@@ -545,6 +572,56 @@ export function birthdayEvents(
     }
   }
   return list;
+}
+
+/**
+ * Reclama los cumpleaños que hay que anunciar HOY (fecha DD/MM = `ddmm`) y aún
+ * no se han anunciado este año (`birthdayNotifiedOn !== todayKey`). Marca a
+ * esos miembros como notificados y devuelve la lista reclamada. Al ejecutarse
+ * dentro de una transacción sobre el doc fresco, dos dispositivos a la vez no
+ * duplican el aviso: solo el primero encuentra miembros sin marcar.
+ *
+ * Sustituye la dependencia del cron de GitHub para los cumpleaños: ahora es la
+ * propia app (el primer miembro que la abre pasada la medianoche) quien lo
+ * dispara. El aviso viaja a las 00:00 del día del cumpleaños.
+ */
+export function claimDueBirthdays(
+  data: GroupData,
+  todayKey: string,
+  ddmm: string,
+): { data: GroupData; claimed: GroupMember[] } {
+  const claimed = data.members.filter(
+    (m) => m.showBirthday && m.birthday === ddmm && m.birthdayNotifiedOn !== todayKey,
+  );
+  if (!claimed.length) return { data, claimed: [] };
+  const ids = new Set(claimed.map((m) => m.userId));
+  return {
+    data: {
+      ...data,
+      members: data.members.map((m) =>
+        ids.has(m.userId) ? { ...m, birthdayNotifiedOn: todayKey } : m,
+      ),
+    },
+    claimed,
+  };
+}
+
+/**
+ * Racha más larga de días consecutivos con al menos una contribución del grupo
+ * en todo el historial (`data.contributions`). El contador solo guarda la
+ * racha actual; esto la calcula mirando los días activos únicos.
+ */
+export function longestGroupStreak(data: GroupData): number {
+  const activeDays = [...new Set(data.contributions.map((c) => dayKey(c.at)))].sort();
+  let best = 0;
+  let run = 0;
+  let prev: string | null = null;
+  for (const day of activeDays) {
+    run = prev && daysBetweenKeys(prev, day) === 1 ? run + 1 : 1;
+    if (run > best) best = run;
+    prev = day;
+  }
+  return best;
 }
 
 /**

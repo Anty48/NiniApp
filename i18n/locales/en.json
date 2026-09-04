@@ -15,7 +15,8 @@
     "edit": "Edit",
     "add": "Add",
     "you": "you",
-    "optional": "optional"
+    "optional": "optional",
+    "close": "Close"
   },
   "language": {
     "title": "Choose your language",
@@ -328,7 +329,13 @@
     "statsDaily": "By day",
     "statsToday": "Today",
     "statsByMember": "By member",
-    "statsNoData": "No contributions in this period yet."
+    "statsNoData": "No contributions in this period yet.",
+    "statsTotalPeriod": "Total (%{days} days)",
+    "statsAvgActive": "Avg/active day",
+    "statsCurrentStreak": "Current streak",
+    "statsBestStreak": "Best streak",
+    "statsDays": "%{days} days",
+    "statsByWeekday": "By weekday"
   },
   "leaderboard": {
     "byCommitment": "Commitment",
@@ -474,7 +481,10 @@
   "member": {
     "personalStreak": "Streak",
     "phrases": "Their quotes in the Phrasary",
-    "viewProfile": "View profile"
+    "viewProfile": "View profile",
+    "adjustCommitment": "Adjust commitment",
+    "adjustCommitmentHint": "Set this person's commitment % (0-100). Passive recovery continues from the new value.",
+    "commitmentValueLabel": "Commitment (0-100)"
   },
   "changelog": {
     "v1_2": {
@@ -531,6 +541,16 @@
       "items": [
         "Initial release: groups, calendar with attendance voting, cars, counter with streaks, leaderboard, copipoints, drivers, pokes, push notifications, extra features and more."
       ]
+    },
+    "v1_4": {
+      "name": "Version 1.4",
+      "date": "September 2026",
+      "items": [
+        "Revamped counter statistics: charts with gridlines, period selector (7/30/90 days), averages, current and best streak, weekday breakdown and per-member split with percentages.",
+        "Admins can manually adjust any member's commitment percentage from their profile.",
+        "Birthday alerts now arrive at 00:00 and are triggered by the app itself, with no dependency on external services.",
+        "New “bomb notification” in the Group tab: admins (or anyone at 100% commitment) can send a message to the whole group once a week, with prior confirmations and an opt-out."
+      ]
     }
   },
   "notifications": {
@@ -543,7 +563,9 @@
     "groupMilestoneTitle": "Group streak milestone! 🔥",
     "groupMilestoneBody": "You've added %{count} days in a row!",
     "personalMilestoneTitle": "Personal streak! 🔥",
-    "personalMilestoneBody": "You've contributed %{count} days in a row."
+    "personalMilestoneBody": "You've contributed %{count} days in a row.",
+    "birthdayTitle": "🎂 Birthday!",
+    "birthdayBody": "Today is %{name}'s birthday!"
   },
   "placeholder": {
     "calendar": "",
@@ -562,5 +584,31 @@
     "empty": "No poke types yet. The normal poke is still available.",
     "deleteTitle": "Delete type",
     "deleteMessage": "Delete \"%{name}\"?"
+  },
+  "bomb": {
+    "section": "Bomb notification",
+    "title": "Bomb notification",
+    "cardHint": "One alert to the whole group. Admins only, or anyone at 100% commitment, once a week.",
+    "intro": "When you send it, the WHOLE group (except anyone who turned it off) will get your message. You can only do this once a week: think it through.",
+    "messageLabel": "Message for everyone",
+    "defaultMessage": "It's been a favourable day!",
+    "receiveToggle": "Receive bomb notifications",
+    "receiveHint": "If you turn this off, you neither send nor receive them.",
+    "optedOutHint": "Your bomb notifications are off: turn them on to be able to send.",
+    "notEligibleHint": "Only admins or people at 100% commitment can launch it.",
+    "readyHint": "You can launch it now. Remember: it reaches the whole group and you can't repeat for a week.",
+    "cooldownWait": "You already sent it this week. You'll be able to do it again in %{days} day(s).",
+    "send": "Send to the whole group",
+    "warnTitle": "Are you sure?",
+    "warnContinue": "Continue",
+    "warn1": "This will send a notification to EVERYONE in the group. Continue?",
+    "warn2": "No going back: once sent, it can't be cancelled. Still going?",
+    "warn3": "You won't be able to launch another bomb notification for a week. Are you sure?",
+    "warn4": "Everyone will see your message on their phone. Think it through. Shall we continue?",
+    "warn5": "Final confirmation: send the bomb notification to the whole group now?",
+    "pushTitle": "💣 Bomb notification",
+    "optedOutError": "You can't send it with bomb notifications turned off.",
+    "sentOkTitle": "Sent",
+    "sentOkMessage": "Your bomb notification has gone out to the whole group."
   }
 }
