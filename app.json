@@ -2,7 +2,7 @@
   "expo": {
     "name": "NiniApp",
     "slug": "mi-red-social",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "orientation": "portrait",
     "icon": "./assets/images/logo_app_icon.png",
     "scheme": "miredsocial",
@@ -54,6 +54,13 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "NiniApp usa tu ubicación solo para calcular en tu dispositivo la distancia al IFAE; nunca se envía a ningún servidor."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#6C5CE7"
         }
       ]
     ],

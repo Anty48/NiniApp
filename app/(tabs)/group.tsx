@@ -2,6 +2,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Image, Modal, Pressable, StyleSheet, Switch, View } from 'react-native';
 
+import { LeaderboardContent } from '@/components/features/LeaderboardContent';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Loading } from '@/components/ui/Loading';
@@ -281,6 +282,28 @@ export default function GroupTabScreen() {
         </View>
       )}
 
+      {/* Miembros del grupo */}
+      <ThemedText variant="label">
+        {t('groupTab.members')} ({data.members.length})
+      </ThemedText>
+      <View style={styles.memberGrid}>
+        {data.members.map((member) => (
+          <Pressable
+            key={member.userId}
+            onPress={() => router.push({ pathname: '/member/[id]', params: { id: member.userId } })}
+            style={({ pressed }) => [styles.memberItem, pressed && { opacity: 0.7 }]}>
+            <Avatar uri={member.photoUrl} name={member.nickname ?? member.name} size={52} />
+            <ThemedText variant="muted" numberOfLines={1} style={styles.memberItemName}>
+              {member.nickname ?? member.name}
+            </ThemedText>
+          </Pressable>
+        ))}
+      </View>
+
+      {/* Ranking del grupo (por compromiso, contribuciones o copipuntos) */}
+      <ThemedText variant="label">{t('groupTab.ranking')}</ThemedText>
+      <LeaderboardContent />
+
       {/* Funciones del grupo */}
       <ThemedText variant="label">{t('groupTab.features')}</ThemedText>
       {features
@@ -377,6 +400,9 @@ const styles = StyleSheet.create({
   statusAvatarWrap: { borderWidth: 2, borderRadius: 30, padding: 2 },
   statusAvatarUnseen: { borderWidth: 3 },
   statusName: { fontSize: 11, maxWidth: 64 },
+  memberGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  memberItem: { alignItems: 'center', width: 64, gap: 4 },
+  memberItemName: { fontSize: 11, maxWidth: 64, textAlign: 'center' },
   bombCard: {
     flexDirection: 'row',
     alignItems: 'center',

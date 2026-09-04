@@ -16,7 +16,9 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(title, {
       body: data.body || '',
       icon: '/icon-192.png',
-      badge: '/icon-192.png',
+      // El "badge" (icono monocromo de la barra de estado en Android) debe ser
+      // blanco sobre transparente; con el icono a color salía un cuadrado.
+      badge: '/notification-badge.png',
       data: { url: data.url || '/' },
     }),
   );

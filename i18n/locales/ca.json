@@ -73,7 +73,9 @@
     "colors": "Colors del grup",
     "drivers": "Zona de Conductors",
     "settings": "Ajustos del grup",
-    "pokeTypes": "Tipus de tocar"
+    "pokeTypes": "Tipus de tocar",
+    "members": "Membres",
+    "ranking": "Rànquing"
   },
   "statuses": {
     "section": "Estats",
@@ -549,7 +551,9 @@
         "Estadístiques del comptador renovades: gràfics amb guies, selector de període (7/30/90 dies), mitjanes, ratxa actual i millor ratxa, repartiment per dia de la setmana i desglossament per membre amb percentatge.",
         "Els administradors poden ajustar a mà el percentatge de compromís de qualsevol membre des del seu perfil.",
         "L'avís d'aniversari arriba a les 00:00 del dia i ara el dispara la mateixa app, sense dependre de serveis externs.",
-        "Nova «notificació bomba» a la pestanya Grup: administradors (o qui tingui el 100 % de compromís) poden enviar un missatge a tot el grup un cop per setmana, amb confirmacions prèvies i opció de desactivar-les."
+        "Nova «notificació bomba» a la pestanya Grup: administradors (o qui tingui el 100 % de compromís) poden enviar un missatge a tot el grup un cop per setmana, amb confirmacions prèvies i opció de desactivar-les.",
+        "La pestanya Grup ara mostra la llista de membres i el rànquing del grup directament, sense haver de posar-ho a l'accés ràpid.",
+        "La icona de les notificacions deixa de ser un quadrat blanc: ara és el trabuquet de NiniApp (a Android cal actualitzar l'app)."
       ]
     }
   },
