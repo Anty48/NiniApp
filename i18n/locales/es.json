@@ -75,7 +75,8 @@
     "settings": "Ajustes del grupo",
     "pokeTypes": "Tipos de tocar",
     "members": "Miembros",
-    "ranking": "Ranking"
+    "ranking": "Ranking",
+    "membersCount": "%{count} miembros"
   },
   "statuses": {
     "section": "Estados",
@@ -552,7 +553,7 @@
         "Los administradores pueden ajustar a mano el porcentaje de compromiso de cualquier miembro desde su perfil.",
         "El aviso de cumpleaños llega a las 00:00 del día y ahora lo dispara la propia app, sin depender de servicios externos.",
         "Nueva “notificación bomba” en la pestaña Grupo: admins (o quien tenga el 100 % de compromiso) pueden enviar un mensaje a todo el grupo una vez por semana, con confirmaciones previas y opción de desactivarlas.",
-        "La pestaña Grupo ahora muestra la lista de miembros y el ranking del grupo directamente, sin tener que ponerlo en el acceso rápido."
+        "La pestaña Grupo tiene ahora accesos directos a la lista de miembros y al ranking del grupo."
       ]
     }
   },
