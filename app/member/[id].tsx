@@ -4,6 +4,8 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
+import { IconText } from '@/components/ui/IconText';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -108,8 +110,8 @@ export default function MemberProfileScreen() {
               variant="muted"
               style={member.role === 'admin' ? { color: theme.primary, fontWeight: '600' } : undefined}>
               {member.role === 'admin' ? t('group.roleAdmin') : t('group.roleMember')}
-              {member.isDriver ? ' · 🚗' : ''}
-              {member.isMusician ? ' · 🎵' : ''}
+              {member.isDriver && <> · <Icon name="car" size={14} color={theme.textMuted} /></>}
+              {member.isMusician && <> · <Icon name="music-note" size={14} color={theme.textMuted} /></>}
             </ThemedText>
           </View>
         </View>
@@ -175,7 +177,8 @@ export default function MemberProfileScreen() {
             </View>
           ) : (
             <Button
-              title={`✏️ ${t('member.adjustCommitment')}`}
+              title={t('member.adjustCommitment')}
+              icon="pencil-outline"
               variant="outline"
               onPress={openCommitmentEditor}
             />
@@ -193,12 +196,13 @@ export default function MemberProfileScreen() {
             <ThemedText variant="muted">{t('poke.cooldown', { hours: hoursLeft })}</ThemedText>
           ) : pokeTypes.length === 0 ? (
             // Sin tipos personalizados: el botón toca directamente (estándar).
-            <Button title={t('poke.button')} onPress={() => poke()} />
+            <Button title={t('poke.button')} icon="gesture-tap" onPress={() => poke()} />
           ) : (
             // Con tipos: el botón despliega el estándar + los del grupo.
             <View style={styles.pokeSection}>
               <Button
                 title={pokeOpen ? t('poke.close') : t('poke.button')}
+                icon={pokeOpen ? undefined : 'gesture-tap'}
                 variant={pokeOpen ? 'outline' : 'primary'}
                 onPress={() => setPokeOpen((v) => !v)}
               />
@@ -208,7 +212,7 @@ export default function MemberProfileScreen() {
                   <Pressable
                     onPress={() => poke()}
                     style={({ pressed }) => [styles.pokeOption, pressed && { opacity: 0.6 }]}>
-                    <ThemedText style={styles.flex}>👉 {t('poke.standardLabel')}</ThemedText>
+                    <IconText icon="gesture-tap" style={styles.flex}>{t('poke.standardLabel')}</IconText>
                   </Pressable>
                   {pokeTypes.map((type) => (
                     <Pressable
@@ -219,7 +223,7 @@ export default function MemberProfileScreen() {
                         { borderTopColor: theme.border, borderTopWidth: 1 },
                         pressed && { opacity: 0.6 },
                       ]}>
-                      <ThemedText style={styles.flex}>👉 {capitalize(type.participle)}</ThemedText>
+                      <IconText icon="gesture-tap" style={styles.flex}>{capitalize(type.participle)}</IconText>
                       {type.count > 1 && (
                         <ThemedText style={{ color: theme.primary, fontWeight: '600' }}>
                           ×{type.count}
@@ -235,7 +239,7 @@ export default function MemberProfileScreen() {
         {/* Frases suyas en el Frasario del grupo */}
         {myPhrases.length > 0 && (
           <>
-            <ThemedText variant="label">📖 {t('member.phrases')}</ThemedText>
+            <IconText icon="book-open-variant" variant="label">{t('member.phrases')}</IconText>
             <View style={[styles.statsCard, styles.phrasesCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
               {myPhrases.map((phrase) => (
                 <ThemedText key={phrase.id}>

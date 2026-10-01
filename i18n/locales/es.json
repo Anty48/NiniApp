@@ -135,7 +135,7 @@
     "multiBadge": "múltiple",
     "anonymousBadge": "anónima",
     "votersCount": "%{count} personas han votado",
-    "notifTitle": "📊 Nueva encuesta",
+    "notifTitle": "Nueva encuesta",
     "notifBody": "Se ha creado la encuesta \"%{title}\". ¡Entra a votar!"
   },
   "colors": {
@@ -177,7 +177,8 @@
     "devContent": "Más contenido de este desarrollador",
     "devRodalies": "Mod de Minecraft: Rodalies Decorations",
     "devCreate": "Schematics de Create",
-    "devBuildpaste": "Builds de BuildPaste"
+    "devBuildpaste": "Builds de BuildPaste",
+    "devCalculator": "Calculadora estadística de laboratorio"
   },
   "gateway": {
     "title": "Bienvenido a NiniApp",
@@ -235,7 +236,7 @@
     "invalidDates": "Fechas no válidas (el fin debe ser posterior al inicio)",
     "voteLockHours": "Horas de cierre de votación",
     "special": "Evento especial",
-    "specialBadge": "★ Especial",
+    "specialBadge": "Especial",
     "carsToggle": "Activar coches",
     "driverCarsHint": "Selecciona los coches de los conductores del grupo disponibles para este evento.",
     "noDriverCars": "Ningún conductor tiene coche asignado todavía.",
@@ -280,11 +281,11 @@
     "kindStandardHint": "Con votación de asistencia y penalizaciones de compromiso.",
     "kindInformalHint": "Sin votación: quien quiera, que se pase. No afecta al compromiso.",
     "kindSpecialDayHint": "Fiestas mayores, celebraciones... Solo marca el día en el calendario.",
-    "informalBadge": "☕ Informal",
-    "specialDayBadge": "🎉 Día especial",
+    "informalBadge": "Informal",
+    "specialDayBadge": "Día especial",
     "noVotingHint": "Este evento no tiene votación de asistencia.",
     "color": "Color del evento",
-    "colorRandom": "🎲 Aleatorio",
+    "colorRandom": "Aleatorio",
     "colorCustom": "Color personalizado",
     "birthdayOf": "Cumpleaños de %{name}",
     "createdBy": "Creado por %{name}"
@@ -416,11 +417,11 @@
     "setting": "Tocar",
     "settingHint": "Permite que los demás te toquen",
     "rechargeInfo": "Tu recarga actual: %{hours} h por persona (baja con más compromiso)",
-    "button": "Tocar 👉",
+    "button": "Tocar",
     "sent": "¡Toque enviado!",
     "disabledByUser": "Esta persona tiene el tocar desactivado",
     "cooldown": "Podrás volver a tocarle en %{hours} h",
-    "notifTitle": "👉 ¡Toque!",
+    "notifTitle": "¡Toque!",
     "notifBody": "%{name} te ha tocado",
     "notifBodyVerb": "%{name} te ha %{participle}",
     "standardLabel": "Tocar",
@@ -555,18 +556,31 @@
         "Nueva “notificación bomba” en la pestaña Grupo: admins (o quien tenga el 100 % de compromiso) pueden enviar un mensaje a todo el grupo una vez por semana, con confirmaciones previas y opción de desactivarlas.",
         "La pestaña Grupo tiene ahora accesos directos a la lista de miembros y al ranking del grupo."
       ]
+    },
+    "latest": "Última versión",
+    "viewAll": "Ver todas las versiones",
+    "v1_5": {
+      "name": "Versión 1.5",
+      "date": "Octubre 2026",
+      "items": [
+        "Iconos nuevos en toda la app: los emojis se sustituyen por iconos vectoriales más limpios y coherentes.",
+        "El registro de cambios aparece directamente al final del Perfil, con la última versión a la vista.",
+        "Presentamos T-Stats, la nueva app del desarrollador, con su propia pantalla y un aviso de novedades que solo sale una vez.",
+        "«Más contenido de este desarrollador» suma la calculadora estadística de laboratorio.",
+        "Las notificaciones tienen títulos más limpios, sin emojis (salvo la de cumpleaños, que conserva su tarta)."
+      ]
     }
   },
   "notifications": {
     "newEventTitle": "Nuevo evento",
     "newEventBody": "Se ha creado \"%{title}\". ¡Entra a votar tu asistencia!",
-    "newInformalTitle": "☕ Nueva quedada informal",
+    "newInformalTitle": "Nueva quedada informal",
     "newInformalBody": "Se ha creado \"%{title}\". Sin votación: ¡pásate si te apetece!",
-    "newSpecialDayTitle": "🎉 Nuevo día especial",
+    "newSpecialDayTitle": "Nuevo día especial",
     "newSpecialDayBody": "Se ha añadido \"%{title}\" al calendario del grupo.",
-    "groupMilestoneTitle": "¡Hito de racha del grupo! 🔥",
+    "groupMilestoneTitle": "¡Hito de racha del grupo!",
     "groupMilestoneBody": "¡Lleváis %{count} días seguidos sumando!",
-    "personalMilestoneTitle": "¡Racha personal! 🔥",
+    "personalMilestoneTitle": "¡Racha personal!",
     "personalMilestoneBody": "Llevas %{count} días seguidos contribuyendo.",
     "birthdayTitle": "🎂 ¡Cumpleaños!",
     "birthdayBody": "¡Hoy es el cumpleaños de %{name}!"
@@ -610,9 +624,30 @@
     "warn3": "No podrás volver a lanzar otra notificación bomba hasta dentro de una semana. ¿Lo tienes claro?",
     "warn4": "Todo el mundo verá tu mensaje en su teléfono. Piénsatelo bien. ¿Seguimos?",
     "warn5": "Última confirmación: ¿enviar la notificación bomba a todo el grupo ahora?",
-    "pushTitle": "💣 Notificación bomba",
+    "pushTitle": "Notificación bomba",
     "optedOutError": "No puedes enviarla con las notificaciones bomba desactivadas.",
     "sentOkTitle": "Enviada",
     "sentOkMessage": "Tu notificación bomba ha salido para todo el grupo."
+  },
+  "tstats": {
+    "kicker": "Nueva app del desarrollador",
+    "tagline": "Tu T-mobilitat, en estadísticas",
+    "description": "T-Stats rastrea, visualiza y gamifica el uso de tu tarjeta de transporte T-mobilitat. Del mismo desarrollador que NiniApp.",
+    "comingSoon": "La web se está cocinando",
+    "comingSoonHint": "Muy pronto podrás probarla. En cuanto esté lista, el enlace aparecerá aquí.",
+    "open": "Abrir T-Stats",
+    "discover": "Descubrir T-Stats",
+    "featTrackTitle": "Rastrea",
+    "featTrackBody": "Lleva la cuenta de tus viajes con la T-mobilitat.",
+    "featVisualizeTitle": "Visualiza",
+    "featVisualizeBody": "Gráficas y estadísticas de cómo te mueves en transporte público.",
+    "featGameTitle": "Gamifica",
+    "featGameBody": "Convierte tus trayectos en retos y logros.",
+    "featPlatformsTitle": "Donde quieras",
+    "featPlatformsBody": "App para Android, web instalable en iPhone y versión de escritorio.",
+    "popupKicker": "Nuevo contenido del desarrollador",
+    "popupTitle": "Te presento T-Stats",
+    "popupBody": "La nueva app del creador de NiniApp: rastrea, visualiza y gamifica el uso de tu T-mobilitat. Ya puedes probarla en su web.",
+    "popupLater": "Ahora no"
   }
 }

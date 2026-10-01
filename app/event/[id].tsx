@@ -2,6 +2,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Linking, Pressable, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { IconText } from '@/components/ui/IconText';
 import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -100,13 +101,13 @@ export default function EventDetailScreen() {
             {event.title}
           </ThemedText>
           {event.isSpecial && (
-            <ThemedText style={{ color: theme.primary }}>{t('events.specialBadge')}</ThemedText>
+            <IconText icon="star" color={theme.primary}>{t('events.specialBadge')}</IconText>
           )}
           {event.kind === 'informal' && (
-            <ThemedText style={{ color: theme.primary }}>{t('events.informalBadge')}</ThemedText>
+            <IconText icon="coffee-outline" color={theme.primary}>{t('events.informalBadge')}</IconText>
           )}
           {event.kind === 'specialDay' && (
-            <ThemedText style={{ color: theme.primary }}>{t('events.specialDayBadge')}</ThemedText>
+            <IconText icon="party-popper" color={theme.primary}>{t('events.specialDayBadge')}</IconText>
           )}
         </View>
 
@@ -219,10 +220,9 @@ export default function EventDetailScreen() {
               <View
                 key={car.id}
                 style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <ThemedText variant="subtitle">
+                <IconText icon="car-outline" iconSize={18} variant="subtitle">
                   {title}
-                  {owner ? ' 🚗' : ''}
-                </ThemedText>
+                </IconText>
                 {subtitle && <ThemedText variant="muted">{subtitle}</ThemedText>}
                 {Array.from({ length: car.seats }).map((_, seatIndex) => {
                   const occupant = car.occupants[seatIndex];
@@ -269,9 +269,9 @@ export default function EventDetailScreen() {
                   key={transport.id}
                   style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
                   <View style={styles.titleRow}>
-                    <ThemedText variant="subtitle" style={styles.flex}>
-                      🚆 {transport.name}
-                    </ThemedText>
+                    <IconText icon="train" iconSize={18} variant="subtitle" style={styles.flex}>
+                      {transport.name}
+                    </IconText>
                     <ThemedText variant="muted">
                       {t('events.transportCount', { count: transport.occupants.length })}
                     </ThemedText>

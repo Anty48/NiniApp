@@ -118,7 +118,7 @@ export default function CounterStatsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: `📈 ${t('counter.statsTitle')}` }} />
+      <Stack.Screen options={{ headerShown: true, title: t('counter.statsTitle') }} />
       <Screen scroll style={styles.container}>
         <ThemedText variant="muted">{t('counter.statsSubtitle')}</ThemedText>
 

@@ -4,6 +4,7 @@ import { Image, Modal, Pressable, StyleSheet, Switch, View } from 'react-native'
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { Icon, IconName } from '@/components/ui/Icon';
 import { Loading } from '@/components/ui/Loading';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
@@ -143,16 +144,16 @@ export default function GroupTabScreen() {
     }
   };
 
-  const features: { key: string; emoji: string; route: string; visible: boolean }[] = [
-    { key: 'members', emoji: '👥', route: '/members', visible: true },
-    { key: 'ranking', emoji: '🏆', route: '/ranking', visible: true },
-    { key: 'phrasebook', emoji: '📖', route: '/phrasebook', visible: true },
-    { key: 'songs', emoji: '🎵', route: '/songs', visible: true },
-    { key: 'polls', emoji: '📊', route: '/polls', visible: true },
-    { key: 'pokeTypes', emoji: '👉', route: '/poke-types', visible: true },
-    { key: 'colors', emoji: '🎨', route: '/group-colors', visible: true },
-    { key: 'drivers', emoji: '🚗', route: '/drivers-zone', visible: !!me?.isDriver },
-    { key: 'settings', emoji: '⚙️', route: '/group-settings', visible: true },
+  const features: { key: string; icon: IconName; route: string; visible: boolean }[] = [
+    { key: 'members', icon: 'account-group-outline', route: '/members', visible: true },
+    { key: 'ranking', icon: 'trophy-outline', route: '/ranking', visible: true },
+    { key: 'phrasebook', icon: 'book-open-variant', route: '/phrasebook', visible: true },
+    { key: 'songs', icon: 'music-note-outline', route: '/songs', visible: true },
+    { key: 'polls', icon: 'poll', route: '/polls', visible: true },
+    { key: 'pokeTypes', icon: 'gesture-tap', route: '/poke-types', visible: true },
+    { key: 'colors', icon: 'palette-outline', route: '/group-colors', visible: true },
+    { key: 'drivers', icon: 'car-outline', route: '/drivers-zone', visible: !!me?.isDriver },
+    { key: 'settings', icon: 'cog-outline', route: '/group-settings', visible: true },
   ];
 
   return (
@@ -290,7 +291,8 @@ export default function GroupTabScreen() {
         .map((f) => (
           <Button
             key={f.key}
-            title={`${f.emoji} ${t(`groupTab.${f.key}`)}`}
+            title={t(`groupTab.${f.key}`)}
+            icon={f.icon}
             variant="outline"
             onPress={() => router.push(f.route as any)}
           />
@@ -305,7 +307,7 @@ export default function GroupTabScreen() {
           { backgroundColor: theme.danger + '15', borderColor: theme.danger },
           pressed && { opacity: 0.7 },
         ]}>
-        <ThemedText style={styles.bombEmoji}>💣</ThemedText>
+        <Icon name="bomb" size={30} color={theme.danger} />
         <View style={styles.flex}>
           <ThemedText style={{ color: theme.danger, fontWeight: '700' }}>
             {t('bomb.title')}
@@ -322,7 +324,10 @@ export default function GroupTabScreen() {
         onRequestClose={() => setBombOpen(false)}>
         <View style={styles.bombBackdrop}>
           <View style={[styles.bombModal, { backgroundColor: theme.background, borderColor: theme.border }]}>
-            <ThemedText variant="title">💣 {t('bomb.title')}</ThemedText>
+            <View style={styles.bombTitleRow}>
+              <Icon name="bomb" size={28} color={theme.danger} />
+              <ThemedText variant="title" style={styles.flex}>{t('bomb.title')}</ThemedText>
+            </View>
             <ThemedText variant="muted">{t('bomb.intro')}</ThemedText>
 
             <TextField
@@ -387,7 +392,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 14,
   },
-  bombEmoji: { fontSize: 30 },
+  bombTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   bombBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.55)',

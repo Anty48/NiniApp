@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Switch, TextInput, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
+import { Icon } from '@/components/ui/Icon';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { FONT_REGULAR } from '@/constants/typography';
 import { useAuth } from '@/contexts/AuthContext';
@@ -111,7 +112,7 @@ export function PollsContent() {
                 <Pressable
                   onPress={() => setOptions((prev) => prev.filter((_, i) => i !== index))}
                   style={styles.removeButton}>
-                  <ThemedText style={{ color: theme.danger, fontSize: 18 }}>✕</ThemedText>
+                  <Icon name="close" size={20} color={theme.danger} />
                 </Pressable>
               )}
             </View>
@@ -187,8 +188,12 @@ export function PollsContent() {
                     pressed && { opacity: 0.7 },
                   ]}>
                   <View style={styles.pollOptionHeader}>
+                    <Icon
+                      name={selected ? 'radiobox-marked' : 'radiobox-blank'}
+                      size={18}
+                      color={selected ? theme.primary : theme.textMuted}
+                    />
                     <ThemedText style={[styles.flex, selected && { fontWeight: '600' }]}>
-                      {selected ? '● ' : '○ '}
                       {option}
                     </ThemedText>
                     <ThemedText variant="muted">{optionVoters.length}</ThemedText>

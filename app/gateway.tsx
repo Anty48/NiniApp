@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { Image, Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { Icon, IconName } from '@/components/ui/Icon';
+import { IconText } from '@/components/ui/IconText';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { openApkDownload } from '@/constants/download';
@@ -13,12 +15,12 @@ import { markEnteredWeb } from '@/utils/webGateway';
 
 const LOGO = require('../assets/images/logo_app.png');
 
-/** Funciones que se destacan en la web de recepción (emoji + claves i18n). */
-const FEATURES: { emoji: string; titleKey: string; bodyKey: string }[] = [
-  { emoji: '🗓️', titleKey: 'landing.featureEventsTitle', bodyKey: 'landing.featureEventsBody' },
-  { emoji: '🔥', titleKey: 'landing.featureCounterTitle', bodyKey: 'landing.featureCounterBody' },
-  { emoji: '🚗', titleKey: 'landing.featureCarsTitle', bodyKey: 'landing.featureCarsBody' },
-  { emoji: '💬', titleKey: 'landing.featureSocialTitle', bodyKey: 'landing.featureSocialBody' },
+/** Funciones que se destacan en la web de recepción (icono + claves i18n). */
+const FEATURES: { icon: IconName; titleKey: string; bodyKey: string }[] = [
+  { icon: 'calendar-month-outline', titleKey: 'landing.featureEventsTitle', bodyKey: 'landing.featureEventsBody' },
+  { icon: 'fire', titleKey: 'landing.featureCounterTitle', bodyKey: 'landing.featureCounterBody' },
+  { icon: 'car-outline', titleKey: 'landing.featureCarsTitle', bodyKey: 'landing.featureCarsBody' },
+  { icon: 'chat-outline', titleKey: 'landing.featureSocialTitle', bodyKey: 'landing.featureSocialBody' },
 ];
 
 /**
@@ -62,8 +64,8 @@ export default function GatewayScreen() {
               { backgroundColor: theme.surface, borderColor: theme.border },
               pressed && { opacity: 0.7 },
             ]}>
-            <ThemedText>🌐 {currentLabel}</ThemedText>
-            <ThemedText variant="muted">▾</ThemedText>
+            <IconText icon="web">{currentLabel}</IconText>
+            <Icon name="chevron-down" size={18} color={theme.textMuted} />
           </Pressable>
         </View>
 
@@ -97,7 +99,7 @@ export default function GatewayScreen() {
             <View
               key={f.titleKey}
               style={[styles.featureCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-              <ThemedText style={styles.featureEmoji}>{f.emoji}</ThemedText>
+              <Icon name={f.icon} size={30} color={theme.primary} />
               <ThemedText variant="subtitle">{t(f.titleKey)}</ThemedText>
               <ThemedText variant="muted" style={styles.featureBody}>
                 {t(f.bodyKey)}
@@ -169,7 +171,7 @@ export default function GatewayScreen() {
                     pressed && { opacity: 0.7 },
                   ]}>
                   <ThemedText style={styles.flex}>{LANGUAGE_LABELS[lang]}</ThemedText>
-                  {selected && <ThemedText style={{ color: theme.primary }}>✓</ThemedText>}
+                  {selected && <Icon name="check" size={20} color={theme.primary} />}
                 </Pressable>
               );
             })}
@@ -211,7 +213,6 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 6,
   },
-  featureEmoji: { fontSize: 28 },
   featureBody: { lineHeight: 20 },
   installCard: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 12 },
   warning: { fontSize: 13, lineHeight: 19 },

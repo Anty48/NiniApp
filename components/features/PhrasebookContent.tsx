@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { Pill } from '@/components/ui/Pill';
 import { TextField } from '@/components/ui/TextField';
+import { Icon } from '@/components/ui/Icon';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
@@ -205,7 +206,7 @@ export function PhrasebookContent() {
                   onPress={() => startEdit(phrase.id, phrase.text)}
                   hitSlop={8}
                   style={({ pressed }) => pressed && { opacity: 0.6 }}>
-                  <ThemedText style={{ fontSize: 14 }}>✏️</ThemedText>
+                  <Icon name="pencil-outline" size={18} color={theme.textMuted} />
                 </Pressable>
               </View>
             ),

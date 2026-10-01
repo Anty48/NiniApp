@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -33,7 +34,7 @@ export default function SongFormScreen() {
       <>
         <Stack.Screen options={{ headerShown: true, title: t('songs.add') }} />
         <Screen style={styles.center}>
-          <ThemedText style={styles.bigEmoji}>🎵</ThemedText>
+          <Icon name="music-note-outline" size={52} color={theme.textMuted} />
           <ThemedText variant="muted">{t('songs.onlyMusicians')}</ThemedText>
         </Screen>
       </>
@@ -96,7 +97,6 @@ export default function SongFormScreen() {
 const styles = StyleSheet.create({
   container: { paddingBottom: 40 },
   center: { alignItems: 'center', justifyContent: 'center', gap: 8 },
-  bigEmoji: { fontSize: 48 },
   lyricsInput: {
     minHeight: 260,
     borderRadius: 12,

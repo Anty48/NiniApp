@@ -1,6 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 
+import { DevAnnouncement } from '@/components/features/DevAnnouncement';
 import { FONT_REGULAR } from '@/constants/typography';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
@@ -28,52 +29,56 @@ export default function TabsLayout() {
   const quickLabel = target ? t(QUICK_ACCESS_LABEL_KEYS[target]) : t('quickAccess.tab');
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: theme.primary,
-        tabBarInactiveTintColor: theme.textMuted,
-        tabBarStyle: {
-          backgroundColor: theme.background,
-          borderTopColor: theme.border,
-        },
-        tabBarLabelStyle: { fontFamily: FONT_REGULAR },
-      }}>
-      <Tabs.Screen
-        name="calendar"
-        options={{
-          title: t('tabs.calendar'),
-          tabBarIcon: ({ color }) => <TabIcon name="calendar" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="counter"
-        options={{
-          title: t('tabs.counter'),
-          tabBarIcon: ({ color }) => <TabIcon name="fire" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="leaderboard"
-        options={{
-          title: quickLabel,
-          tabBarIcon: ({ color }) => <TabIcon name={quickIcon} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="group"
-        options={{
-          title: t('tabs.group'),
-          tabBarIcon: ({ color }) => <TabIcon name="users" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: t('tabs.profile'),
-          tabBarIcon: ({ color }) => <TabIcon name="user" color={color} />,
-        }}
-      />
-    </Tabs>
+    <>
+      {/* Popup de "nuevo contenido del desarrollador" (una sola vez) */}
+      <DevAnnouncement />
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: theme.primary,
+          tabBarInactiveTintColor: theme.textMuted,
+          tabBarStyle: {
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
+          },
+          tabBarLabelStyle: { fontFamily: FONT_REGULAR },
+        }}>
+        <Tabs.Screen
+          name="calendar"
+          options={{
+            title: t('tabs.calendar'),
+            tabBarIcon: ({ color }) => <TabIcon name="calendar" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="counter"
+          options={{
+            title: t('tabs.counter'),
+            tabBarIcon: ({ color }) => <TabIcon name="fire" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="leaderboard"
+          options={{
+            title: quickLabel,
+            tabBarIcon: ({ color }) => <TabIcon name={quickIcon} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="group"
+          options={{
+            title: t('tabs.group'),
+            tabBarIcon: ({ color }) => <TabIcon name="users" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: t('tabs.profile'),
+            tabBarIcon: ({ color }) => <TabIcon name="user" color={color} />,
+          }}
+        />
+      </Tabs>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import { Lora_400Regular, Lora_700Bold } from '@expo-google-fonts/lora';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   DarkTheme,
   DefaultTheme,
@@ -36,6 +37,7 @@ export default function RootLayout() {
     'Lora-Bold': Lora_700Bold,
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
+    ...MaterialCommunityIcons.font,
   });
 
   useEffect(() => {

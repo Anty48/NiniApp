@@ -135,7 +135,7 @@
     "multiBadge": "múltiple",
     "anonymousBadge": "anònima",
     "votersCount": "%{count} persones han votat",
-    "notifTitle": "📊 Nova enquesta",
+    "notifTitle": "Nova enquesta",
     "notifBody": "S'ha creat l'enquesta \"%{title}\". Entra a votar!"
   },
   "colors": {
@@ -177,7 +177,8 @@
     "devContent": "Més contingut d'aquest desenvolupador",
     "devRodalies": "Mod de Minecraft: Rodalies Decorations",
     "devCreate": "Schematics de Create",
-    "devBuildpaste": "Builds de BuildPaste"
+    "devBuildpaste": "Builds de BuildPaste",
+    "devCalculator": "Calculadora estadística de laboratori"
   },
   "gateway": {
     "title": "Benvingut a NiniApp",
@@ -235,7 +236,7 @@
     "invalidDates": "Dates no vàlides (el final ha de ser posterior a l'inici)",
     "voteLockHours": "Hores de tancament de votació",
     "special": "Esdeveniment especial",
-    "specialBadge": "★ Especial",
+    "specialBadge": "Especial",
     "carsToggle": "Activar cotxes",
     "driverCarsHint": "Selecciona els cotxes dels conductors del grup disponibles per a aquest esdeveniment.",
     "noDriverCars": "Cap conductor té encara un cotxe assignat.",
@@ -280,11 +281,11 @@
     "kindStandardHint": "Amb votació d'assistència i penalitzacions de compromís.",
     "kindInformalHint": "Sense votació: qui vulgui, que hi passi. No afecta el compromís.",
     "kindSpecialDayHint": "Festes majors, celebracions... Només marca el dia al calendari.",
-    "informalBadge": "☕ Informal",
-    "specialDayBadge": "🎉 Dia especial",
+    "informalBadge": "Informal",
+    "specialDayBadge": "Dia especial",
     "noVotingHint": "Aquest esdeveniment no té votació d'assistència.",
     "color": "Color de l'esdeveniment",
-    "colorRandom": "🎲 Aleatori",
+    "colorRandom": "Aleatori",
     "colorCustom": "Color personalitzat",
     "birthdayOf": "Aniversari de %{name}",
     "createdBy": "Creat per %{name}"
@@ -416,11 +417,11 @@
     "setting": "Tocar",
     "settingHint": "Permet que els altres et toquin",
     "rechargeInfo": "La teva recàrrega actual: %{hours} h per persona (baixa amb més compromís)",
-    "button": "Tocar 👉",
+    "button": "Tocar",
     "sent": "Toc enviat!",
     "disabledByUser": "Aquesta persona té el tocar desactivat",
     "cooldown": "Podràs tornar a tocar-lo d'aquí a %{hours} h",
-    "notifTitle": "👉 Toc!",
+    "notifTitle": "Toc!",
     "notifBody": "%{name} t'ha tocat",
     "notifBodyVerb": "%{name} t'ha %{participle}",
     "standardLabel": "Tocar",
@@ -555,18 +556,31 @@
         "Nova «notificació bomba» a la pestanya Grup: administradors (o qui tingui el 100 % de compromís) poden enviar un missatge a tot el grup un cop per setmana, amb confirmacions prèvies i opció de desactivar-les.",
         "La pestanya Grup té ara accessos directes a la llista de membres i al rànquing del grup."
       ]
+    },
+    "latest": "Última versió",
+    "viewAll": "Veure totes les versions",
+    "v1_5": {
+      "name": "Versió 1.5",
+      "date": "Octubre 2026",
+      "items": [
+        "Icones noves a tota l'app: els emojis se substitueixen per icones vectorials més netes i coherents.",
+        "El registre de canvis apareix directament al final del Perfil, amb l'última versió a la vista.",
+        "Presentem T-Stats, la nova app del desenvolupador, amb la seva pròpia pantalla i un avís de novetats que només surt un cop.",
+        "«Més contingut d'aquest desenvolupador» afegeix la calculadora estadística de laboratori.",
+        "Les notificacions tenen títols més nets, sense emojis (excepte la d'aniversari, que conserva el seu pastís)."
+      ]
     }
   },
   "notifications": {
     "newEventTitle": "Nou esdeveniment",
     "newEventBody": "S'ha creat \"%{title}\". Entra a votar la teva assistència!",
-    "newInformalTitle": "☕ Nova quedada informal",
+    "newInformalTitle": "Nova quedada informal",
     "newInformalBody": "S'ha creat \"%{title}\". Sense votació: passa-hi si et ve de gust!",
-    "newSpecialDayTitle": "🎉 Nou dia especial",
+    "newSpecialDayTitle": "Nou dia especial",
     "newSpecialDayBody": "S'ha afegit \"%{title}\" al calendari del grup.",
-    "groupMilestoneTitle": "Fita de ratxa del grup! 🔥",
+    "groupMilestoneTitle": "Fita de ratxa del grup!",
     "groupMilestoneBody": "Porteu %{count} dies seguits sumant!",
-    "personalMilestoneTitle": "Ratxa personal! 🔥",
+    "personalMilestoneTitle": "Ratxa personal!",
     "personalMilestoneBody": "Portes %{count} dies seguits contribuint.",
     "birthdayTitle": "🎂 Aniversari!",
     "birthdayBody": "Avui és l'aniversari de %{name}!"
@@ -610,9 +624,30 @@
     "warn3": "No podràs tornar a llançar una altra notificació bomba fins d'aquí a una setmana. Ho tens clar?",
     "warn4": "Tothom veurà el teu missatge al telèfon. Pensa-t'ho bé. Continuem?",
     "warn5": "Última confirmació: enviar la notificació bomba a tot el grup ara?",
-    "pushTitle": "💣 Notificació bomba",
+    "pushTitle": "Notificació bomba",
     "optedOutError": "No pots enviar-la amb les notificacions bomba desactivades.",
     "sentOkTitle": "Enviada",
     "sentOkMessage": "La teva notificació bomba ha sortit cap a tot el grup."
+  },
+  "tstats": {
+    "kicker": "Nova app del desenvolupador",
+    "tagline": "La teva T-mobilitat, en estadístiques",
+    "description": "T-Stats registra, visualitza i gamifica l'ús de la teva targeta de transport T-mobilitat. Del mateix desenvolupador que NiniApp.",
+    "comingSoon": "La web s'està cuinant",
+    "comingSoonHint": "Ben aviat la podràs provar. Quan estigui llesta, l'enllaç apareixerà aquí.",
+    "open": "Obrir T-Stats",
+    "discover": "Descobrir T-Stats",
+    "featTrackTitle": "Registra",
+    "featTrackBody": "Porta el compte dels teus viatges amb la T-mobilitat.",
+    "featVisualizeTitle": "Visualitza",
+    "featVisualizeBody": "Gràfics i estadístiques de com et mous en transport públic.",
+    "featGameTitle": "Gamifica",
+    "featGameBody": "Converteix els teus trajectes en reptes i assoliments.",
+    "featPlatformsTitle": "On vulguis",
+    "featPlatformsBody": "App per a Android, web instal·lable a l'iPhone i versió d'escriptori.",
+    "popupKicker": "Nou contingut del desenvolupador",
+    "popupTitle": "Et presento T-Stats",
+    "popupBody": "La nova app del creador de NiniApp: registra, visualitza i gamifica l'ús de la teva T-mobilitat. Ja la pots provar al seu web.",
+    "popupLater": "Ara no"
   }
 }

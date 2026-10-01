@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { Loading } from '@/components/ui/Loading';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -151,7 +152,7 @@ export default function CounterScreen() {
       <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
         {/* Racha y total */}
         <View style={[styles.hero, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <ThemedText style={styles.streakEmoji}>🔥</ThemedText>
+          <Icon name="fire" size={44} color={theme.primary} />
           <ThemedText variant="title">
             {t('counter.streakLabel', { count: counter.streakDays })}
           </ThemedText>
@@ -161,7 +162,8 @@ export default function CounterScreen() {
         </View>
 
         <Button
-          title={`📈 ${t('counter.viewStats')}`}
+          title={t('counter.viewStats')}
+          icon="chart-line"
           variant="outline"
           onPress={() => router.push('/counter-stats')}
         />
@@ -205,9 +207,10 @@ export default function CounterScreen() {
               <Pressable
                 onPress={() => setEditingContribs((v) => !v)}
                 hitSlop={8}
-                style={({ pressed }) => pressed && { opacity: 0.6 }}>
+                style={({ pressed }) => [styles.editToggle, pressed && { opacity: 0.6 }]}>
+                {!editingContribs && <Icon name="pencil-outline" size={15} color={theme.primary} />}
                 <ThemedText style={{ color: theme.primary, fontWeight: '600', fontSize: 13 }}>
-                  {editingContribs ? t('common.cancel') : `✏️ ${t('counter.editContribs')}`}
+                  {editingContribs ? t('common.cancel') : t('counter.editContribs')}
                 </ThemedText>
               </Pressable>
             </View>
@@ -227,7 +230,7 @@ export default function CounterScreen() {
                         onPress={() => deleteContribution(c.id, memberName(c.userId))}
                         hitSlop={8}
                         style={({ pressed }) => pressed && { opacity: 0.6 }}>
-                        <ThemedText style={{ color: theme.danger, fontSize: 16 }}>✕</ThemedText>
+                        <Icon name="close" size={18} color={theme.danger} />
                       </Pressable>
                     )}
                   </View>
@@ -282,7 +285,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   list: { gap: 12, paddingBottom: 24 },
   hero: { borderRadius: 20, borderWidth: 1, padding: 24, alignItems: 'center', gap: 4 },
-  streakEmoji: { fontSize: 40 },
+  editToggle: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   row: { flexDirection: 'row', gap: 10 },
   flex: { flex: 1 },
   card: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 10 },

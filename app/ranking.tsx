@@ -15,7 +15,7 @@ export default function RankingScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: `🏆 ${t('groupTab.ranking')}` }} />
+      <Stack.Screen options={{ headerShown: true, title: t('groupTab.ranking') }} />
       <Screen scroll style={styles.container}>
         <LeaderboardContent />
       </Screen>

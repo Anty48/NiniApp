@@ -5,6 +5,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
+import { Icon } from '@/components/ui/Icon';
+import { IconText } from '@/components/ui/IconText';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -55,7 +57,7 @@ export default function PokeTypesScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: `👉 ${t('groupTab.pokeTypes')}` }} />
+      <Stack.Screen options={{ headerShown: true, title: t('groupTab.pokeTypes') }} />
       <Screen scroll style={styles.container}>
         <ThemedText variant="muted">{t('pokeTypes.subtitle')}</ThemedText>
 
@@ -102,7 +104,7 @@ export default function PokeTypesScreen() {
             key={type.id}
             style={[styles.typeRow, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <View style={styles.flex}>
-              <ThemedText>👉 {type.participle}</ThemedText>
+              <IconText icon="gesture-tap">{type.participle}</IconText>
               <ThemedText variant="muted">
                 {t('pokeTypes.countBadge', { count: type.count })}
               </ThemedText>
@@ -111,7 +113,7 @@ export default function PokeTypesScreen() {
               onPress={() => remove(type.id, type.participle)}
               hitSlop={8}
               style={({ pressed }) => pressed && { opacity: 0.6 }}>
-              <ThemedText style={{ color: theme.danger, fontSize: 18 }}>✕</ThemedText>
+              <Icon name="close" size={20} color={theme.danger} />
             </Pressable>
           </View>
         ))}

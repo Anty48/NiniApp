@@ -7,6 +7,8 @@ import { FONT_REGULAR } from '@/constants/typography';
 import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
+import { Icon } from '@/components/ui/Icon';
+import { IconText } from '@/components/ui/IconText';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
@@ -347,9 +349,13 @@ export default function EventFormScreen() {
                     },
                     pressed && { opacity: 0.7 },
                   ]}>
-                  <ThemedText style={{ fontWeight: '600' }}>
-                    {selected ? '☑' : '☐'} {m.nickname ?? m.name}
-                  </ThemedText>
+                  <IconText
+                    icon={selected ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                    iconSize={20}
+                    color={selected ? theme.primary : undefined}
+                    textStyle={{ fontWeight: '600', color: theme.text }}>
+                    {m.nickname ?? m.name}
+                  </IconText>
                   <ThemedText variant="muted">
                     {[
                       m.carDetails?.name,
@@ -395,7 +401,7 @@ export default function EventFormScreen() {
                 <Pressable
                   onPress={() => setTempCars((prev) => prev.filter((_, i) => i !== index))}
                   style={styles.removeButton}>
-                  <ThemedText style={{ color: theme.danger, fontSize: 18 }}>✕</ThemedText>
+                  <Icon name="close" size={20} color={theme.danger} />
                 </Pressable>
               </View>
             ))}
@@ -430,7 +436,7 @@ export default function EventFormScreen() {
                 <Pressable
                   onPress={() => setTransports((prev) => prev.filter((_, i) => i !== index))}
                   style={styles.removeButton}>
-                  <ThemedText style={{ color: theme.danger, fontSize: 18 }}>✕</ThemedText>
+                  <Icon name="close" size={20} color={theme.danger} />
                 </Pressable>
               </View>
             ))}

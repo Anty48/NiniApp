@@ -3,12 +3,16 @@ import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 
+import { CHANGELOG_VERSIONS, ChangelogCard } from '@/components/features/ChangelogCard';
+import { TStatsCard } from '@/components/features/TStatsCard';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { IconText } from '@/components/ui/IconText';
 import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
+import { DEV_LINKS } from '@/constants/developer';
 import { openApkDownload } from '@/constants/download';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
@@ -30,13 +34,6 @@ const ACCENT_PRESETS = [
   '#E0533D',
   '#E84393',
 ];
-
-/** Otros proyectos del desarrollador, enlazados abajo del todo del Perfil. */
-const DEV_LINKS = [
-  { key: 'devRodalies', emoji: '⛏️', url: 'https://www.curseforge.com/minecraft/mc-mods/rodalies-decorations' },
-  { key: 'devCreate', emoji: '⚙️', url: 'https://createmod.com/es/author/anty48' },
-  { key: 'devBuildpaste', emoji: '🏗️', url: 'https://buildpaste.net/profile/io7uXbS485OjMq431nRknR25EoU2' },
-] as const;
 
 /** Perfil propio, estadísticas en el grupo y ajustes de la app. */
 export default function ProfileScreen() {
@@ -167,7 +164,9 @@ export default function ProfileScreen() {
       {/* Notificaciones push: activación explícita por dispositivo */}
       <ThemedText variant="label">{t('push.section')}</ThemedText>
       {pushStatus === 'enabled' ? (
-        <ThemedText variant="muted">✓ {t('push.enabled')}</ThemedText>
+        <IconText icon="check-circle-outline" variant="muted" color={theme.success}>
+          {t('push.enabled')}
+        </IconText>
       ) : pushStatus === 'need-install' ? (
         <ThemedText variant="muted">{t('push.needInstall')}</ThemedText>
       ) : pushStatus === 'denied' ? (
@@ -301,29 +300,41 @@ export default function ProfileScreen() {
 
       <Button title={t('common.logout')} onPress={signOut} variant="ghost" />
 
-      {/* Más contenido de este desarrollador (abajo del todo, plegable) */}
+      {/* Más contenido de este desarrollador (plegable): mod, schematics, calculadora */}
       <Button
-        title={`${showDevLinks ? '▾' : '▸'} ${t('profile.devContent')}`}
+        title={t('profile.devContent')}
+        icon={showDevLinks ? 'chevron-down' : 'chevron-right'}
         variant="ghost"
         onPress={() => setShowDevLinks((v) => !v)}
       />
       {showDevLinks && (
         <View style={styles.devLinks}>
-          <Button
-            title={`🗒️ ${t('changelog.title')}`}
-            variant="outline"
-            onPress={() => router.push('/changelog')}
-          />
           {DEV_LINKS.map((link) => (
             <Button
               key={link.key}
-              title={`${link.emoji} ${t(`profile.${link.key}`)}`}
+              title={t(`profile.${link.key}`)}
+              icon={link.icon}
               variant="outline"
               onPress={() => WebBrowser.openBrowserAsync(link.url)}
             />
           ))}
         </View>
       )}
+
+      {/* Nueva app del desarrollador */}
+      <TStatsCard />
+
+      {/* Registro de cambios, abajo del todo: la última versión a la vista */}
+      <IconText icon="history" variant="label" style={styles.sectionLabel}>
+        {t('changelog.title')}
+      </IconText>
+      <ChangelogCard version={CHANGELOG_VERSIONS[0]} />
+      <Button
+        title={t('changelog.viewAll')}
+        icon="format-list-bulleted"
+        variant="outline"
+        onPress={() => router.push('/changelog')}
+      />
     </Screen>
   );
 }
@@ -340,6 +351,7 @@ const styles = StyleSheet.create({
   hexRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-end' },
   downloadWarning: { fontSize: 13, lineHeight: 19 },
   devLinks: { gap: 8 },
+  sectionLabel: { marginTop: 8 },
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',

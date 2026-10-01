@@ -4,13 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { Icon, IconName } from '@/components/ui/Icon';
+import { IconText } from '@/components/ui/IconText';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { haversineKm, IFAE_COORDS } from '@/utils/geo';
 
-const DICE_FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+const DICE_FACES: IconName[] = ['dice-1', 'dice-2', 'dice-3', 'dice-4', 'dice-5', 'dice-6'];
 const PANTOGRAPH_WIKI_URL = 'https://es.wikipedia.org/wiki/Pant%C3%B3grafo_(ferrocarril)';
 const MYSTERY_YOUTUBE_URL = 'https://www.youtube.com/watch?v=lzmWzXLPa6I';
 
@@ -60,7 +62,7 @@ export default function ExtrasScreen() {
   };
 
   // ---------- B. Dado virtual ----------
-  const [face, setFace] = useState(5); // ⚅ de bienvenida
+  const [face, setFace] = useState(5); // el seis de bienvenida
   const [rolling, setRolling] = useState(false);
   const spin = useRef(new Animated.Value(0)).current;
 
@@ -124,22 +126,20 @@ export default function ExtrasScreen() {
             onPress={locateIfae}
             loading={ifaeState.kind === 'locating'}
           />
-          <ThemedText variant="muted" style={styles.small}>
-            🔒 {t('extras.ifaePrivacy')}
-          </ThemedText>
+          <IconText icon="lock-outline" iconSize={14} variant="muted" textStyle={styles.small}>
+            {t('extras.ifaePrivacy')}
+          </IconText>
         </View>
 
         {/* B. Dado virtual */}
         <View style={card}>
-          <ThemedText variant="subtitle">🎲 {t('extras.diceTitle')}</ThemedText>
+          <IconText icon="dice-multiple-outline" iconSize={20} variant="subtitle">
+            {t('extras.diceTitle')}
+          </IconText>
           <View style={styles.diceArea}>
-            <Animated.Text
-              style={[
-                styles.dice,
-                { color: theme.text, transform: [{ rotate }, { scale }] },
-              ]}>
-              {DICE_FACES[face]}
-            </Animated.Text>
+            <Animated.View style={{ transform: [{ rotate }, { scale }] }}>
+              <Icon name={DICE_FACES[face]} size={96} color={theme.text} />
+            </Animated.View>
             <ThemedText variant="title">{rolling ? '…' : face + 1}</ThemedText>
           </View>
           <Button
@@ -160,7 +160,7 @@ export default function ExtrasScreen() {
           {/* Ilustración: catenaria + brazo articulado dibujados con Views */}
           <View style={styles.pantoScene}>
             <View style={styles.catenary} />
-            <ThemedText style={styles.spark}>⚡</ThemedText>
+            <Icon name="lightning-bolt" size={22} color={PANTO_GOLD} style={styles.spark} />
             <View style={styles.contactStrip} />
             <View style={[styles.arm, styles.armUpper]} />
             <View style={[styles.arm, styles.armLower]} />
@@ -173,9 +173,10 @@ export default function ExtrasScreen() {
           <Pressable
             onPress={openPantograph}
             style={({ pressed }) => [styles.pantoButton, pressed && { opacity: 0.8 }]}>
-            <ThemedText style={styles.pantoButtonText}>
-              {t('extras.pantoButton')} →
-            </ThemedText>
+            <View style={styles.pantoButtonRow}>
+              <ThemedText style={styles.pantoButtonText}>{t('extras.pantoButton')}</ThemedText>
+              <Icon name="arrow-right" size={18} color={PANTO_BG} />
+            </View>
           </Pressable>
         </View>
       </Screen>
@@ -199,7 +200,6 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   diceArea: { alignItems: 'center', gap: 4, paddingVertical: 8 },
-  dice: { fontSize: 96, lineHeight: 104 },
 
   pantoCard: {
     backgroundColor: PANTO_BG,
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     backgroundColor: PANTO_STEEL,
     opacity: 0.9,
   },
-  spark: { position: 'absolute', top: 0, alignSelf: 'center', fontSize: 22 },
+  spark: { position: 'absolute', top: 0, alignSelf: 'center' },
   contactStrip: {
     position: 'absolute',
     top: 22,
@@ -274,5 +274,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
   },
+  pantoButtonRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   pantoButtonText: { color: PANTO_BG, fontWeight: '800', fontSize: 15 },
 });

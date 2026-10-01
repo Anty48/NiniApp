@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -43,7 +44,7 @@ export default function DriversZoneScreen() {
       <>
         <Stack.Screen options={{ headerShown: true, title: t('drivers.title') }} />
         <Screen style={styles.center}>
-          <ThemedText style={styles.bigEmoji}>🚗</ThemedText>
+          <Icon name="car-outline" size={52} color={theme.textMuted} />
           <ThemedText variant="muted">{t('drivers.notDriver')}</ThemedText>
         </Screen>
       </>
@@ -187,7 +188,6 @@ export default function DriversZoneScreen() {
 const styles = StyleSheet.create({
   container: { paddingBottom: 40 },
   center: { alignItems: 'center', justifyContent: 'center', gap: 8 },
-  bigEmoji: { fontSize: 48 },
   card: { borderRadius: 16, borderWidth: 1, padding: 12, gap: 12 },
   inlineRow: { flexDirection: 'row', gap: 8 },
   flex: { flex: 1 },

@@ -15,7 +15,7 @@ export default function PhrasebookScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: `📖 ${t('groupTab.phrasebook')}` }} />
+      <Stack.Screen options={{ headerShown: true, title: t('groupTab.phrasebook') }} />
       <Screen scroll style={styles.container}>
         <PhrasebookContent />
       </Screen>

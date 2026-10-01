@@ -135,7 +135,7 @@
     "multiBadge": "multiple",
     "anonymousBadge": "anonymous",
     "votersCount": "%{count} people have voted",
-    "notifTitle": "📊 New poll",
+    "notifTitle": "New poll",
     "notifBody": "The poll \"%{title}\" was created. Go vote!"
   },
   "colors": {
@@ -177,7 +177,8 @@
     "devContent": "More content from this developer",
     "devRodalies": "Minecraft mod: Rodalies Decorations",
     "devCreate": "Create schematics",
-    "devBuildpaste": "BuildPaste builds"
+    "devBuildpaste": "BuildPaste builds",
+    "devCalculator": "Lab statistics calculator"
   },
   "gateway": {
     "title": "Welcome to NiniApp",
@@ -235,7 +236,7 @@
     "invalidDates": "Invalid dates (end must be after start)",
     "voteLockHours": "Vote closing hours",
     "special": "Special event",
-    "specialBadge": "★ Special",
+    "specialBadge": "Special",
     "carsToggle": "Enable cars",
     "driverCarsHint": "Select the group drivers' cars available for this event.",
     "noDriverCars": "No driver has an assigned car yet.",
@@ -280,11 +281,11 @@
     "kindStandardHint": "With attendance voting and commitment penalties.",
     "kindInformalHint": "No voting: whoever wants to, drops by. Commitment is unaffected.",
     "kindSpecialDayHint": "Festivities, celebrations... It only marks the day on the calendar.",
-    "informalBadge": "☕ Casual",
-    "specialDayBadge": "🎉 Special day",
+    "informalBadge": "Casual",
+    "specialDayBadge": "Special day",
     "noVotingHint": "This event has no attendance voting.",
     "color": "Event color",
-    "colorRandom": "🎲 Random",
+    "colorRandom": "Random",
     "colorCustom": "Custom color",
     "birthdayOf": "%{name}'s birthday",
     "createdBy": "Created by %{name}"
@@ -416,11 +417,11 @@
     "setting": "Poke",
     "settingHint": "Let others poke you",
     "rechargeInfo": "Your current recharge: %{hours}h per person (drops with more commitment)",
-    "button": "Poke 👉",
+    "button": "Poke",
     "sent": "Poke sent!",
     "disabledByUser": "This person has pokes disabled",
     "cooldown": "You can poke them again in %{hours}h",
-    "notifTitle": "👉 Poke!",
+    "notifTitle": "Poke!",
     "notifBody": "%{name} poked you",
     "notifBodyVerb": "%{name} %{participle} you",
     "standardLabel": "Poke",
@@ -555,18 +556,31 @@
         "New “bomb notification” in the Group tab: admins (or anyone at 100% commitment) can send a message to the whole group once a week, with prior confirmations and an opt-out.",
         "The Group tab now has shortcuts to the member list and the group ranking."
       ]
+    },
+    "latest": "Latest version",
+    "viewAll": "See all versions",
+    "v1_5": {
+      "name": "Version 1.5",
+      "date": "October 2026",
+      "items": [
+        "New icons across the app: emojis are replaced by cleaner, consistent vector icons.",
+        "The changelog now shows up right at the bottom of the Profile, with the latest version in view.",
+        "Introducing T-Stats, the developer's new app, with its own screen and a what's-new notice that only shows once.",
+        "\"More content from this developer\" now includes the lab statistics calculator.",
+        "Notifications have cleaner titles, without emojis (except the birthday one, which keeps its cake)."
+      ]
     }
   },
   "notifications": {
     "newEventTitle": "New event",
     "newEventBody": "\"%{title}\" was created. Go vote your attendance!",
-    "newInformalTitle": "☕ New casual meetup",
+    "newInformalTitle": "New casual meetup",
     "newInformalBody": "\"%{title}\" was created. No voting: drop by if you feel like it!",
-    "newSpecialDayTitle": "🎉 New special day",
+    "newSpecialDayTitle": "New special day",
     "newSpecialDayBody": "\"%{title}\" was added to the group calendar.",
-    "groupMilestoneTitle": "Group streak milestone! 🔥",
+    "groupMilestoneTitle": "Group streak milestone!",
     "groupMilestoneBody": "You've added %{count} days in a row!",
-    "personalMilestoneTitle": "Personal streak! 🔥",
+    "personalMilestoneTitle": "Personal streak!",
     "personalMilestoneBody": "You've contributed %{count} days in a row.",
     "birthdayTitle": "🎂 Birthday!",
     "birthdayBody": "Today is %{name}'s birthday!"
@@ -610,9 +624,30 @@
     "warn3": "You won't be able to launch another bomb notification for a week. Are you sure?",
     "warn4": "Everyone will see your message on their phone. Think it through. Shall we continue?",
     "warn5": "Final confirmation: send the bomb notification to the whole group now?",
-    "pushTitle": "💣 Bomb notification",
+    "pushTitle": "Bomb notification",
     "optedOutError": "You can't send it with bomb notifications turned off.",
     "sentOkTitle": "Sent",
     "sentOkMessage": "Your bomb notification has gone out to the whole group."
+  },
+  "tstats": {
+    "kicker": "New app from the developer",
+    "tagline": "Your T-mobilitat, in stats",
+    "description": "T-Stats tracks, visualizes and gamifies how you use your T-mobilitat transport card. From the developer of NiniApp.",
+    "comingSoon": "The website is cooking",
+    "comingSoonHint": "You'll be able to try it very soon. As soon as it's ready, the link will show up here.",
+    "open": "Open T-Stats",
+    "discover": "Discover T-Stats",
+    "featTrackTitle": "Track",
+    "featTrackBody": "Keep count of your trips with T-mobilitat.",
+    "featVisualizeTitle": "Visualize",
+    "featVisualizeBody": "Charts and stats on how you get around by public transport.",
+    "featGameTitle": "Gamify",
+    "featGameBody": "Turn your journeys into challenges and achievements.",
+    "featPlatformsTitle": "Anywhere",
+    "featPlatformsBody": "Android app, installable web app on iPhone and a desktop version.",
+    "popupKicker": "New content from the developer",
+    "popupTitle": "Meet T-Stats",
+    "popupBody": "The new app from the creator of NiniApp: track, visualize and gamify your T-mobilitat usage. You can try it now on its website.",
+    "popupLater": "Not now"
   }
 }

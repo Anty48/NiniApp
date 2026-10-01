@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
 import { Pill } from '@/components/ui/Pill';
+import { Icon } from '@/components/ui/Icon';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
@@ -16,7 +17,8 @@ import {
   sortByCopipoints,
 } from '@/services/groupData';
 
-const MEDALS = ['🥇', '🥈', '🥉'];
+/** Oro, plata y bronce para el podio. */
+const MEDAL_COLORS = ['#D4A017', '#A8A9AD', '#B87333'];
 
 /**
  * Cuerpo del Ranking del grupo (por compromiso, contribuciones o copipuntos).
@@ -70,7 +72,13 @@ export function LeaderboardContent() {
             member.userId === user?.id && { borderColor: theme.primary },
             pressed && styles.pressed,
           ]}>
-          <ThemedText style={styles.rank}>{MEDALS[index] ?? `${index + 1}.`}</ThemedText>
+          <View style={styles.rank}>
+            {index < MEDAL_COLORS.length ? (
+              <Icon name="medal" size={24} color={MEDAL_COLORS[index]} />
+            ) : (
+              <ThemedText style={{ fontSize: 16 }}>{`${index + 1}.`}</ThemedText>
+            )}
+          </View>
           <Avatar uri={member.photoUrl} name={member.nickname ?? member.name} size={36} />
           <ThemedText style={styles.name} numberOfLines={1}>
             {member.nickname ?? member.name}
@@ -100,7 +108,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 12,
   },
-  rank: { width: 34, fontSize: 16 },
+  rank: { width: 34 },
   name: { flex: 1 },
   pressed: { opacity: 0.7 },
 });

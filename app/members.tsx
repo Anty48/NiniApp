@@ -27,7 +27,7 @@ export default function MembersScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: `👥 ${t('groupTab.members')}` }} />
+      <Stack.Screen options={{ headerShown: true, title: t('groupTab.members') }} />
       <Screen scroll style={styles.container}>
         <ThemedText variant="muted">
           {t('groupTab.membersCount', { count: data.members.length })}

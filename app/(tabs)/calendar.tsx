@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { MonthCalendar } from '@/components/MonthCalendar';
 import { Button } from '@/components/ui/Button';
+import { IconText } from '@/components/ui/IconText';
 import { Loading } from '@/components/ui/Loading';
 import { Pill } from '@/components/ui/Pill';
 import { Screen } from '@/components/ui/Screen';
@@ -104,17 +105,18 @@ export default function CalendarScreen() {
           pressed && { opacity: 0.7 },
         ]}>
         <View style={styles.cardHeader}>
+          {/* Los cumpleaños conservan su emoji (excepción a los iconos) */}
           <ThemedText variant="subtitle" style={styles.cardTitle} numberOfLines={1}>
             {isBirthday ? `🎂 ${event.title}` : event.title}
           </ThemedText>
           {event.isSpecial && (
-            <ThemedText style={{ color: theme.primary }}>{t('events.specialBadge')}</ThemedText>
+            <IconText icon="star" color={theme.primary}>{t('events.specialBadge')}</IconText>
           )}
           {(isBirthday || event.kind === 'specialDay') && (
-            <ThemedText style={{ color: theme.primary }}>{t('events.specialDayBadge')}</ThemedText>
+            <IconText icon="party-popper" color={theme.primary}>{t('events.specialDayBadge')}</IconText>
           )}
           {event.kind === 'informal' && (
-            <ThemedText style={{ color: theme.primary }}>{t('events.informalBadge')}</ThemedText>
+            <IconText icon="coffee-outline" color={theme.primary}>{t('events.informalBadge')}</IconText>
           )}
         </View>
         <ThemedText variant="muted">{formatEventRange(event, language)}</ThemedText>

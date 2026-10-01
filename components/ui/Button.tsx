@@ -3,9 +3,11 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  View,
   ViewStyle,
 } from 'react-native';
 
+import { Icon, IconName } from '@/components/ui/Icon';
 import { FONT_BOLD } from '@/constants/typography';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -16,6 +18,8 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   style?: ViewStyle;
+  /** Icono a la izquierda del texto. */
+  icon?: IconName;
 }
 
 export function Button({
@@ -25,6 +29,7 @@ export function Button({
   loading = false,
   disabled = false,
   style,
+  icon,
 }: ButtonProps) {
   const { theme } = useTheme();
   const isDisabled = disabled || loading;
@@ -51,6 +56,11 @@ export function Button({
       ]}>
       {loading ? (
         <ActivityIndicator color={textColor} />
+      ) : icon ? (
+        <View style={styles.content}>
+          <Icon name={icon} size={20} color={textColor} />
+          <Text style={[styles.text, styles.shrink, { color: textColor }]}>{title}</Text>
+        </View>
       ) : (
         <Text style={[styles.text, { color: textColor }]}>{title}</Text>
       )}
@@ -68,4 +78,6 @@ const styles = StyleSheet.create({
   },
   dimmed: { opacity: 0.6 },
   text: { fontSize: 16, fontFamily: FONT_BOLD },
+  content: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  shrink: { flexShrink: 1, textAlign: 'center' },
 });

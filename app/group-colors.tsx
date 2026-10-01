@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
+import { Icon } from '@/components/ui/Icon';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -56,7 +57,7 @@ export default function GroupColorsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: `🎨 ${t('groupTab.colors')}` }} />
+      <Stack.Screen options={{ headerShown: true, title: t('groupTab.colors') }} />
       <Screen scroll style={styles.container}>
         <ThemedText variant="muted">{t('colors.subtitle')}</ThemedText>
 
@@ -109,7 +110,7 @@ export default function GroupColorsScreen() {
               onPress={() => remove(saved.id, saved.name)}
               hitSlop={8}
               style={({ pressed }) => pressed && { opacity: 0.6 }}>
-              <ThemedText style={{ color: theme.danger, fontSize: 18 }}>✕</ThemedText>
+              <Icon name="close" size={20} color={theme.danger} />
             </Pressable>
           </View>
         ))}

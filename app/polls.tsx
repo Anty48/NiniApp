@@ -14,7 +14,7 @@ export default function PollsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: `📊 ${t('groupTab.polls')}` }} />
+      <Stack.Screen options={{ headerShown: true, title: t('groupTab.polls') }} />
       <Screen scroll style={styles.container}>
         <PollsContent />
       </Screen>

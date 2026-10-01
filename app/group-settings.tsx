@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Pill } from '@/components/ui/Pill';
+import { Icon } from '@/components/ui/Icon';
 import { Screen } from '@/components/ui/Screen';
 import { TextField } from '@/components/ui/TextField';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -213,8 +214,8 @@ export default function GroupSettingsScreen() {
                 <View style={styles.flex}>
                   <ThemedText numberOfLines={1}>
                     {member.nickname ?? member.name}
-                    {member.isDriver ? ' 🚗' : ''}
-                    {member.isMusician ? ' 🎵' : ''}
+                    {member.isDriver && <> <Icon name="car" size={15} color={theme.textMuted} /></>}
+                    {member.isMusician && <> <Icon name="music-note" size={15} color={theme.textMuted} /></>}
                     {member.userId === user?.id ? ` (${t('common.you')})` : ''}
                   </ThemedText>
                   {member.isDriver && member.carDetails && (

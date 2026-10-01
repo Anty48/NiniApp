@@ -14,7 +14,7 @@ export default function SongsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: true, title: `🎵 ${t('groupTab.songs')}` }} />
+      <Stack.Screen options={{ headerShown: true, title: t('groupTab.songs') }} />
       <Screen scroll style={styles.container}>
         <SongsContent />
       </Screen>

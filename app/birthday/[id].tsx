@@ -2,6 +2,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '@/components/ui/Avatar';
+import { IconText } from '@/components/ui/IconText';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
 import { useGroupData } from '@/contexts/GroupDataContext';
@@ -50,7 +51,7 @@ export default function BirthdayDetailScreen() {
             {title}
           </ThemedText>
           {day && <ThemedText variant="muted">{day}</ThemedText>}
-          <ThemedText style={{ color: theme.primary }}>{t('events.specialDayBadge')}</ThemedText>
+          <IconText icon="party-popper" color={theme.primary}>{t('events.specialDayBadge')}</IconText>
         </View>
 
         {/* La persona: tócala para abrir su perfil */}
@@ -77,8 +78,8 @@ const styles = StyleSheet.create({
   container: { paddingBottom: 40 },
   center: { alignItems: 'center', justifyContent: 'center' },
   centerText: { textAlign: 'center' },
-  hero: { borderRadius: 20, borderWidth: 1, padding: 24, alignItems: 'center', gap: 6 },
   bigEmoji: { fontSize: 48 },
+  hero: { borderRadius: 20, borderWidth: 1, padding: 24, alignItems: 'center', gap: 6 },
   memberRow: {
     flexDirection: 'row',
     alignItems: 'center',

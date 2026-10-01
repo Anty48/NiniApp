@@ -13,6 +13,8 @@ export const StorageKeys = {
   seenStatuses: 'niniapp.seenStatuses',
   /** Acceso rápido elegido para la pestaña central (frasario/canciones/encuestas/ranking). */
   quickAccess: 'niniapp.quickAccess',
+  /** Último anuncio de "nuevo contenido del desarrollador" ya visto (su id). */
+  devAnnouncementSeen: 'niniapp.devAnnouncementSeen',
 } as const;
 
 export type StorageKey = (typeof StorageKeys)[keyof typeof StorageKeys];

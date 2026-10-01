@@ -31,23 +31,23 @@ const TZ = 'Europe/Madrid';
 
 const TEXTS = {
   es: {
-    title: '⏳ Votación a punto de cerrarse',
+    title: 'Votación a punto de cerrarse',
     body: (t) => `Aún no has votado "${t}". La votación se cierra en menos de 1 hora.`,
   },
   en: {
-    title: '⏳ Voting closes soon',
+    title: 'Voting closes soon',
     body: (t) => `You haven't voted on "${t}" yet. Voting closes in less than an hour.`,
   },
   ca: {
-    title: '⏳ La votació es tanca aviat',
+    title: 'La votació es tanca aviat',
     body: (t) => `Encara no has votat "${t}". La votació es tanca en menys d'1 hora.`,
   },
 };
 
 const TEXTS_SPECIAL_DAY = {
-  es: { title: '🎉 Día especial', body: (t) => `¡Hoy es "${t}"!` },
-  en: { title: '🎉 Special day', body: (t) => `Today is "${t}"!` },
-  ca: { title: '🎉 Dia especial', body: (t) => `Avui és "${t}"!` },
+  es: { title: 'Día especial', body: (t) => `¡Hoy es "${t}"!` },
+  en: { title: 'Special day', body: (t) => `Today is "${t}"!` },
+  ca: { title: 'Dia especial', body: (t) => `Avui és "${t}"!` },
 };
 
 const TEXTS_BIRTHDAY = {

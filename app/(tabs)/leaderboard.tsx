@@ -7,6 +7,7 @@ import { PhrasebookContent } from '@/components/features/PhrasebookContent';
 import { PollsContent } from '@/components/features/PollsContent';
 import { SongsContent } from '@/components/features/SongsContent';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 import { Loading } from '@/components/ui/Loading';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -91,7 +92,7 @@ export default function QuickAccessScreen() {
                   color={selected ? theme.primary : theme.text}
                 />
                 <ThemedText style={styles.optionLabel}>{t(QUICK_ACCESS_LABEL_KEYS[option])}</ThemedText>
-                {selected && <ThemedText style={{ color: theme.primary }}>✓</ThemedText>}
+                {selected && <Icon name="check" size={20} color={theme.primary} />}
               </Pressable>
             );
           })}
