@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Switch, View } from 'react-native';
 
 import { CHANGELOG_VERSIONS, ChangelogCard } from '@/components/features/ChangelogCard';
 import { TStatsCard } from '@/components/features/TStatsCard';
@@ -300,7 +299,8 @@ export default function ProfileScreen() {
 
       <Button title={t('common.logout')} onPress={signOut} variant="ghost" />
 
-      {/* Más contenido de este desarrollador (plegable): mod, schematics, calculadora */}
+      {/* Más contenido de este desarrollador (plegable): mod, schematics, calculadora.
+          Se abren en el navegador del sistema, no en la pestaña integrada. */}
       <Button
         title={t('profile.devContent')}
         icon={showDevLinks ? 'chevron-down' : 'chevron-right'}
@@ -315,7 +315,7 @@ export default function ProfileScreen() {
               title={t(`profile.${link.key}`)}
               icon={link.icon}
               variant="outline"
-              onPress={() => WebBrowser.openBrowserAsync(link.url)}
+              onPress={() => Linking.openURL(link.url).catch(() => {})}
             />
           ))}
         </View>

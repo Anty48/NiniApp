@@ -1,3 +1,5 @@
+import { Linking } from 'react-native';
+
 import type { IconName } from '@/components/ui/Icon';
 
 /**
@@ -11,6 +13,16 @@ import type { IconName } from '@/components/ui/Icon';
  * en cuanto pongas aquí la URL, todos los botones pasan a abrirla.
  */
 export const TSTATS_URL: string | null = 'https://t-stats.vercel.app/';
+
+/**
+ * Abre la web de T-Stats en la app de navegador del sistema (no en la pestaña
+ * integrada de expo-web-browser): así el usuario está en su navegador de
+ * verdad, puede instalar la app desde allí, y "atrás" le devuelve a NiniApp.
+ * En web abre una pestaña nueva.
+ */
+export function openTStats(): void {
+  if (TSTATS_URL) Linking.openURL(TSTATS_URL).catch(() => {});
+}
 
 /** Logo de T-Stats (copia reducida del T-S.png de su repositorio). */
 export const TSTATS_LOGO = require('../assets/images/tstats-logo.png');

@@ -1,7 +1,6 @@
 import { Stack } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Linking, Pressable, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { Icon, IconName } from '@/components/ui/Icon';
@@ -96,7 +95,8 @@ export default function ExtrasScreen() {
   const scale = spin.interpolate({ inputRange: [0, 0.5, 1], outputRange: [1, 1.3, 1] });
 
   // ---------- C. El pantógrafo ----------
-  const openPantograph = () => WebBrowser.openBrowserAsync(PANTOGRAPH_WIKI_URL);
+  // Enlaces externos: navegador del sistema (o la app de YouTube), no pestaña integrada.
+  const openPantograph = () => Linking.openURL(PANTOGRAPH_WIKI_URL).catch(() => {});
 
   const card = [styles.card, { backgroundColor: theme.surface, borderColor: theme.border }];
 
@@ -152,7 +152,7 @@ export default function ExtrasScreen() {
         {/* C. YouTube...??? (solo el botón, sin explicaciones) */}
         <Button
           title={t('extras.youtubeButton')}
-          onPress={() => WebBrowser.openBrowserAsync(MYSTERY_YOUTUBE_URL)}
+          onPress={() => Linking.openURL(MYSTERY_YOUTUBE_URL).catch(() => {})}
         />
 
         {/* D. El pantógrafo (featured card) */}

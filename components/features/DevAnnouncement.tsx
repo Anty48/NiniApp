@@ -1,12 +1,11 @@
 import { useRouter } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { Image, Modal, StyleSheet, View } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
 import { IconText } from '@/components/ui/IconText';
 import { ThemedText } from '@/components/ui/ThemedText';
-import { DEV_ANNOUNCEMENT_ID, TSTATS_INK, TSTATS_LOGO, TSTATS_URL, TSTATS_YELLOW } from '@/constants/developer';
+import { DEV_ANNOUNCEMENT_ID, openTStats, TSTATS_INK, TSTATS_LOGO, TSTATS_URL, TSTATS_YELLOW } from '@/constants/developer';
 import { FONT_BOLD } from '@/constants/typography';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -40,7 +39,7 @@ export function DevAnnouncement() {
   // Con la web publicada, el botón lleva directo a ella; si no, a /tstats.
   const discover = () => {
     dismiss();
-    if (TSTATS_URL) WebBrowser.openBrowserAsync(TSTATS_URL);
+    if (TSTATS_URL) openTStats();
     else router.push('/tstats');
   };
 

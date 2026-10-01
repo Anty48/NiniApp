@@ -1,11 +1,10 @@
 import { Stack } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Icon, IconName } from '@/components/ui/Icon';
 import { Screen } from '@/components/ui/Screen';
 import { ThemedText } from '@/components/ui/ThemedText';
-import { TSTATS_INK, TSTATS_LOGO, TSTATS_URL, TSTATS_YELLOW } from '@/constants/developer';
+import { openTStats, TSTATS_INK, TSTATS_LOGO, TSTATS_URL, TSTATS_YELLOW } from '@/constants/developer';
 import { FONT_BOLD, FONT_REGULAR } from '@/constants/typography';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -56,7 +55,7 @@ export default function TStatsScreen() {
 
         {TSTATS_URL ? (
           <Pressable
-            onPress={() => WebBrowser.openBrowserAsync(TSTATS_URL!)}
+            onPress={openTStats}
             style={({ pressed }) => [styles.cta, pressed && { opacity: 0.85 }]}>
             <Text style={styles.ctaText}>{t('tstats.open')}</Text>
             <Icon name="open-in-new" size={18} color={TSTATS_YELLOW} />
