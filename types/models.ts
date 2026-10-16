@@ -94,6 +94,12 @@ export interface GroupMember {
   carDetails?: CarDetails;
   /** Músico del grupo: lo asigna el admin; puede añadir canciones. */
   isMusician?: boolean;
+  /**
+   * Gran colaborador: lo asigna el admin. La foto de prueba del contador nunca
+   * le es obligatoria y recibe avisos del contador (racha a punto de perderse
+   * y "mucha gente sumando").
+   */
+  isBigContributor?: boolean;
   /** Cumpleaños (DD/MM) copiado del perfil, para pintarlo en el calendario. */
   birthday?: string;
   showBirthday?: boolean;
@@ -296,6 +302,10 @@ export interface GroupCounter {
   streakDays: number;
   /** Última fecha (YYYY-MM-DD) con alguna contribución. */
   lastContributionDate?: string;
+  /** Último día (YYYY-MM-DD, hora española) en que se avisó de que la racha se perdía (lo escribe api/vote-reminders.js). */
+  streakWarningSentOn?: string;
+  /** Última vez (ISO) que se avisó de "mucha gente sumando" a los grandes colaboradores. */
+  rushNotifiedAt?: string;
 }
 
 export interface CounterContribution {
@@ -303,7 +313,7 @@ export interface CounterContribution {
   groupId: GroupId;
   userId: UserId;
   at: string;
-  /** Foto de prueba: opcional en los 3 primeros clics del día, obligatoria en el 4º. Se borra a las 24h. */
+  /** Foto de prueba: opcional en los 3 primeros clics del día, obligatoria en el 4º (salvo grandes colaboradores). Se borra a las 24h. */
   proofPhotoUrl?: string;
 }
 

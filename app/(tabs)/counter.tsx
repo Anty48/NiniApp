@@ -19,11 +19,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useGroupData } from '@/contexts/GroupDataContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import {
-  CLICKS_BEFORE_PROOF_REQUIRED,
-  contributionsToday,
-  sortByContributions,
-} from '@/services/groupData';
+import { contributionsToday, isProofRequired, sortByContributions } from '@/services/groupData';
 import { uploadPhoto } from '@/services/photos';
 import { alertMessage, chooseAsync, confirmAsync } from '@/utils/confirm';
 import { formatDateTime } from '@/utils/date';
@@ -35,7 +31,7 @@ export default function CounterScreen() {
   const { t, language } = useLanguage();
   const { theme } = useTheme();
   const { user } = useAuth();
-  const { data, isLoading, isAdmin, contribute, removeContribution } = useGroupData();
+  const { data, me, isLoading, isAdmin, contribute, removeContribution } = useGroupData();
   // Foto de prueba abierta a pantalla completa (null = visor cerrado).
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   // Modo edición de las últimas contribuciones (para borrar equivocaciones).
@@ -69,7 +65,8 @@ export default function CounterScreen() {
   const myClicksToday = user ? contributionsToday(data, user.id) : 0;
   const canIncrement = counter.anyoneCanIncrement || isAdmin;
   const dailyLimitReached = !counter.multiplePerDay && myClicksToday >= 1;
-  const photoRequired = counter.multiplePerDay && myClicksToday >= CLICKS_BEFORE_PROOF_REQUIRED;
+  // Los grandes colaboradores nunca tienen foto obligatoria: +1 con o sin foto.
+  const photoRequired = isProofRequired(data, me);
 
   const memberName = (userId: string) => {
     const m = data.members.find((x) => x.userId === userId);

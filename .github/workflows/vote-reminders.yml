@@ -1,5 +1,6 @@
-# Cron de recordatorios de votación: cada 15 min llama a /api/vote-reminders,
-# que avisa a quienes no han votado cuando queda <1 h para el cierre.
+# Cron de recordatorios: cada 15 min llama a /api/vote-reminders (votación,
+# días especiales, cumpleaños y racha del contador en peligro). Entre otras cosas,
+# avisa a quienes no han votado cuando queda <1 h para el cierre.
 # (El plan Hobby de Vercel solo permite crons diarios; GitHub Actions hace de
 # reloj. OJO: GitHub desactiva los crons si el repo pasa ~60 días sin commits.)
 name: Recordatorios de votacion

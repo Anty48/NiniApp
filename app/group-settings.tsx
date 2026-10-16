@@ -36,6 +36,7 @@ export default function GroupSettingsScreen() {
     setMemberRole,
     setDriver,
     setMusician,
+    setBigContributor,
     setMemberCar,
     leaveGroup,
   } = useGroupData();
@@ -216,6 +217,7 @@ export default function GroupSettingsScreen() {
                     {member.nickname ?? member.name}
                     {member.isDriver && <> <Icon name="car" size={15} color={theme.textMuted} /></>}
                     {member.isMusician && <> <Icon name="music-note" size={15} color={theme.textMuted} /></>}
+                    {member.isBigContributor && <> <Icon name="star" size={15} color={theme.textMuted} /></>}
                     {member.userId === user?.id ? ` (${t('common.you')})` : ''}
                   </ThemedText>
                   {member.isDriver && member.carDetails && (
@@ -252,6 +254,11 @@ export default function GroupSettingsScreen() {
                     label={t('group.musician')}
                     selected={!!member.isMusician}
                     onPress={() => setMusician(member.userId, !member.isMusician)}
+                  />
+                  <Pill
+                    label={t('group.bigContributor')}
+                    selected={!!member.isBigContributor}
+                    onPress={() => setBigContributor(member.userId, !member.isBigContributor)}
                   />
                   {member.isDriver && (
                     <Pill

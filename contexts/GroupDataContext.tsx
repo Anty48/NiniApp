@@ -81,6 +81,8 @@ interface GroupDataContextValue {
   setDriver: (userId: UserId, isDriver: boolean) => Promise<void>;
   /** Asigna o retira el rol de músico (solo admin). */
   setMusician: (userId: UserId, isMusician: boolean) => Promise<void>;
+  /** Asigna o retira el rol de gran colaborador (solo admin). */
+  setBigContributor: (userId: UserId, isBigContributor: boolean) => Promise<void>;
   /** El conductor edita o quita los datos de su propio coche. */
   updateMyCar: (carDetails: CarDetails | undefined) => Promise<void>;
   /** El admin asigna, edita o quita el coche de cualquier conductor. */
@@ -308,6 +310,14 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
           i18n.t('notifications.personalMilestoneBody', { count: result.personalMilestone }),
         );
       }
+      if (result.rushRecipients.length && committed.counter) {
+        sendPushToUsers(committed.group.id, result.rushRecipients, {
+          ...localizedPush('notifications.counterRushTitle', 'notifications.counterRushBody', {
+            name: committed.counter.name,
+          }),
+          url: '/counter',
+        });
+      }
     },
     [user, data],
   );
@@ -492,6 +502,16 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       await mutate((d) => ({
         ...d,
         members: d.members.map((m) => (m.userId === userId ? { ...m, isMusician } : m)),
+      }));
+    },
+    [mutate],
+  );
+
+  const setBigContributor = useCallback(
+    async (userId: UserId, isBigContributor: boolean) => {
+      await mutate((d) => ({
+        ...d,
+        members: d.members.map((m) => (m.userId === userId ? { ...m, isBigContributor } : m)),
       }));
     },
     [mutate],
@@ -791,6 +811,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       adjustCopipoints,
       setDriver,
       setMusician,
+      setBigContributor,
       updateMyCar,
       setMemberCar,
       addPhrase,
@@ -833,6 +854,7 @@ export function GroupDataProvider({ children }: { children: ReactNode }) {
       adjustCopipoints,
       setDriver,
       setMusician,
+      setBigContributor,
       updateMyCar,
       setMemberCar,
       addPhrase,

@@ -213,6 +213,7 @@
     "leave": "Sortir del grup",
     "driver": "Conductor",
     "musician": "Músic",
+    "bigContributor": "Gran col·laborador",
     "leaveTitle": "Sortir del grup?",
     "leaveMessage": "S'esborraran totes les teves dades d'aquest grup (vots, aportacions i places). Aquesta acció no es pot desfer.",
     "chooseSuccessor": "Ets l'administrador. Tria qui heretarà el rol:",
@@ -559,6 +560,16 @@
     },
     "latest": "Última versió",
     "viewAll": "Veure totes les versions",
+    "v1_6": {
+      "name": "Versió 1.6",
+      "date": "Octubre 2026",
+      "items": [
+        "Nou rol de gran col·laborador, que assignen els admins des de la configuració del grup (icona d'estrella).",
+        "Els grans col·laboradors mai tenen foto de prova obligatòria al comptador: +1 amb foto o +1 i prou.",
+        "Els grans col·laboradors reben un avís unes hores abans que es perdi la ratxa si aquell dia encara no ha sumat ningú.",
+        "I un altre quan hi ha molta gent sumant al comptador, perquè s'hi afegeixin."
+      ]
+    },
     "v1_5": {
       "name": "Versió 1.5",
       "date": "Octubre 2026",
@@ -582,6 +593,8 @@
     "groupMilestoneBody": "Porteu %{count} dies seguits sumant!",
     "personalMilestoneTitle": "Ratxa personal!",
     "personalMilestoneBody": "Portes %{count} dies seguits contribuint.",
+    "counterRushTitle": "Molta gent sumant",
+    "counterRushBody": "Hi ha molta gent sumant \"%{name}\". Uneix-t'hi!",
     "birthdayTitle": "🎂 Aniversari!",
     "birthdayBody": "Avui és l'aniversari de %{name}!"
   },

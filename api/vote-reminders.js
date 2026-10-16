@@ -6,6 +6,9 @@
  *     avisa a todo el grupo ("Hoy es ...").
  *  3) Cumpleaños: si un miembro muestra su cumpleaños y es hoy, avisa a todo
  *     el grupo ("Hoy es el cumpleaños de ...").
+ *  4) Racha en peligro: a partir de las 20:00 hora española, si el contador
+ *     tiene racha y hoy nadie ha sumado todavía, avisa a los grandes
+ *     colaboradores (member.isBigContributor) de que se perderá a medianoche.
  * Los avisos de día (2 y 3) se envían a partir de las 08:00 hora española,
  * para no notificar de madrugada.
  *
@@ -15,7 +18,7 @@
  * (el plan Hobby de Vercel solo permite crons diarios, insuficiente aquí).
  *
  * Idempotente: marca event.voteReminderSentAt / event.specialDayNotifiedAt /
- * member.birthdayNotifiedOn dentro de una transacción, así dos ejecuciones
+ * member.birthdayNotifiedOn / counter.streakWarningSentOn dentro de una transacción, así dos ejecuciones
  * simultáneas no duplican avisos. El idioma de cada aviso es el del
  * destinatario (users/{uid}.language, que la app sincroniza al abrir).
  */
@@ -26,6 +29,8 @@ const { env, init, clampPayload, deliverToUser, getFirestore } = require('./_lib
 const WINDOW_MS = 65 * 60 * 1000;
 /** Hora española a partir de la cual se envían los avisos de día. */
 const DAY_NOTICE_FROM_HOUR = 8;
+/** Hora española a partir de la cual se avisa de que la racha se va a perder (4 h antes). */
+const STREAK_WARNING_FROM_HOUR = 20;
 /** Zona horaria del grupo (la app es de un grupo español). */
 const TZ = 'Europe/Madrid';
 
@@ -54,6 +59,21 @@ const TEXTS_BIRTHDAY = {
   es: { title: '🎂 ¡Cumpleaños!', body: (n) => `¡Hoy es el cumpleaños de ${n}!` },
   en: { title: '🎂 Birthday!', body: (n) => `Today is ${n}'s birthday!` },
   ca: { title: '🎂 Aniversari!', body: (n) => `Avui és l'aniversari de ${n}!` },
+};
+
+const TEXTS_STREAK = {
+  es: {
+    title: 'La racha está en peligro',
+    body: (n, d) => `Hoy nadie ha sumado en "${n}". Si nadie suma antes de medianoche se perderá la racha de ${d} días.`,
+  },
+  en: {
+    title: 'The streak is at risk',
+    body: (n, d) => `Nobody has added to "${n}" today. If nobody adds before midnight, the ${d}-day streak will be lost.`,
+  },
+  ca: {
+    title: 'La ratxa està en perill',
+    body: (n, d) => `Avui ningú ha sumat a "${n}". Si ningú suma abans de mitjanit es perdrà la ratxa de ${d} dies.`,
+  },
 };
 
 function lockTimeMs(event) {
@@ -93,10 +113,13 @@ module.exports = async (req, res) => {
   const now = Date.now();
   const today = madridParts();
   const dayNoticesActive = today.hour >= DAY_NOTICE_FROM_HOUR;
+  const streakWarningsActive = today.hour >= STREAK_WARNING_FROM_HOUR;
+  const yesterdayKey = madridParts(new Date(now - 24 * 3600 * 1000)).dayKey;
   const groups = await db.collection('groups').get();
 
   let reminded = 0;
   let dayNotices = 0;
+  let streakWarnings = 0;
   let delivered = 0;
 
   for (const groupDoc of groups.docs) {
@@ -142,6 +165,48 @@ module.exports = async (req, res) => {
               title: T.title,
               body: T.body(event.title),
               url: `/event/${event.id}`,
+            });
+          });
+        }
+      }
+    }
+
+    // ---------- 4) Racha del contador en peligro ----------
+    // Solo si la última contribución fue ayer: si fue hoy la racha está a
+    // salvo, y si fue antes ya se perdió.
+    const counter = data.counter;
+    const bigContributors = (data.members || []).filter((m) => m.isBigContributor);
+    if (
+      streakWarningsActive &&
+      counter &&
+      counter.streakDays > 0 &&
+      counter.lastContributionDate === yesterdayKey &&
+      counter.streakWarningSentOn !== today.dayKey &&
+      bigContributors.length
+    ) {
+      const claimedStreak = await db.runTransaction(async (tx) => {
+        const snap = await tx.get(groupDoc.ref);
+        if (!snap.exists) return null;
+        const fresh = snap.data().counter;
+        if (
+          !fresh ||
+          fresh.lastContributionDate !== yesterdayKey ||
+          fresh.streakWarningSentOn === today.dayKey
+        ) {
+          return null;
+        }
+        tx.update(groupDoc.ref, { 'counter.streakWarningSentOn': today.dayKey });
+        return fresh;
+      });
+      if (claimedStreak) {
+        streakWarnings++;
+        for (const member of bigContributors) {
+          delivered += await deliverToUser(db, member.userId, (u) => {
+            const T = TEXTS_STREAK[u.language] || TEXTS_STREAK.es;
+            return clampPayload({
+              title: T.title,
+              body: T.body(claimedStreak.name, claimedStreak.streakDays),
+              url: '/counter',
             });
           });
         }
@@ -232,5 +297,5 @@ module.exports = async (req, res) => {
 
   return res
     .status(200)
-    .json({ groups: groups.size, eventsReminded: reminded, dayNotices, delivered });
+    .json({ groups: groups.size, eventsReminded: reminded, dayNotices, streakWarnings, delivered });
 };

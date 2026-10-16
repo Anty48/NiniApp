@@ -112,6 +112,7 @@ export default function MemberProfileScreen() {
               {member.role === 'admin' ? t('group.roleAdmin') : t('group.roleMember')}
               {member.isDriver && <> · <Icon name="car" size={14} color={theme.textMuted} /></>}
               {member.isMusician && <> · <Icon name="music-note" size={14} color={theme.textMuted} /></>}
+              {member.isBigContributor && <> · <Icon name="star" size={14} color={theme.textMuted} /></>}
             </ThemedText>
           </View>
         </View>

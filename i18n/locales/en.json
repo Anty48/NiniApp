@@ -213,6 +213,7 @@
     "leave": "Leave group",
     "driver": "Driver",
     "musician": "Musician",
+    "bigContributor": "Top contributor",
     "leaveTitle": "Leave the group?",
     "leaveMessage": "All your data in this group (votes, contributions and seats) will be deleted. This cannot be undone.",
     "chooseSuccessor": "You are the admin. Choose who inherits the role:",
@@ -559,6 +560,16 @@
     },
     "latest": "Latest version",
     "viewAll": "See all versions",
+    "v1_6": {
+      "name": "Version 1.6",
+      "date": "October 2026",
+      "items": [
+        "New top contributor role, assigned by admins from the group settings (star icon).",
+        "Top contributors never need a proof photo on the counter: +1 with a photo or just +1.",
+        "Top contributors get a notice a few hours before the streak is lost if nobody has added that day yet.",
+        "And another one when lots of people are adding to the counter, so they can join in."
+      ]
+    },
     "v1_5": {
       "name": "Version 1.5",
       "date": "October 2026",
@@ -582,6 +593,8 @@
     "groupMilestoneBody": "You've added %{count} days in a row!",
     "personalMilestoneTitle": "Personal streak!",
     "personalMilestoneBody": "You've contributed %{count} days in a row.",
+    "counterRushTitle": "Lots of people adding",
+    "counterRushBody": "Lots of people are adding to \"%{name}\". Join in!",
     "birthdayTitle": "🎂 Birthday!",
     "birthdayBody": "Today is %{name}'s birthday!"
   },

@@ -213,6 +213,7 @@
     "leave": "Salir del grupo",
     "driver": "Conductor",
     "musician": "Músico",
+    "bigContributor": "Gran colaborador",
     "leaveTitle": "¿Salir del grupo?",
     "leaveMessage": "Se borrarán todos tus datos de este grupo (votos, aportes y plazas). Esta acción no se puede deshacer.",
     "chooseSuccessor": "Eres el administrador. Elige quién heredará el rol:",
@@ -559,6 +560,16 @@
     },
     "latest": "Última versión",
     "viewAll": "Ver todas las versiones",
+    "v1_6": {
+      "name": "Versión 1.6",
+      "date": "Octubre 2026",
+      "items": [
+        "Nuevo rol de gran colaborador, que asignan los admins desde los ajustes del grupo (icono de estrella).",
+        "Los grandes colaboradores nunca tienen foto de prueba obligatoria en el contador: +1 con foto o +1 sin más.",
+        "Los grandes colaboradores reciben un aviso unas horas antes de que se pierda la racha si ese día nadie ha sumado todavía.",
+        "Y otro cuando hay mucha gente sumando al contador, para que se apunten."
+      ]
+    },
     "v1_5": {
       "name": "Versión 1.5",
       "date": "Octubre 2026",
@@ -582,6 +593,8 @@
     "groupMilestoneBody": "¡Lleváis %{count} días seguidos sumando!",
     "personalMilestoneTitle": "¡Racha personal!",
     "personalMilestoneBody": "Llevas %{count} días seguidos contribuyendo.",
+    "counterRushTitle": "Mucha gente sumando",
+    "counterRushBody": "Hay mucha gente sumando \"%{name}\". ¡Únete!",
     "birthdayTitle": "🎂 ¡Cumpleaños!",
     "birthdayBody": "¡Hoy es el cumpleaños de %{name}!"
   },

@@ -39,8 +39,16 @@ export const EVENT_RETENTION_DAYS = 30;
 export const PROOF_TTL_MS = 24 * 3600 * 1000;
 export const GROUP_MILESTONES = [7, 30, 67, 365];
 export const PERSONAL_MILESTONES = [5, 10];
-/** A partir del 4º clic del día la foto de prueba es obligatoria. */
+/** A partir del 4º clic del día la foto de prueba es obligatoria (salvo grandes colaboradores). */
 export const CLICKS_BEFORE_PROOF_REQUIRED = 3;
+/**
+ * "Mucha gente sumando": cuando al menos RUSH_MIN_PEOPLE personas distintas
+ * suman en la última RUSH_WINDOW_MS, se avisa a los grandes colaboradores que
+ * aún no están sumando. Como mucho un aviso cada RUSH_COOLDOWN_MS.
+ */
+export const RUSH_MIN_PEOPLE = 3;
+export const RUSH_WINDOW_MS = 60 * 60 * 1000;
+export const RUSH_COOLDOWN_MS = 6 * 3600 * 1000;
 /**
  * "Tocar": cooldown por destinatario que depende del compromiso de quien
  * toca. Mínimo 12 h con 100% de compromiso; con menos compromiso tarda más,
@@ -438,14 +446,30 @@ export function contributionsToday(data: GroupData, userId: UserId, now: Date = 
   return data.contributions.filter((c) => c.userId === userId && dayKey(c.at) === today).length;
 }
 
+/** La foto de prueba es obligatoria en este clic (4º del día o más, si no es gran colaborador). */
+export function isProofRequired(
+  data: GroupData,
+  member: GroupMember | null,
+  now: Date = new Date(),
+): boolean {
+  if (!data.counter?.multiplePerDay || !member || member.isBigContributor) return false;
+  return contributionsToday(data, member.userId, now) >= CLICKS_BEFORE_PROOF_REQUIRED;
+}
+
 export function contribute(
   data: GroupData,
   userId: UserId,
   proofPhotoUrl: string | undefined,
   now: Date = new Date(),
-): { data: GroupData; groupMilestone: number | null; personalMilestone: number | null } {
+): {
+  data: GroupData;
+  groupMilestone: number | null;
+  personalMilestone: number | null;
+  /** Grandes colaboradores a avisar de "mucha gente sumando" (vacío si no toca). */
+  rushRecipients: UserId[];
+} {
   const counter = data.counter;
-  if (!counter) return { data, groupMilestone: null, personalMilestone: null };
+  if (!counter) return { data, groupMilestone: null, personalMilestone: null, rushRecipients: [] };
   const today = dayKey(now);
 
   let groupMilestone: number | null = null;
@@ -483,11 +507,33 @@ export function contribute(
     at: now.toISOString(),
     proofPhotoUrl,
   };
+  const contributions = [record, ...data.contributions];
+
+  // "Mucha gente sumando": se reclama dentro de la misma transacción (marca
+  // rushNotifiedAt), así dos clics simultáneos no duplican el aviso.
+  let rushRecipients: UserId[] = [];
+  const lastRush = counter.rushNotifiedAt ? new Date(counter.rushNotifiedAt).getTime() : 0;
+  if (now.getTime() - lastRush >= RUSH_COOLDOWN_MS) {
+    const recent = new Set(
+      contributions
+        .filter((c) => now.getTime() - new Date(c.at).getTime() <= RUSH_WINDOW_MS)
+        .map((c) => c.userId),
+    );
+    if (recent.size >= RUSH_MIN_PEOPLE) {
+      rushRecipients = members
+        .filter((m) => m.isBigContributor && !recent.has(m.userId))
+        .map((m) => m.userId);
+      if (rushRecipients.length) {
+        newCounter = { ...newCounter, rushNotifiedAt: now.toISOString() };
+      }
+    }
+  }
 
   return {
-    data: { ...data, counter: newCounter, members, contributions: [record, ...data.contributions] },
+    data: { ...data, counter: newCounter, members, contributions },
     groupMilestone,
     personalMilestone,
+    rushRecipients,
   };
 }
 
